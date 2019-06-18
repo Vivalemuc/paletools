@@ -1,0 +1,26 @@
+{
+  "name": "paletools",
+  "version": "1.0.0",
+  "description": "Set of tools for EA Sports FIFA WebApp to improve the market usage experience",
+  "main": "gulpfile.js",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-wrap": "^0.15.0",
+    "through2": "^3.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eallegretta/paletools.git"
+  },
+  "author": "Paleta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eallegretta/paletools/issues"
+  },
+  "homepage": "https://github.com/eallegretta/paletools#readme",
+  "dependencies": {}
+}
