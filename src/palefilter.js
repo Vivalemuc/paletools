@@ -1,7 +1,7 @@
 (function () {
     if (window.__palefilter) return;
 
-    const ver = "v1.1";
+    const ver = "v1.2";
     const
         localePlayers = window.services.Localization.localize('search.filters.players'),
         localeSquadFitness = window.services.Localization.localize('card.title.squadfitness'),
