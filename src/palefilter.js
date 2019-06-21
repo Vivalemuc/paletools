@@ -30,10 +30,10 @@
         getSquadFitness = (t) => $('.name:contains(' + localeSquadFitness + ')', t).length > 0 ? $('.subtype', t)[0].textContent : null,
         header = $("#FIFAHeader");
 
-        let selectedFilter = 'player';
+    let selectedFilter = 'player';
     $("<select style='height:46px'><option value='player'>" + localePlayers + "</option><option value='fitness'>" + localeSquadFitness + "</option></select>").change(function () {
         selectedFilter = this.value;
-        if(this.value == 'player'){
+        if (this.value == 'player') {
             playerAttrsContainer.show();
             squadFitnessContainer.hide();
         }
@@ -51,7 +51,7 @@
     let squadFitnessContainer = $("<select id='squadFitness' style='height:46px'><option value='+30'>+30</option><option value='+20'>+20</option><option value='+10'>+10</option></select>").appendTo(header).hide();
 
     $('.view-root').on('DOMSubtreeModified', function (elem) {
-        var items = $('.listFUTItem', elem.target);
+        let items = $('.listFUTItem', elem.target);
         let selectedSquadFitness = $("#squadFitness").val();
         items.each(function () {
             if (selectedFilter === 'player') {
@@ -62,18 +62,21 @@
                     }
                 }
             }
-            else if(selectedFilter === 'fitness') {
-                if(getSquadFitness(this) != selectedSquadFitness){
+            else if (selectedFilter === 'fitness') {
+                if (getSquadFitness(this) != selectedSquadFitness) {
                     $(this).remove();
                 }
             }
 
         });
-        
-        var items = $('.listFUTItem', elem.target);
-        if(items.length > 0){
-            mouseClick(items);
+
+        items = $('.listFUTItem', elem.target);
+        if (items.length > 0) {
+            setTimeout(function () {
+                mouseClick(items);
+            }, 0);
         }
+
     });
 
     $("nav.view-tab-bar").append('<button class="view-tab-bar-item" style="order: 6"><a style="text-decoration:none;color:inherit" target="paletools" href="http://eallegretta.github.io/paletools.html">Palefilter ' + ver + '</a>');
