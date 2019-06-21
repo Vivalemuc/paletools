@@ -29,6 +29,6 @@ gulp.task('build', function () {
     return gulp.src('./src/*.js')
             .pipe(base64Encode())
             .pipe(concat('paletools.js'))
-            .pipe(wrap('window.paletools = { <%=contents%> }', {}, { parse: false }))
+            .pipe(wrap('window.paletools = { <%=contents%> };', {}, { parse: false }))
             .pipe(gulp.dest('./dist/'));
 });

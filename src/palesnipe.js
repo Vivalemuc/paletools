@@ -7,36 +7,11 @@
     buyNowButtonKey, 
     sendToTransferListButtonKey,
     sendToClubButtonKey) {
-    const ver = "v1.0";
+    const ver = "v1.1";
     
     if(window.__palesnipe) return;
 
-    const localeButtons = {
-            'es_ES': {
-                storeInClub: 'Enviar a Mi club',
-                sendTradePile: 'Enviar a transferibles'
-            },
-            'en_US': {
-                storeInClub: 'Send to My Club',
-                sendTradePile: 'Send to Transfer List'
-            },
-            'fr_FR': {
-                storeInClub: 'Envoyer vers Mon club',
-                sendTradePile: 'Env. Liste transf.'
-            },
-            'de_DE': {
-                storeInClub: 'Zu Mein Verein',
-                sendTradePile: 'Auf Transferliste'
-            },
-            'it_IT': {
-                storeInClub: 'Invia a Il mio club',
-                sendTradePile: 'Invia a trasferim.'
-            },
-            'pt_BR': {
-                storeInClub: 'Enviar ao Meu clube',
-                sendTradePile: 'Enviar para Transfer.'
-            }
-        },
+    const 
         dispatchMouseEvent = ($target, eventName) => {
             if($target.length == 0) return;
             const mouseEvent = document.createEvent('MouseEvents');
@@ -57,8 +32,8 @@
             [backButtonKey]: () => mouseClick($('.NavigationBar .btn-navigation')),
             [searchButtonKey]: () => mouseClick($('#ut-search-wrapper .call-to-action')),
             [buyNowButtonKey]: () => mouseClick($('.buyButton')),
-            [sendToTransferListButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" + localeButtons[window.localStorage.UT_LOCALE].sendTradePile + "')")),
-            [sendToClubButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" + localeButtons[window.localStorage.UT_LOCALE].storeInClub + "')"))
+            [sendToTransferListButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" + window.services.Localization.localize('infopanel.label.sendTradePile') + "')")),
+            [sendToClubButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" +  window.services.Localization.localize('infopanel.label.storeInClub') + "')"))
         };
 
     console.log(keys);

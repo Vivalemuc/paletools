@@ -1,34 +1,10 @@
 (function () {
     if (window.__palefilter) return;
 
-    const ver = "v1.0";
+    const ver = "v1.1";
     const
-        locales = {
-            'es_ES': {
-                players: 'Jugadores',
-                squadFitness: 'Forma de plantilla'
-            },
-            'en_US': {
-                players: 'Players',
-                squadFitness: 'Squad Fitness'
-            },
-            'de_DE': {
-                players: 'Spieler',
-                squadFitness: 'Team-Fitness'
-            },
-            'fr_FR': {
-                players: 'Joueurs',
-                squadFitness: 'Forme équipe'
-            },
-            'pt_BR': {
-                players: 'Jogadores',
-                squadFitness: 'Preparo fís. elenco'
-            },
-            'it_IT': {
-                players: 'Giocatori',
-                squadFitness: 'Forma fisica rosa'
-            }
-        },
+        localePlayers = window.services.Localization.localize('search.filters.players'),
+        localeSquadFitness = window.services.Localization.localize('card.title.squadfitness'),
         dispatchMouseEvent = ($target, eventName) => {
             if ($target.length == 0) return;
             const mouseEvent = document.createEvent('MouseEvents');
@@ -51,12 +27,11 @@
             def: t => getPlayerStat(t, 4),
             phy: t => getPlayerStat(t, 5)
         },
-        getSquadFitness = (t) => $('.name:contains(' + locale.squadFitness + ')', t).length > 0 ? $('.subtype', t)[0].textContent : null,
+        getSquadFitness = (t) => $('.name:contains(' + localeSquadFitness + ')', t).length > 0 ? $('.subtype', t)[0].textContent : null,
         header = $("#FIFAHeader");
 
-    let locale = locales[window.localStorage.UT_LOCALE];
-    let selectedFilter = 'player';
-    $("<select style='height:46px'><option value='player'>" + locale.players + "</option><option value='fitness'>" + locale.squadFitness + "</option></select>").change(function () {
+        let selectedFilter = 'player';
+    $("<select style='height:46px'><option value='player'>" + localePlayers + "</option><option value='fitness'>" + localeSquadFitness + "</option></select>").change(function () {
         selectedFilter = this.value;
         if(this.value == 'player'){
             playerAttrsContainer.show();
@@ -83,20 +58,21 @@
                 for (var playerAttr in playerAttrs) {
                     var attrValue = $('#_' + playerAttr).val();
                     if (attrValue && playerAttrs[playerAttr](this) != attrValue) {
-                        $(this).hide();
+                        $(this).remove();
                     }
                 }
             }
             else if(selectedFilter === 'fitness') {
                 if(getSquadFitness(this) != selectedSquadFitness){
-                    $(this).hide();
+                    $(this).remove();
                 }
             }
 
         });
-        let visibleItems = items.filter(":visible");
-        if (visibleItems.length > 0) {
-            mouseClick(visibleItems);
+        
+        var items = $('.listFUTItem', elem.target);
+        if(items.length > 0){
+            mouseClick(items);
         }
     });
 
