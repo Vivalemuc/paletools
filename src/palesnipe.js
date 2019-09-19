@@ -7,7 +7,7 @@
     buyNowButtonKey, 
     sendToTransferListButtonKey,
     sendToClubButtonKey) {
-    const ver = "v1.1";
+    const ver = "v1.2";
     
     if(window.__palesnipe) return;
     

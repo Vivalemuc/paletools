@@ -3,7 +3,7 @@
 
     window._0x1c1887 = function(){}
 
-    const ver = "v1.2";
+    const ver = "v1.3";
     const
         localePlayers = window.services.Localization.localize('search.filters.players'),
         localeSquadFitness = window.services.Localization.localize('card.title.squadfitness'),

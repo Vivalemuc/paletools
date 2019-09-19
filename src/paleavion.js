@@ -3,7 +3,7 @@
 
     window._0x1c1887 = function(){}
 
-    const ver = "v1.0";
+    const ver = "v1.1";
     document.body.onkeypress = e => {
         if (e.key === 't' || e.key === 'T') {
             var currentValue = parseInt($('.DetailPanel .auctionInfo .coins').text().replace(',', '').replace('.',''));
