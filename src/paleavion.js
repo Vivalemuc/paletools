@@ -1,6 +1,8 @@
 (function () {
     if (window.__paleavion) return;
 
+    window._0x1c1887 = function(){}
+
     const ver = "v1.0";
     document.body.onkeypress = e => {
         if (e.key === 't' || e.key === 'T') {
@@ -12,6 +14,6 @@
         }
     };
 
-    $("nav.view-tab-bar").append('<button class="view-tab-bar-item" style="order: 6"><a style="text-decoration:none;color:inherit" target="paletools" href="http://eallegretta.github.io/paletools.html">Paleavion ' + ver + '</a>');
+    $("nav.ut-tab-bar").append('<button class="ut-tab-bar-item" style="order: 6"><a style="text-decoration:none;color:inherit" target="paletools" href="http://eallegretta.github.io/paletools.html">Paleavion ' + ver + '</a>');
     window.__paleavion = true;
 })();
