@@ -3,44 +3,60 @@ window.palesnipe = window.palesnipe || {
     incrementMinBinKey: 39,
     decrementMaxBinKey: 98,
     incrementMaxBinKey: 104,
-    decrementMinBuyNowKey:100,
-    incrementMinBuyNowKey:102,
-    decrementMaxBuyNowKey:40,
-    incrementMaxBuyNowKey:38,
-    backButtonKey:49,
-    searchButtonKey:50,
-    buyNowButtonKey:51,
-    sendToTransferListButtonKey:52,
-    sendToClubButtonKey:53,
+    decrementMinBuyNowKey: 100,
+    incrementMinBuyNowKey: 102,
+    decrementMaxBuyNowKey: 40,
+    incrementMaxBuyNowKey: 38,
+    backButtonKey: 49,
+    searchButtonKey: 50,
+    buyNowButtonKey: 51,
+    sendToTransferListButtonKey: 52,
+    sendToClubButtonKey: 53,
     autoPressEnterAfterBuyNow: true,
+    autoBuyAfterSearch: false,
     enableDisablePalesnipeKey: 9
 };
 
-(function() {
-    const ver = "v1.4";
-    
-    if(window.__palesnipe) return;
-    
-    window._0x1c1887 = function(){}
+(function () {
+    const ver = "v1.5";
+
+    if (window.__palesnipe) return;
+
+    window._0x1c1887 = function () { }
 
     let p = window.palesnipe;
     let loc = window.services.Localization;
     let enabled = true;
     let backButtonLastDate = new Date();
 
-    const 
+    const
         BACK_BUTTON_THRESHOLD = 500,
         dispatchMouseEvent = ($target, eventName) => {
-            if($target.length == 0) return;
+            if ($target.length == 0) return;
             const mouseEvent = document.createEvent('MouseEvents');
             mouseEvent.initEvent(eventName);
             $target[0].dispatchEvent(mouseEvent)
         },
         mouseDown = target => dispatchMouseEvent(target, 'mousedown'),
         mouseUp = target => dispatchMouseEvent(target, 'mouseup'),
-        mouseClick = target => { 
+        mouseClick = target => {
             mouseDown(target);
             mouseUp(target);
+        },
+        buyNow = (timeout) => {
+            function buy(){
+                mouseClick($('.buyButton'));
+                if (p.autoPressEnterAfterBuyNow) {
+                    pressOkBtn();
+                }
+            }
+
+            if (timeout) {
+                setTimeout(buy, timeout)
+                return;
+            }
+
+            buy();
         },
         pressOkBtn = () => setTimeout(() => mouseClick($('.dialog-body .ut-button-group button:eq(0)')), 100),
         keys = {
@@ -53,42 +69,42 @@ window.palesnipe = window.palesnipe || {
             [p.decrementMaxBuyNowKey]: () => mouseClick($('.decrement-value:eq(3)')),
             [p.incrementMaxBuyNowKey]: () => mouseClick($('.increment-value:eq(3)')),
             [p.backButtonKey]: () => {
-                if(new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD){
+                if (new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD) {
                     return;
                 }
                 backButtonLastDate = new Date();
                 mouseClick($('.ut-navigation-button-control'));
             },
-            [p.searchButtonKey]: () => mouseClick($('.button-container .btn-standard.call-to-action')),
-            [p.buyNowButtonKey]: () => {
-                mouseClick($('.buyButton'));
-                if(autoPressEnterAfterBuyNow){
-                    pressOkBtn();
+            [p.searchButtonKey]: () => {
+                mouseClick($('.button-container .btn-standard.call-to-action'));
+                if(p.autoBuyAfterSearch){
+                    buyNow(100);
                 }
             },
+            [p.buyNowButtonKey]: () => buyNow(),
             [p.sendToTransferListButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" + loc.localize('infopanel.label.sendTradePile') + "')")),
-            [p.sendToClubButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" +  loc.localize('infopanel.label.storeInClub') + "')")),
+            [p.sendToClubButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" + loc.localize('infopanel.label.storeInClub') + "')")),
         };
 
     document.body.onkeydown = e => {
-        if(e.keyCode == p.enableDisablePalesnipeKey){
+        if (e.keyCode == p.enableDisablePalesnipeKey) {
             enabled = !enabled;
-            if(enabled){
+            if (enabled) {
                 $("#paletools-status").removeClass('off').addClass('on').text('ON');
             }
             else {
                 $("#paletools-status").removeClass('on').addClass('off').text('OFF');
             }
         }
-        
-        if(!enabled || !keys.hasOwnProperty(e.keyCode)) {
+
+        if (!enabled || !keys.hasOwnProperty(e.keyCode)) {
             return;
         }
 
         keys[e.keyCode]();
     };
 
-    const 
+    const
         css = "#paletools-status.on { color: green }; #paletools-status.off { color: red };",
         head = document.head || document.getElementsByTagName('head')[0],
         style = document.createElement('style');
