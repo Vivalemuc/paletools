@@ -1,19 +1,35 @@
-(function(decrementMinBidKey, 
-    incrementMinBinKey, 
-    decrementMaxBuyNowKey, 
-    incrementMaxBuyNowKey, 
-    backButtonKey, 
-    searchButtonKey, 
-    buyNowButtonKey, 
-    sendToTransferListButtonKey,
-    sendToClubButtonKey) {
-    const ver = "v1.2";
+window.palesnipe = window.palesnipe || {
+    decrementMinBidKey: 37,
+    incrementMinBinKey: 39,
+    decrementMaxBinKey: 98,
+    incrementMaxBinKey: 104,
+    decrementMinBuyNowKey:100,
+    incrementMinBuyNowKey:102,
+    decrementMaxBuyNowKey:40,
+    incrementMaxBuyNowKey:38,
+    backButtonKey:49,
+    searchButtonKey:50,
+    buyNowButtonKey:51,
+    sendToTransferListButtonKey:52,
+    sendToClubButtonKey:53,
+    autoPressEnterAfterBuyNow: true,
+    enableDisablePalesnipeKey: 9
+};
+
+(function() {
+    const ver = "v1.4";
     
     if(window.__palesnipe) return;
     
     window._0x1c1887 = function(){}
 
+    let p = window.palesnipe;
+    let loc = window.services.Localization;
+    let enabled = true;
+    let backButtonLastDate = new Date();
+
     const 
+        BACK_BUTTON_THRESHOLD = 500,
         dispatchMouseEvent = ($target, eventName) => {
             if($target.length == 0) return;
             const mouseEvent = document.createEvent('MouseEvents');
@@ -26,25 +42,70 @@
             mouseDown(target);
             mouseUp(target);
         },
+        pressOkBtn = () => setTimeout(() => mouseClick($('.dialog-body .ut-button-group button:eq(0)')), 100),
         keys = {
-            [decrementMinBidKey]: () => mouseClick($('.decrement-value')),
-            [incrementMinBinKey]: () => mouseClick($('.increment-value')),
-            [decrementMaxBuyNowKey]: () => mouseClick($('.decrement-value:eq(3)')),
-            [incrementMaxBuyNowKey]: () => mouseClick($('.increment-value:eq(3)')),
-            [backButtonKey]: () => mouseClick($('.ut-navigation-button-control')),
-            [searchButtonKey]: () => mouseClick($('.button-container .btn-standard.call-to-action')),
-            [buyNowButtonKey]: () => mouseClick($('.buyButton')),
-            [sendToTransferListButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" + window.services.Localization.localize('infopanel.label.sendTradePile') + "')")),
-            [sendToClubButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" +  window.services.Localization.localize('infopanel.label.storeInClub') + "')"))
+            [p.decrementMinBidKey]: () => mouseClick($('.decrement-value')),
+            [p.incrementMinBinKey]: () => mouseClick($('.increment-value')),
+            [p.decrementMaxBinKey]: () => mouseClick($('.decrement-value:eq(1)')),
+            [p.incrementMaxBinKey]: () => mouseClick($('.increment-value:eq(1)')),
+            [p.decrementMinBuyNowKey]: () => mouseClick($('.decrement-value:eq(2)')),
+            [p.incrementMinBuyNowKey]: () => mouseClick($('.increment-value:eq(2)')),
+            [p.decrementMaxBuyNowKey]: () => mouseClick($('.decrement-value:eq(3)')),
+            [p.incrementMaxBuyNowKey]: () => mouseClick($('.increment-value:eq(3)')),
+            [p.backButtonKey]: () => {
+                if(new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD){
+                    return;
+                }
+                backButtonLastDate = new Date();
+                mouseClick($('.ut-navigation-button-control'));
+            },
+            [p.searchButtonKey]: () => mouseClick($('.button-container .btn-standard.call-to-action')),
+            [p.buyNowButtonKey]: () => {
+                mouseClick($('.buyButton'));
+                if(autoPressEnterAfterBuyNow){
+                    pressOkBtn();
+                }
+            },
+            [p.sendToTransferListButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" + loc.localize('infopanel.label.sendTradePile') + "')")),
+            [p.sendToClubButtonKey]: () => mouseClick($(".ut-button-group > button:contains('" +  loc.localize('infopanel.label.storeInClub') + "')")),
         };
 
-    console.log(keys);
-
     document.body.onkeydown = e => {
-        if(!keys.hasOwnProperty(e.keyCode)) return;
+        if(e.keyCode == p.enableDisablePalesnipeKey){
+            enabled = !enabled;
+            if(enabled){
+                $("#paletools-status").removeClass('off').addClass('on').text('ON');
+            }
+            else {
+                $("#paletools-status").removeClass('on').addClass('off').text('OFF');
+            }
+        }
+        
+        if(!enabled || !keys.hasOwnProperty(e.keyCode)) {
+            return;
+        }
+
         keys[e.keyCode]();
     };
 
-    $("nav.ut-tab-bar").append('<button class="ut-tab-bar-item" style="order: 6"><a style="text-decoration:none;color:inherit" target="paletools" href="http://eallegretta.github.io/paletools.html">Palesnipe ' + ver + '</a>');
+    const 
+        css = "#paletools-status.on { color: green }; #paletools-status.off { color: red };",
+        head = document.head || document.getElementsByTagName('head')[0],
+        style = document.createElement('style');
+
+    head.appendChild(style);
+    style.type = 'text/css';
+    style.appendChild(document.createTextNode(css));
+
+    let donateHtml = '<form id="paletools-donate" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">\
+    <input type="hidden" name="cmd" value="_donations" />\
+    <input type="hidden" name="business" value="ZAJX6AD6XPLRN" />\
+    <input type="hidden" name="currency_code" value="USD" />\
+    <a style="text-decoration:none;color:inherit" onclick="javascript:$(\'#paletools-donate\')[0].submit()" href="javascript:void(0)">Paletools Donate</a></form></a>';
+
+    $("nav.ut-tab-bar")
+        .append('<button class="ut-tab-bar-item" style="order: 7"><a style="text-decoration:none;color:inherit" target="paletools" href="http://eallegretta.github.io/paletools.html">Palesnipe ' + ver + ' <span id="paletools-status" class="on">ON</span></a></button>')
+        .append('<button class="ut-tab-bar-item" style="order: 7">' + donateHtml + '</button>');
+
     window.__palesnipe = true;
-})(37,39,40,38,49,50,51,52,53);
+})();

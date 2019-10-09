@@ -6,7 +6,7 @@
     const ver = "v1.1";
     document.body.onkeypress = e => {
         if (e.key === 't' || e.key === 'T') {
-            var currentValue = parseInt($('.DetailPanel .auctionInfo .coins').text().replace(',', '').replace('.',''));
+            var currentValue = parseInt($('.DetailPanel .auctionInfo .currency-coins').text().replace(',', '').replace('.',''));
             if (!currentValue) return;
             var techAvion = currentValue + ((Math.floor(currentValue / 10000) - 1) * 1000) + 3500;
             if ($('.DetailPanel .techAvion').length > 0) return;

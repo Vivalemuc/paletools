@@ -1,9 +1,9 @@
+window._0x1c1887 = function(){}
+
 (function () {
     if (window.__palefilter) return;
 
-    window._0x1c1887 = function(){}
-
-    const ver = "v1.3";
+    const ver = "v1.4";
     const
         localePlayers = window.services.Localization.localize('search.filters.players'),
         localeSquadFitness = window.services.Localization.localize('card.title.squadfitness'),
@@ -52,7 +52,7 @@
 
     let squadFitnessContainer = $("<select id='squadFitness' style='height:46px'><option value='+30'>+30</option><option value='+20'>+20</option><option value='+10'>+10</option></select>").appendTo(header).hide();
 
-    $('.view-root').on('DOMSubtreeModified', function (elem) {
+    $('.ut-content').on('DOMSubtreeModified', function (elem) {
         let items = $('.listFUTItem', elem.target);
         let selectedSquadFitness = $("#squadFitness").val();
         items.each(function () {
@@ -81,6 +81,6 @@
 
     });
 
-    $("nav.ut-tab-bar").append('<button class="ut-tab-bar-item" style="order: 6"><a style="text-decoration:none;color:inherit" target="paletools" href="http://eallegretta.github.io/paletools.html">Palefilter ' + ver + '</a>');
+    $("nav.ut-tab-bar").append('<button class="ut-tab-bar-item" style="order: 7"><a style="text-decoration:none;color:inherit" target="paletools" href="http://eallegretta.github.io/paletools.html">Palefilter ' + ver + '</a>');
     window.__palefilter = true;
 })();
