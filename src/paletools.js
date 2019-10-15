@@ -266,7 +266,9 @@ window.paletools = window.paletools || {
             + ".ut-market-search-filters-view .call-to-action:after { content: '[ " + map[p.search.search] +  " ]' }"
             + ".ut-navigation-button-control:after { font-size:10px; float:right; margin-right:12px; content: '[ " + map[p.back] +  " ]' }"
             + ".pagingContainer .prev:after { font-size: 10px; display:block; content: '[ " + map[p.lists.prev] + " ]' }"
-            + ".pagingContainer .next:after { font-size: 10px; display:block; content: '[ " + map[p.lists.next] + " ]' }";
+            + ".pagingContainer .next:after { font-size: 10px; display:block; content: '[ " + map[p.lists.next] + " ]' }"
+            + ".bidButton:after { content: ' [ " + map[p.results.bid] + " ]' }"
+            + ".buyButton:after { content: ' [ " + map[p.results.buy] + " ]' }";
 
             var style = document.createElement("style");
             style.type = "text/css";
