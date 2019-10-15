@@ -47,15 +47,18 @@ window.paletools = window.paletools || {
     results: {
         bid: 52,
         buy: 51,
-        transfer: 53,
-        club: 54,
+        transfer: 82,
+        club: 67,
         pressEnter: true,
         autoBuy: false,
+        sell: 81
     }
 };
 
 (function () {
     const ver = "v2.0";
+
+    const map = ["","","","CANCEL","","","HELP","","BACK_SPACE","TAB","","","CLEAR","ENTER","ENTER_SPECIAL","","SHIFT","CONTROL","ALT","PAUSE","CAPS_LOCK","KANA","EISU","JUNJA","FINAL","HANJA","","ESCAPE","CONVERT","NONCONVERT","ACCEPT","MODECHANGE","SPACE","PAGE_UP","PAGE_DOWN","END","HOME","LEFT","UP","RIGHT","DOWN","SELECT","PRINT","EXECUTE","PRINTSCREEN","INSERT","DELETE","","0","1","2","3","4","5","6","7","8","9","COLON","SEMICOLON","LESS_THAN","EQUALS","GREATER_THAN","QUESTION_MARK","AT","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","OS_KEY","","CONTEXT_MENU","","SLEEP","NUMPAD0","NUMPAD1","NUMPAD2","NUMPAD3","NUMPAD4","NUMPAD5","NUMPAD6","NUMPAD7","NUMPAD8","NUMPAD9","MULTIPLY","ADD","SEPARATOR","SUBTRACT","DECIMAL","DIVIDE","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","F13","F14","F15","F16","F17","F18","F19","F20","F21","F22","F23","F24","","","","","","","","","NUM_LOCK","SCROLL_LOCK","WIN_OEM_FJ_JISHO","WIN_OEM_FJ_MASSHOU","WIN_OEM_FJ_TOUROKU","WIN_OEM_FJ_LOYA","WIN_OEM_FJ_ROYA","","","","","","","","","","CIRCUMFLEX","EXCLAMATION","DOUBLE_QUOTE","HASH","DOLLAR","PERCENT","AMPERSAND","UNDERSCORE","OPEN_PAREN","CLOSE_PAREN","ASTERISK","PLUS","PIPE","HYPHEN_MINUS","OPEN_CURLY_BRACKET","CLOSE_CURLY_BRACKET","TILDE","","","","","VOLUME_MUTE","VOLUME_DOWN","VOLUME_UP","","","SEMICOLON","EQUALS","COMMA","MINUS","PERIOD","SLASH","BACK_QUOTE","","","","","","","","","","","","","","","","","","","","","","","","","","","OPEN_BRACKET","BACK_SLASH","CLOSE_BRACKET","QUOTE","","META","ALTGR","","WIN_ICO_HELP","WIN_ICO_00","","WIN_ICO_CLEAR","","","WIN_OEM_RESET","WIN_OEM_JUMP","WIN_OEM_PA1","WIN_OEM_PA2","WIN_OEM_PA3","WIN_OEM_WSCTRL","WIN_OEM_CUSEL","WIN_OEM_ATTN","WIN_OEM_FINISH","WIN_OEM_COPY","WIN_OEM_AUTO","WIN_OEM_ENLW","WIN_OEM_BACKTAB","ATTN","CRSEL","EXSEL","EREOF","PLAY","ZOOM","","PA1","WIN_OEM_CLEAR",""];
 
     // If the script is already define, just return
     if (window.__paletools) return;
@@ -64,6 +67,8 @@ window.paletools = window.paletools || {
 
     // Set variable to avoid a user from hitting the back button multiple times
     let backButtonLastDate = new Date();
+    let shouldBuyNow = false;
+    let shouldPressEnter = false;
 
     const
         BACK_BUTTON_THRESHOLD = 500, // throwhols to avoid multiple back button clicks
@@ -71,6 +76,7 @@ window.paletools = window.paletools || {
         loc = window.services.Localization, // alias to save space
         locPlayers = window.services.Localization.localize('search.filters.players'), // alias to save space
         locSquadFitness = window.services.Localization.localize('card.title.squadfitness'), // alias to save space
+        locContracts = window.services.Localization.localize('card.title.contract'), //alias to save space
         dispatchMouseEvent = ($target, eventName) => {
             if ($target.length == 0) return false;
             const mouseEvent = document.createEvent('MouseEvents');
@@ -86,6 +92,7 @@ window.paletools = window.paletools || {
 
         // Palefilter logic
         getPlayerStat = (t, e) => $('.player-stats-data-component .value', t)[e].textContent,
+        getContract = (t) => $(".contracts", t).hasClass('rare') ? 'rare' : 'common',
         playerAttrs = {
             ovr: t => $('.rating', t)[0].textContent,
             pac: t => getPlayerStat(t, 0),
@@ -102,6 +109,7 @@ window.paletools = window.paletools || {
             let items = $('.listFUTItem', container);
             if (items.length == 0) return;
             let selectedSquadFitness = $("#squadFitness").val();
+            let selectedContract = $("#contracts").val();
             items.each(function () {
                 if (selectedFilter === 'player') {
                     for (var playerAttr in playerAttrs) {
@@ -116,6 +124,11 @@ window.paletools = window.paletools || {
                         $(this).remove();
                     }
                 }
+                else if(selectedFilter === 'contracts') {
+                    if(getContract(this) != selectedContract){
+                        $(this).remove();
+                    }
+                }
             });
 
             items = $('.listFUTItem', container);
@@ -126,26 +139,34 @@ window.paletools = window.paletools || {
             }
         }
 
-        // clicks the buy now button 
-        buyNow = () => {
-            if (mouseClick($('.buyButton'))) {
-                if (p.results.pressEnter) {
-                    pressOkBtn();
+        buyNow = () =>{
+            if(mouseClick($(".buyButton"))){
+                if(p.results.pressEnter){
+                    shouldPressEnter = true;
                 }
-            }
-            else {
-                setTimeout(buyNow, 10);
             }
         },
 
-        pressOkBtn = () => {
-            if (!mouseClick($('.dialog-body .ut-button-group button:eq(0)'))) {
-                setTimeout(pressOkBtn, 25);
-            }
+        // clicks the buy now button 
+        tryBuyNow = () => {
+            let buyNow = $(".buyButton");
+            if(!shouldBuyNow || buyNow.length == 0) return;
+            buyNow();
+            shouldBuyNow = false;
+        },
+
+        tryPressOkBtn = () => {
+            let enter = $('.dialog-body .ut-button-group button:eq(0)')
+            if(!shouldPressEnter || enter.length == 0) return;
+            mouseClick(enter);
+            shouldPressEnter = false;
         },
 
         search = () => {
             mouseClick($('.button-container .btn-standard.call-to-action'));
+            if(p.results.autoBuy){
+                shouldBuyNow = true;
+            }
         },
 
         back = () => {
@@ -165,6 +186,10 @@ window.paletools = window.paletools || {
             let techAvion = currentValue + ((Math.floor(currentValue / 10000) - 1) * 1000) + 3500;
             $('.DetailPanel .auctionInfo').append('<div class=\'column\'><span class=\'secondary subHeading techAvion\'>Tech Avion</span><span class=\'coins subContent\'>' + techAvion + '</span></div>');
         },
+
+        transferBtn = () => $(".ut-button-group > button:contains('" + loc.localize('infopanel.label.sendTradePile') + "')"),
+        clubBtn = () => $(".ut-button-group > button:contains('" + loc.localize('infopanel.label.storeInClub') + "')"),
+        sellBtn = () => $(".ut-button-group > button:contains('" + loc.localize('infopanel.label.discard') + "')"),
 
         keys = () => {
             try {
@@ -189,8 +214,9 @@ window.paletools = window.paletools || {
                     }
 
                     if (itemsExists && $(".DetailPanel > .ut-button-group").length > 0) {
-                        b[p.results.transfer] = () => mouseClick($(".ut-button-group > button:contains('" + loc.localize('infopanel.label.sendTradePile') + "')"));
-                        b[p.results.club] = () => mouseClick($(".ut-button-group > button:contains('" + loc.localize('infopanel.label.storeInClub') + "')"));
+                        b[p.results.transfer] = () => mouseClick(transferBtn());
+                        b[p.results.club] = () => mouseClick(clubBtn());
+                        b[p.results.sell] = () => mouseClick(sellBtn());
                     }
 
                     if (itemsExists) {
@@ -211,20 +237,64 @@ window.paletools = window.paletools || {
             }
         },
 
+        // UI update
+        updateUI = () => {
+            let upd = (t, tx) => {
+                if(!t) return;
+                let add = ' [ ' + map[p.results[tx]] + ' ]';
+                let html = t.html();
+                if(html && html.indexOf(add) == -1){
+                    t.html(t.html() + add);
+                }
+            }
+
+            upd(transferBtn(), 'transfer');
+            upd(clubBtn(), 'club');
+            upd(sellBtn(), 'sell');
+        },
+
+        addCss = () => {
+            let css = ""
+            + ".search-prices .price-filter:nth-child(2) .decrement-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ " + map[p.search.decMinBid] + " ]' }"
+            + ".search-prices .price-filter:nth-child(2) .increment-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ " + map[p.search.incMinBin] + " ]' }"
+            + ".search-prices .price-filter:nth-child(3) .decrement-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ " + map[p.search.decMaxBin] + " ]' }"
+            + ".search-prices .price-filter:nth-child(3) .increment-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ " + map[p.search.incMaxBin] + " ]' }"
+            + ".search-prices .price-filter:nth-child(5) .decrement-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ " + map[p.search.decMinBuy] + " ]' }"
+            + ".search-prices .price-filter:nth-child(5) .increment-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ " + map[p.search.incMinBuy] + " ]' }"
+            + ".search-prices .price-filter:nth-child(6) .decrement-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ " + map[p.search.decMaxBuy] + " ]' }"
+            + ".search-prices .price-filter:nth-child(6) .increment-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ " + map[p.search.incMaxBuy] + " ]' }"
+            + ".ut-market-search-filters-view .call-to-action:after { content: '[ " + map[p.search.search] +  " ]' }"
+            + ".ut-navigation-button-control:after { font-size:10px; float:right; margin-right:12px; content: '[ " + map[p.back] +  " ]' }"
+            + ".pagingContainer .prev:after { font-size: 10px; display:block; content: '[ " + map[p.lists.prev] + " ]' }"
+            + ".pagingContainer .next:after { font-size: 10px; display:block; content: '[ " + map[p.lists.next] + " ]' }";
+
+            var style = document.createElement("style");
+            style.type = "text/css";
+            style.innerText = css;
+            document.head.appendChild(style);
+        },
+
         log = msg => {
             $("#log").val(new Date() + ':' + msg + "\n" + $("#log").val());
         };
 
+    //header.append("<textarea id='log' style='position:absolute;bottom:0;left:0' rows='10' cols='200'></textarea>");
+
+    // BEGIN: Attach Palefilter to the header
     let selectedFilter = 'player';
-    $("<select style='height:46px'><option value='player'>" + locPlayers + "</option><option value='fitness'>" + locSquadFitness + "</option></select>").change(function () {
+    $("<select style='height:46px'><option value='player'>" + locPlayers + "</option><option value='fitness'>" + locSquadFitness + "</option><option value='contracts'>" + locContracts + "</option></select>").change(function () {
         selectedFilter = this.value;
+        playerAttrsContainer.hide();
+        squadFitnessContainer.hide();
+        contractsContainer.hide();
         if (this.value == 'player') {
             playerAttrsContainer.show();
-            squadFitnessContainer.hide();
         }
-        else {
-            playerAttrsContainer.hide();
+        else if(this.value === 'fitness') {
             squadFitnessContainer.show();
+        }
+        else if(this.value === 'contracts') {
+            contractsContainer.show();
         }
     }).appendTo(header);
 
@@ -234,12 +304,16 @@ window.paletools = window.paletools || {
     }
 
     let squadFitnessContainer = $("<select id='squadFitness' style='height:46px'><option value='+30'>+30</option><option value='+20'>+20</option><option value='+10'>+10</option></select>").appendTo(header).hide();
+    let contractsContainer = $("<select id='contracts' style='height:46px'><option value='rare'>Rare</option><option value='common'>Common</option></select>").appendTo(header).hide();
+    // END: Attach Palefilter to the header
 
-    $(document.body).on('DOMSubtreeModified', function (elem) {
+    addCss();
 
-        tryToFilterItems();
-
-        
+    $(document.body).on('DOMSubtreeModified', function (ev) {
+        tryToFilterItems(ev.target);
+        tryBuyNow();
+        tryPressOkBtn();
+        updateUI();
     });
 
     document.body.onkeydown = e => {
