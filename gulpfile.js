@@ -3,6 +3,7 @@ const through = require('through2');
 const path = require('path');
 const concat = require('gulp-concat');
 const wrap = require('gulp-wrap');
+const minify = require('gulp-minify');
 
 function base64Encode(){
     return through.obj(function (vinylFile, encoding, callback) {
@@ -27,6 +28,7 @@ function base64Encode(){
 //basic example
 gulp.task('build', function () {
     return gulp.src('./src/*.js')
+            .pipe(minify())
             .pipe(base64Encode())
             .pipe(concat('paletools.js'))
             .pipe(wrap('window.paletools = { <%=contents%> };', {}, { parse: false }))
