@@ -23,55 +23,55 @@
 // SOFTWARE.
 
 // Define default commands, this allows for simpler customzation
-window.paletools = window.paletools || {
-    back: 49,
-    enableDisable: 9,
-    tech: 84,
-    lists: {
-        up: 38,
-        down: 40,
-        prev: 37,
-        next: 39,
-    },
-    search: {
-        decMinBid: 37,
-        incMinBid: 39,
-        decMaxBid: 35,
-        incMaxBid: 36,
-        decMinBuy: 46,
-        incMinBuy: 34,
-        decMaxBuy: 40,
-        incMaxBuy: 38,
-        search: 50
-    },
-    results: {
-        bid: 52,
-        buy: 51,
-        transfer: 82,
-        club: 67,
-        pressEnter: true,
-        autoBuy: false,
-        sell: 81
-    }
-};
+
 
 (function () {
     const ver = 'v2.0';
 
     const map = ['', '', '', 'CANCEL', '', '', 'HELP', '', 'BACK_SPACE', 'TAB', '', '', 'CLEAR', 'ENTER', 'ENTER_SPECIAL', '', 'SHIFT', 'CONTROL', 'ALT', 'PAUSE', 'CAPS_LOCK', 'KANA', 'EISU', 'JUNJA', 'FINAL', 'HANJA', '', 'ESCAPE', 'CONVERT', 'NONCONVERT', 'ACCEPT', 'MODECHANGE', 'SPACE', 'PAGE_UP', 'PAGE_DOWN', 'END', 'HOME', 'LEFT', 'UP', 'RIGHT', 'DOWN', 'SELECT', 'PRINT', 'EXECUTE', 'PRINTSCREEN', 'INSERT', 'DELETE', '', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'COLON', 'SEMICOLON', 'LESS_THAN', 'EQUALS', 'GREATER_THAN', 'QUESTION_MARK', 'AT', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'OS_KEY', '', 'CONTEXT_MENU', '', 'SLEEP', 'NUMPAD0', 'NUMPAD1', 'NUMPAD2', 'NUMPAD3', 'NUMPAD4', 'NUMPAD5', 'NUMPAD6', 'NUMPAD7', 'NUMPAD8', 'NUMPAD9', 'MULTIPLY', 'ADD', 'SEPARATOR', 'SUBTRACT', 'DECIMAL', 'DIVIDE', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17', 'F18', 'F19', 'F20', 'F21', 'F22', 'F23', 'F24', '', '', '', '', '', '', '', '', 'NUM_LOCK', 'SCROLL_LOCK', 'WIN_OEM_FJ_JISHO', 'WIN_OEM_FJ_MASSHOU', 'WIN_OEM_FJ_TOUROKU', 'WIN_OEM_FJ_LOYA', 'WIN_OEM_FJ_ROYA', '', '', '', '', '', '', '', '', '', 'CIRCUMFLEX', 'EXCLAMATION', 'DOUBLE_QUOTE', 'HASH', 'DOLLAR', 'PERCENT', 'AMPERSAND', 'UNDERSCORE', 'OPEN_PAREN', 'CLOSE_PAREN', 'ASTERISK', 'PLUS', 'PIPE', 'HYPHEN_MINUS', 'OPEN_CURLY_BRACKET', 'CLOSE_CURLY_BRACKET', 'TILDE', '', '', '', '', 'VOLUME_MUTE', 'VOLUME_DOWN', 'VOLUME_UP', '', '', 'SEMICOLON', 'EQUALS', 'COMMA', 'MINUS', 'PERIOD', 'SLASH', 'BACK_QUOTE', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'OPEN_BRACKET', 'BACK_SLASH', 'CLOSE_BRACKET', 'QUOTE', '', 'META', 'ALTGR', '', 'WIN_ICO_HELP', 'WIN_ICO_00', '', 'WIN_ICO_CLEAR', '', '', 'WIN_OEM_RESET', 'WIN_OEM_JUMP', 'WIN_OEM_PA1', 'WIN_OEM_PA2', 'WIN_OEM_PA3', 'WIN_OEM_WSCTRL', 'WIN_OEM_CUSEL', 'WIN_OEM_ATTN', 'WIN_OEM_FINISH', 'WIN_OEM_COPY', 'WIN_OEM_AUTO', 'WIN_OEM_ENLW', 'WIN_OEM_BACKTAB', 'ATTN', 'CRSEL', 'EXSEL', 'EREOF', 'PLAY', 'ZOOM', '', 'PA1', 'WIN_OEM_CLEAR', ''];
 
-    // If the script is already define, just return
-    if (window.__paletools) return;
-
     let enabled = true;
     // Set variable to avoid a user from hitting the back button multiple times
     let backButtonLastDate = new Date();
     let shouldBuyNow = false;
     let shouldPressEnter = false;
+    const buttons = {
+        back: 49,
+        enableDisable: 9,
+        tech: 84,
+        lists: {
+            up: 38,
+            down: 40,
+            prev: 37,
+            next: 39,
+        },
+        search: {
+            decMinBid: 37,
+            incMinBid: 39,
+            decMaxBid: 35,
+            incMaxBid: 36,
+            decMinBuy: 46,
+            incMinBuy: 34,
+            decMaxBuy: 40,
+            incMaxBuy: 38,
+            search: 50
+        },
+        results: {
+            bid: 52,
+            buy: 51,
+            transfer: 82,
+            club: 67,
+            pressEnter: true,
+            autoBuy: false,
+            sell: 81,
+            decBid: 46,
+            incBid: 34
+        }
+    };
 
     const
         BACK_BUTTON_THRESHOLD = 500, // throwhols to avoid multiple back button clicks
-        p = window.paletools, // alias to save space
+        p = buttons, // alias to save space
         loc = window.services.Localization, // alias to save space
         locPlayers = window.services.Localization.localize('search.filters.players'), // alias to save space
         locSquadFitness = window.services.Localization.localize('card.title.squadfitness'), // alias to save space
@@ -92,6 +92,7 @@ window.paletools = window.paletools || {
         // Palefilter logic
         getPlayerStat = (t, e) => $('.player-stats-data-component .value', t)[e].textContent,
         getContract = (t) => $(".contracts", t).hasClass('rare') ? 'rare' : 'common',
+        getCardType = (t) => $($("#card-type").val(), t).length,
         playerAttrs = {
             ovr: t => $('.rating', t)[0].textContent,
             pac: t => getPlayerStat(t, 0),
@@ -116,10 +117,16 @@ window.paletools = window.paletools || {
                 $elem.attr('pale-id', idx);
 
                 if (selectedFilter === 'player') {
-                    for (var playerAttr in playerAttrs) {
-                        var attrValue = $(`#_${playerAttr}`).val();
-                        if (attrValue && playerAttrs[playerAttr](elem) != attrValue) {
-                            $elem.remove();
+                    if (getCardType(elem) == 0) {
+                        $elem.remove();
+                    }
+                    else {
+                        for (var playerAttr in playerAttrs) {
+                            var attrValue = $(`#_${playerAttr}`).val();
+                            if (attrValue && playerAttrs[playerAttr](elem) != attrValue) {
+                                $elem.remove();
+                                break;
+                            }
                         }
                     }
                 }
@@ -208,6 +215,8 @@ window.paletools = window.paletools || {
                     if (itemsExists && $('.DetailPanel > .bidOptions').length > 0) {
                         b[p.results.bid] = () => mouseClick($('.bidButton'));
                         b[p.results.buy] = () => buyNow();
+                        b[p.results.decBid] = () => mouseClick($('.bidOptions .decrement-value'));
+                        b[p.results.incBid] = () => mouseClick($('.bidOptions .increment-value'));
                     }
 
                     if (itemsExists && $('.DetailPanel > .ut-button-group').length > 0) {
@@ -222,7 +231,7 @@ window.paletools = window.paletools || {
                             mouseClick($('.listFUTItem.selected').prev().next());
 
                             let selected = $('.listFUTItem.selected');
-                            if(selected.attr('pale-id') === currentId){
+                            if (selected.attr('pale-id') === currentId) {
                                 mouseClick($('.listFUTItem.selected').prev());
                                 selected = $('.listFUTItem.selected');
                             }
@@ -236,7 +245,7 @@ window.paletools = window.paletools || {
                             mouseClick($('.listFUTItem.selected').next().prev());
 
                             let selected = $('.listFUTItem.selected');
-                            if(selected.attr('pale-id') === currentId){
+                            if (selected.attr('pale-id') === currentId) {
                                 mouseClick($('.listFUTItem.selected').next());
                                 selected = $('.listFUTItem.selected');
                             }
@@ -277,19 +286,28 @@ window.paletools = window.paletools || {
         },
 
         addCss = () => {
-            let sp1 = (i, k, inc) => `.search-prices .price-filter:nth-child(${i}) .${(inc ? 'in' : 'de')}crement-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ ${map[p.search[k]]} ]' }`;
+            let btn = (q, k1, k2, inc) => `${q} .${(inc ? 'in' : 'de')}crement-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ ${map[p[k1][k2]]} ]' }`;
+            let sp1 = (i, k, inc) => btn(`.search-prices .price-filter:nth-child(${i})`,'search', k, inc);
             let sp2 = (i, k1, k2) => `${sp1(i, k1)}${sp1(i, k2, true)}`;
             let css = `
             ${sp2(2, 'decMinBid', 'incMinBid')}
             ${sp2(3, 'decMaxBid', 'incMaxBid')}
             ${sp2(5, 'decMinBuy', 'incMinBuy')}
             ${sp2(6, 'decMaxBuy', 'incMaxBuy')}
+            ${btn('.DetailPanel > .bidOptions','results','decBid', false)}
+            ${btn('.DetailPanel > .bidOptions','results','incBid', true)}
             .ut-market-search-filters-view .call-to-action:after { content: '[ ${map[p.search.search]} ]' }
             .ut-navigation-button-control:after { font-size:10px; float:right; margin-right:12px; content: '[ ${map[p.back]} ]' }
             .pagingContainer .prev:after { font-size: 10px; display:block; content: '[ ${map[p.lists.prev]} ]' }
             .pagingContainer .next:after { font-size: 10px; display:block; content: '[ ${map[p.lists.next]} ]' }
             .bidButton:after { content: ' [ ${map[p.results.bid]} ]' }
             .buyButton:before { float:right; margin-left: -40px; content: ' [ ${map[p.results.buy]} ]' }
+            button.ut-tab-bar-item.icon-home { order: 0 }
+            button.ut-tab-bar-item.icon-squad { order: 0 }
+            button.ut-tab-bar-item.icon-sbc { order: 1 }
+            button.ut-tab-bar-item.icon-transfer { order: 2 }
+            button.ut-tab-bar-item.icon-store { order: 2 }
+            button.ut-tab-bar-item.icon-club { order: 2 }
             `;
 
             var style = document.createElement("style");
@@ -326,6 +344,17 @@ window.paletools = window.paletools || {
     for (var playerAttr in playerAttrs) {
         $('<input />').attr('id', `_${playerAttr}`).attr('type', 'text').attr('style', 'width:52px').addClass('playerattr').attr('placeholder', playerAttr.toUpperCase()).appendTo(playerAttrsContainer);
     }
+    $(`<select id="card-type" style="height:46px">
+            <option value=".item"></option>
+            <option value=".common:not(.champions)">Common</option>
+            <option value=".rare:not(.champions)">Rare</options>
+            <option value=".common.champions">UCL Common</option>
+            <option value=".rare.champions">UCL Rare</option>
+            <option value='.specials .playerOverview[style="color: rgb(255, 226, 140);"]'>Gold IF</option>
+            <option value='.specials .playerOverview[style="color: rgb(242, 242, 243);"]'>Silver IF</option>
+            <option value='.specials .playerOverview[style="color: rgb(252, 84, 97);"]'>OTW</option>
+        </select>
+    `).appendTo(playerAttrsContainer);
 
     let squadFitnessContainer = $('<select id="squadFitness" style="height:46px"><option value="+30">+30</option><option value="+20">+20</option><option value="+10">+10</option></select>').appendTo(header).hide();
     let contractsContainer = $('<select id="contracts" style="height:46px"><option value="rare">Rare</option><option value="common">Common</option></select>').appendTo(header).hide();
@@ -343,7 +372,7 @@ window.paletools = window.paletools || {
     document.body.onkeydown = e => {
         if (e.keyCode == p.enableDisable) {
             enabled = !enabled;
-            $('#paletools-status').css('color', enabled ? 'green' : 'red').text(enabled ? 'ON' : 'OFF');
+            $('#paletools-status').css('color', enabled ? 'lime' : 'red').text(enabled ? 'ON' : 'OFF');
         }
 
         if (!enabled) {
@@ -375,13 +404,11 @@ window.paletools = window.paletools || {
     <input type="hidden" name="currency_code" value="USD" />
     <a style="text-decoration:none;color:inherit" onclick="javascript:$(\'#paletools-donate\')[0].submit()" href="javascript:void(0)">Paletools Donate</a></form></a>`;
 
-    let menuItem = (html) => $('nav.ut-tab-bar').append(`<button class="ut-tab-bar-item" style="order:7">${html}</button>`);
-    let menuLink = (l, w, c) => menuItem(`<a style="text-decoration:none;color:inherit" target="${w}" href="${l}">${c}</a>`);
+    let menuItem = (html) => $('nav.ut-tab-bar').append(`<button class="ut-tab-bar-item" style="order:3">${html}</button>`);
+    let menuLink = (l, w, c, co) => menuItem(`<a style="text-decoration:none;color:${co || 'inherit'};cursor:pointer;cursor:hand" target="${w}" href="${l}">${c}</a>`);
 
-    menuLink('http://eallegretta.github.io/paletools.html', 'paletools', `Palesnipe ${ver} <span id="paletools-status" style="color:green">ON</span>`);
-    menuLink('https://twitter.com/FFVA', 'twitter', '@FFVA');
+    menuLink('http://eallegretta.github.io/paletools/', 'paletools', `Paletools ${ver} <span id="paletools-status" style="color:green">ON</span>`);
+    menuLink('https://twitter.com/FFVA', 'twitter', '@FFVA', '#0099FF;font-weight:bold');
     menuItem(donateHtml);
     menuLink('https://www.iesa-global.com', 'iesa', '<img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QBmRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAAExAAIAAAAQAAAATgAAAAAAAABgAAAAAQAAAGAAAAABcGFpbnQubmV0IDQuMi4xAP/bAEMAEAsMDgwKEA4NDhIREBMYKBoYFhYYMSMlHSg6Mz08OTM4N0BIXE5ARFdFNzhQbVFXX2JnaGc+TXF5cGR4XGVnY//bAEMBERISGBUYLxoaL2NCOEJjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY//AABEIAEIAQAMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AObqe2srq7/497eWX3RSa2tAtrVNOa+ls/tdwbgQQxscLkgHmuoj03U7lALu/wDssf8Azxs1C4HpuPNVcRyEemJpUP2rWYW3E4htt2DIfUkdAKsWni+4tU2LY2gTPARSuPatw6PbajrVwl60skVnFGiKz9QQSST61xKpbJqISR2e1WXBdepXPX8qANKHUItWuBb6lbx7pm2pPEoVkJ6Z9R9arXuhajZSur2srIpOJEUlSPWtvxVFpFvawPpwhW53rgxNyFA6kD8Oa1dKW+1fSra9XUJYLgAqcKCj4J5K+tIDz7pRXd3Nmbu5FjrFnCZpUZobu3+UsQO4rhKYjsvDlpcf2TZkwPj7eJeV/g2/e+lb+q311az2yW8DyIzZlYIW2rkDt35z+FYF9d3MOr6JDFPIkTwxbkViAee4rPsY9c1We5+yX8oET4IaZh1Jxj8qQzWF3qMitLNp6tISVL/ZSWZccLjPQ8/l71Xl+1KrmPSYHYO4C/YiPlA4Of6VLZaP4jivYJJ74tErguvnscjPPFVWj1nVdc1CKzv3iSCQjmUqAMkAAD6UAXTbTJKweytWVZVTK2PUEZJ/DpT7PUtVt7eNTp/lqHXKRwEAJjLY98n+dVv7A8Sf9Bb/AMjv/hQdA8SY/wCQrn/tu/8AhQBu6iR/bGln/rr/AOgV5geprr9J1m7ttRbS9abLcokrjJRiMDnuDnrXM6jYzabeyWs4+ZDwezDsRTQHRan/AMh3Qf8ArjD/AOhVnabYRXtxd+Zqa2RWTgMcbuT7itSLUNEvptOuLme4iubdEQKB8uQe5x0zT9R0rQBLPPcSXVtiYo6LyA3X0PBHIpAMttGtoLmKY+IYmEbhtu4c4PT71LeaLZ3N9cXKa7BH5zl9oI4yf96oP7L8M/ZftP2678rf5e7H8WM4+76UTaX4ZgSJ5L67CzJvTjqMkf3fagChrFimnRRvBqy3TO2CqN0Hr1NX7G48vxVYtNNsjFuhYs2B/qqni0bw4uqLZm5uZJw2DE3QnrjIH9aS6t9B1rUt8eoSo7qAEWIgAKPccDAoAteLbWy1G1+1W9zAbmEdBIMuvp9azIWHiTSPs7kf2lZrmNj/AMtU9Pr/AJ9aLjRdCtUhabU51Eyb0/d8lfXpRBd6NoiTT6fcTXV26FE3LtCZ79KAOaruvsdrqWkW9xLexok0AilZ+Muv3T9Qcj3FcLWxoesxaekkF3b/AGm3Y7lT+62MZH4GmBr/APCPwf2ObX+1bbifzS/b7uMdaL3QILlLSH+1rZXt4/KIPUncff3xWhZX+mahaEWFlE838Vs7BGxz07Hqfzp/2vS0IFzpc8MwP3GgLZPsRwelICuNHhXxCdSOpW+N5by+/wB0+/sfyqvpnhy3jd411KCWSX5SE67P4gOep6Z9M1oh7Ilri60xbW2HPm3DBWJ9l5Oaxr/xLYLFMmm2RjmIKpN0wDwT+VAGR4knS41u4MT7okIROMAADGB7VmUUUxBRRRQAAlSCCQR0Irt/D11cSaTM0k8rsq8FnJIoooY0cjfzzT3TGaV5CDgF2Jx+dVqKKBBRRRQB/9k=" alt="" />');
-
-    window.__paletools = true;
 })();
