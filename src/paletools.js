@@ -33,8 +33,7 @@
     let enabled = true;
     // Set variable to avoid a user from hitting the back button multiple times
     let backButtonLastDate = new Date();
-    let shouldBuyNow = false;
-    let shouldPressEnter = false;
+    let currentObserver = null;
     const buttons = {
         back: 49,
         enableDisable: 9,
@@ -70,12 +69,22 @@
     };
 
     const
+        MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
         BACK_BUTTON_THRESHOLD = 500, // throwhols to avoid multiple back button clicks
         p = buttons, // alias to save space
         loc = window.services.Localization, // alias to save space
         locPlayers = window.services.Localization.localize('search.filters.players'), // alias to save space
         locSquadFitness = window.services.Localization.localize('card.title.squadfitness'), // alias to save space
         locContracts = window.services.Localization.localize('card.title.contract'), //alias to save space
+        observeDOM = (target, callback) => {
+            let obs = new MutationObserver(function(mutations, observer){
+                if( mutations[0].addedNodes.length || mutations[0].removedNodes.length )
+                    callback();
+            });
+            // have the observer observe foo for changes in children
+            obs.observe(target, { childList:true });
+            return obs;
+        },
         dispatchMouseEvent = ($target, eventName) => {
             if ($target.length == 0) return false;
             const mouseEvent = document.createEvent('MouseEvents');
@@ -105,9 +114,11 @@
         getSquadFitness = (t) => $(`.name:contains(${locSquadFitness})`, t).length > 0 ? $('.subtype', t)[0].textContent : null,
         header = $('.ut-fifa-header-view'),
 
-        tryToFilterItems = (container) => {
+        filterItems = (container) => {
             let items = $('.listFUTItem', container);
-            if (items.length == 0) return;
+            if (items.length == 0) {
+                return;
+            }
 
             let selectedSquadFitness = $('#squadFitness').val();
             let selectedContract = $('#contracts').val();
@@ -146,32 +157,40 @@
         buyNow = () => {
             if (mouseClick($('.buyButton'))) {
                 if (p.results.pressEnter) {
-                    shouldPressEnter = true;
+                    tryPressOkBtn();
                 }
             }
         },
 
-        // clicks the buy now button 
-        tryBuyNow = () => {
-            let buyNow = $('.buyButton');
-            if (!shouldBuyNow || buyNow.length == 0) return;
-            buyNow();
-            shouldBuyNow = false;
-        },
-
         tryPressOkBtn = () => {
             let enter = $('.dialog-body .ut-button-group button:eq(0)')
-            if (!shouldPressEnter || enter.length == 0) return;
-            mouseClick(enter);
-            shouldPressEnter = false;
+            if(!mouseClick(enter)){
+                setTimeout(tryPressOkBtn, 10);
+                return;
+            }
+            updateBoughtUI();
         },
 
         search = () => {
             mouseClick($('.button-container .btn-standard.call-to-action'));
-            if (p.results.autoBuy) {
-                shouldBuyNow = true;
-            }
+            setItemsFilter();
         },
+
+        setItemsFilter = () => {
+            let container = $('.paginated');
+            if(container.length == 0){
+                setTimeout(setItemsFilter, 10);
+                return;
+            }
+
+            filterItems(container);
+            if(currentObserver){
+                currentObserver.disconnect();
+            }
+            currentObserver = observeDOM(container[0], () => {
+                filterItems(container);
+            });
+        }
 
         back = () => {
             if (new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD) {
@@ -211,7 +230,9 @@
                     b[p.search.search] = () => search();
                 }
                 else {
-                    let itemsExists = $('.listFUTItem').length > 0;
+                    let items = $(".listFUTItem");
+                    let itemsExists = items.length > 0;
+                    let itemsContainer = items.length > 0 ? items.parents('.paginated, .ut-watch-list-view, .ut-transfer-list-view') : null;
                     if (itemsExists && $('.DetailPanel > .bidOptions').length > 0) {
                         b[p.results.bid] = () => mouseClick($('.bidButton'));
                         b[p.results.buy] = () => buyNow();
@@ -227,30 +248,16 @@
 
                     if (itemsExists) {
                         b[p.lists.up] = () => {
-                            let currentId = $('.listFUTItem.select').attr('pale-id');
-                            mouseClick($('.listFUTItem.selected').prev().next());
-
-                            let selected = $('.listFUTItem.selected');
-                            if (selected.attr('pale-id') === currentId) {
-                                mouseClick($('.listFUTItem.selected').prev());
-                                selected = $('.listFUTItem.selected');
-                            }
-
-                            let container = selected.parent();//selected.closest('.paginated-item-list');
+                            let container = itemsContainer;
+                            let selected = $('.listFUTItem.selected', container).prev();
+                            mouseClick(selected);
                             container.css('position', 'relative');
                             container.scrollTop(container.scrollTop() + selected.position().top - selected.height());
                         };
                         b[p.lists.down] = () => {
-                            let currentId = $('.listFUTItem.select').attr('pale-id');
-                            mouseClick($('.listFUTItem.selected').next().prev());
-
-                            let selected = $('.listFUTItem.selected');
-                            if (selected.attr('pale-id') === currentId) {
-                                mouseClick($('.listFUTItem.selected').next());
-                                selected = $('.listFUTItem.selected');
-                            }
-
-                            let container = selected.parent(); //selected.closest('.paginated-item-list');
+                            let container = itemsContainer;
+                            let selected = $('.listFUTItem.selected', container).next();
+                            mouseClick(selected);
                             container.css('position', 'relative');
                             container.scrollTop(container.scrollTop() + selected.position().top);
                         };
@@ -269,8 +276,14 @@
             }
         },
 
-        // UI update
-        updateUI = () => {
+        // UI update after buy now
+        updateBoughtUI = () => {
+            var txBtn = transferBtn();
+            if(txBtn.length == 0){
+                setTimeout(updateBoughtUI, 50);
+                return;
+            }
+
             let upd = (t, tx) => {
                 if (!t) return;
                 let add = ` [ ${map[p.results[tx]]} ]`;
@@ -280,7 +293,7 @@
                 }
             }
 
-            upd(transferBtn(), 'transfer');
+            upd(txBtn, 'transfer');
             upd(clubBtn(), 'club');
             upd(sellBtn(), 'sell');
         },
@@ -361,13 +374,6 @@
     // END: Attach Palefilter to the header
 
     addCss();
-
-    $(document.body).on('DOMSubtreeModified', function (ev) {
-        tryToFilterItems(ev.target);
-        tryBuyNow();
-        tryPressOkBtn();
-        updateUI();
-    });
 
     document.body.onkeydown = e => {
         if (e.keyCode == p.enableDisable) {
