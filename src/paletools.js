@@ -25,7 +25,7 @@
 // Define default commands, this allows for simpler customzation
 
 
-(function () {
+(function (buttons) {
     const ver = 'v2.0';
 
     const map = ['', '', '', 'CANCEL', '', '', 'HELP', '', 'BACK_SPACE', 'TAB', '', '', 'CLEAR', 'ENTER', 'ENTER_SPECIAL', '', 'SHIFT', 'CONTROL', 'ALT', 'PAUSE', 'CAPS_LOCK', 'KANA', 'EISU', 'JUNJA', 'FINAL', 'HANJA', '', 'ESCAPE', 'CONVERT', 'NONCONVERT', 'ACCEPT', 'MODECHANGE', 'SPACE', 'PAGE_UP', 'PAGE_DOWN', 'END', 'HOME', 'LEFT', 'UP', 'RIGHT', 'DOWN', 'SELECT', 'PRINT', 'EXECUTE', 'PRINTSCREEN', 'INSERT', 'DELETE', '', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'COLON', 'SEMICOLON', 'LESS_THAN', 'EQUALS', 'GREATER_THAN', 'QUESTION_MARK', 'AT', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'OS_KEY', '', 'CONTEXT_MENU', '', 'SLEEP', 'NUMPAD0', 'NUMPAD1', 'NUMPAD2', 'NUMPAD3', 'NUMPAD4', 'NUMPAD5', 'NUMPAD6', 'NUMPAD7', 'NUMPAD8', 'NUMPAD9', 'MULTIPLY', 'ADD', 'SEPARATOR', 'SUBTRACT', 'DECIMAL', 'DIVIDE', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17', 'F18', 'F19', 'F20', 'F21', 'F22', 'F23', 'F24', '', '', '', '', '', '', '', '', 'NUM_LOCK', 'SCROLL_LOCK', 'WIN_OEM_FJ_JISHO', 'WIN_OEM_FJ_MASSHOU', 'WIN_OEM_FJ_TOUROKU', 'WIN_OEM_FJ_LOYA', 'WIN_OEM_FJ_ROYA', '', '', '', '', '', '', '', '', '', 'CIRCUMFLEX', 'EXCLAMATION', 'DOUBLE_QUOTE', 'HASH', 'DOLLAR', 'PERCENT', 'AMPERSAND', 'UNDERSCORE', 'OPEN_PAREN', 'CLOSE_PAREN', 'ASTERISK', 'PLUS', 'PIPE', 'HYPHEN_MINUS', 'OPEN_CURLY_BRACKET', 'CLOSE_CURLY_BRACKET', 'TILDE', '', '', '', '', 'VOLUME_MUTE', 'VOLUME_DOWN', 'VOLUME_UP', '', '', 'SEMICOLON', 'EQUALS', 'COMMA', 'MINUS', 'PERIOD', 'SLASH', 'BACK_QUOTE', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'OPEN_BRACKET', 'BACK_SLASH', 'CLOSE_BRACKET', 'QUOTE', '', 'META', 'ALTGR', '', 'WIN_ICO_HELP', 'WIN_ICO_00', '', 'WIN_ICO_CLEAR', '', '', 'WIN_OEM_RESET', 'WIN_OEM_JUMP', 'WIN_OEM_PA1', 'WIN_OEM_PA2', 'WIN_OEM_PA3', 'WIN_OEM_WSCTRL', 'WIN_OEM_CUSEL', 'WIN_OEM_ATTN', 'WIN_OEM_FINISH', 'WIN_OEM_COPY', 'WIN_OEM_AUTO', 'WIN_OEM_ENLW', 'WIN_OEM_BACKTAB', 'ATTN', 'CRSEL', 'EXSEL', 'EREOF', 'PLAY', 'ZOOM', '', 'PA1', 'WIN_OEM_CLEAR', ''];
@@ -34,9 +34,9 @@
     // Set variable to avoid a user from hitting the back button multiple times
     let backButtonLastDate = new Date();
     let currentObserver = null;
-    const buttons = {
+    buttons = $.extend({
         back: 49,
-        enableDisable: 9,
+        enableDisable: 92,
         tech: 84,
         lists: {
             up: 38,
@@ -66,7 +66,7 @@
             decBid: 46,
             incBid: 34
         }
-    };
+    }, buttons || {});
 
     const
         MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
@@ -413,7 +413,7 @@
     let menuItem = (html) => $('nav.ut-tab-bar').append(`<button class="ut-tab-bar-item" style="order:3">${html}</button>`);
     let menuLink = (l, w, c, co) => menuItem(`<a style="text-decoration:none;color:${co || 'inherit'};cursor:pointer;cursor:hand" target="${w}" href="${l}">${c}</a>`);
 
-    menuLink('http://eallegretta.github.io/paletools/', 'paletools', `Paletools ${ver} <span id="paletools-status" style="color:green">ON</span>`);
+    menuLink('http://eallegretta.github.io/paletools/', 'paletools', `Paletools ${ver} <span id="paletools-status" style="color:lime">ON</span>`);
     menuLink('https://twitter.com/FFVA', 'twitter', '@FFVA', '#0099FF;font-weight:bold');
     menuItem(donateHtml);
     menuLink('https://www.iesa-global.com', 'iesa', '<img src="data:image/jpeg;base64,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" alt="" />');
