@@ -233,6 +233,9 @@
                     let items = $(".listFUTItem");
                     let itemsExists = items.length > 0;
                     let itemsContainer = items.length > 0 ? items.parents('.paginated, .ut-watch-list-view, .ut-transfer-list-view') : null;
+                    if(itemsContainer.length == 0){
+                        itemsContainer = items.parent();
+                    }
                     if (itemsExists && $('.DetailPanel > .bidOptions').length > 0) {
                         b[p.results.bid] = () => mouseClick($('.bidButton'));
                         b[p.results.buy] = () => buyNow();
