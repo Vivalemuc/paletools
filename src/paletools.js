@@ -33,7 +33,8 @@
     let enabled = true;
     // Set variable to avoid a user from hitting the back button multiple times
     let backButtonLastDate = new Date();
-    let currentObserver = null;
+    let filterItemsObserver = null;
+    let searchItemsObserver = null;
     buttons = $.extend({
         back: 49,
         enableDisable: 92,
@@ -77,12 +78,12 @@
         locSquadFitness = window.services.Localization.localize('card.title.squadfitness'), // alias to save space
         locContracts = window.services.Localization.localize('card.title.contract'), //alias to save space
         observeDOM = (target, callback) => {
-            let obs = new MutationObserver(function(mutations, observer){
-                if( mutations[0].addedNodes.length || mutations[0].removedNodes.length )
+            let obs = new MutationObserver(function (mutations, observer) {
+                if (mutations[0].addedNodes.length || mutations[0].removedNodes.length)
                     callback();
             });
             // have the observer observe foo for changes in children
-            obs.observe(target, { childList:true });
+            obs.observe(target, { childList: true });
             return obs;
         },
         dispatchMouseEvent = ($target, eventName) => {
@@ -164,7 +165,7 @@
 
         tryPressOkBtn = () => {
             let enter = $('.dialog-body .ut-button-group button:eq(0)')
-            if(!mouseClick(enter)){
+            if (!mouseClick(enter)) {
                 setTimeout(tryPressOkBtn, 10);
                 return;
             }
@@ -173,24 +174,32 @@
 
         search = () => {
             mouseClick($('.button-container .btn-standard.call-to-action'));
+            let searchContainer = $(".ut-navigation-container-view--content");
+            searchItemsObserver = observeDOM(searchContainer[0], () => {
+                setItemsFilter();
+            });
+
             setItemsFilter();
         },
 
         setItemsFilter = () => {
             let container = $('.paginated');
-            if(container.length == 0){
-                setTimeout(setItemsFilter, 10);
+            if (container.length == 0) {
                 return;
             }
 
-            filterItems(container);
-            if(currentObserver){
-                currentObserver.disconnect();
+            if (searchItemsObserver) {
+                searchItemsObserver.disconnect();
             }
-            currentObserver = observeDOM(container[0], () => {
+
+            filterItems(container);
+            if (filterItemsObserver) {
+                filterItemsObserver.disconnect();
+            }
+            filterItemsObserver = observeDOM(container[0], () => {
                 filterItems(container);
             });
-        }
+        },
 
         back = () => {
             if (new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD) {
@@ -232,8 +241,8 @@
                 else {
                     let items = $(".listFUTItem");
                     let itemsExists = items.length > 0;
-                    let itemsContainer = items.length > 0 ? items.parents('.paginated, .ut-watch-list-view, .ut-transfer-list-view') : null;
-                    if(itemsContainer.length == 0){
+                    let itemsContainer = items.parents('.paginated, .ut-watch-list-view, .ut-transfer-list-view');
+                    if (itemsContainer.length == 0) {
                         itemsContainer = items.parent();
                     }
                     if (itemsExists && $('.DetailPanel > .bidOptions').length > 0) {
@@ -266,7 +275,7 @@
                         };
                     }
 
-                    if ($('.pagingContainer')) {
+                    if ($('.pagingContainer').length > 0) {
                         b[p.lists.prev] = () => mouseClick($('.pagingContainer .prev:visible'));
                         b[p.lists.next] = () => mouseClick($('.pagingContainer .next:visible'));
                     }
@@ -282,7 +291,7 @@
         // UI update after buy now
         updateBoughtUI = () => {
             var txBtn = transferBtn();
-            if(txBtn.length == 0){
+            if (txBtn.length == 0) {
                 setTimeout(updateBoughtUI, 50);
                 return;
             }
@@ -303,15 +312,15 @@
 
         addCss = () => {
             let btn = (q, k1, k2, inc) => `${q} .${(inc ? 'in' : 'de')}crement-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ ${map[p[k1][k2]]} ]' }`;
-            let sp1 = (i, k, inc) => btn(`.search-prices .price-filter:nth-child(${i})`,'search', k, inc);
+            let sp1 = (i, k, inc) => btn(`.search-prices .price-filter:nth-child(${i})`, 'search', k, inc);
             let sp2 = (i, k1, k2) => `${sp1(i, k1)}${sp1(i, k2, true)}`;
             let css = `
             ${sp2(2, 'decMinBid', 'incMinBid')}
             ${sp2(3, 'decMaxBid', 'incMaxBid')}
             ${sp2(5, 'decMinBuy', 'incMinBuy')}
             ${sp2(6, 'decMaxBuy', 'incMaxBuy')}
-            ${btn('.DetailPanel > .bidOptions','results','decBid', false)}
-            ${btn('.DetailPanel > .bidOptions','results','incBid', true)}
+            ${btn('.DetailPanel > .bidOptions', 'results', 'decBid', false)}
+            ${btn('.DetailPanel > .bidOptions', 'results', 'incBid', true)}
             .ut-market-search-filters-view .call-to-action:after { content: '[ ${map[p.search.search]} ]' }
             .ut-navigation-button-control:after { font-size:10px; float:right; margin-right:12px; content: '[ ${map[p.back]} ]' }
             .pagingContainer .prev:after { font-size: 10px; display:block; content: '[ ${map[p.lists.prev]} ]' }
@@ -336,7 +345,7 @@
             $('#log').val(`${new Date()}: ${msg}\n${$('#log').val()}`);
         };
 
-    // header.append("<textarea id='log' style='position:absolute;bottom:0;left:0;z-index:1000' rows='10' cols='200'></textarea>");
+    //header.append("<textarea id='log' style='position:absolute;bottom:0;left:0;z-index:1000' rows='10' cols='200'></textarea>");
 
     // BEGIN: Attach Palefilter to the header
     let selectedFilter = 'player';
