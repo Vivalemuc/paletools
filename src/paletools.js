@@ -35,6 +35,7 @@
     let backButtonLastDate = new Date();
     let filterItemsObserver = null;
     let searchItemsObserver = null;
+    let backButtonPressedOnResult = false;
     buttons = $.extend({
         back: 49,
         enableDisable: 92,
@@ -63,6 +64,7 @@
             club: 67,
             pressEnter: true,
             autoBuy: false,
+            preventBack: true,
             sell: 81,
             decBid: 46,
             incBid: 34
@@ -204,6 +206,19 @@
         },
 
         back = () => {
+            if (e.results.preventBack && searchResults.length > 0) {
+                if (backButtonPressedOnResult) {
+                    backButtonPressedOnResult = false;
+                    mouseClick($('.ut-navigation-button-control'));
+                    return;
+                }
+
+                if ($('.listFUTItem', searchResults).length > 0) {
+                    backButtonPressedOnResult = true;
+                    return;
+                }
+            }
+
             if (new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD) {
                 return;
             }
