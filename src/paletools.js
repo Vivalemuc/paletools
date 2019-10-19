@@ -119,7 +119,7 @@
 
         filterItems = (container) => {
             let items = $('.listFUTItem', container);
-            if (items.length == 0) {
+            if (items.length == 0 || items.filter('[processed="true"]').length > 0) {
                 return;
             }
 
@@ -128,7 +128,7 @@
 
             items.each((idx, elem) => {
                 let $elem = $(elem);
-                $elem.attr('pale-id', idx);
+                $elem.attr('processed', 'true');
 
                 if (selectedFilter === 'player') {
                     if (getCardType(elem) == 0) {
@@ -155,6 +155,8 @@
                     mouseClick(items);
                 }, 0);
             }
+
+            filterList = false;
         },
 
         buyNow = () => {
@@ -206,18 +208,18 @@
         },
 
         back = () => {
-            if (e.results.preventBack && searchResults.length > 0) {
-                if (backButtonPressedOnResult) {
-                    backButtonPressedOnResult = false;
-                    mouseClick($('.ut-navigation-button-control'));
-                    return;
-                }
+            // if (e.results.preventBack && searchResults.length > 0) {
+            //     if (backButtonPressedOnResult) {
+            //         backButtonPressedOnResult = false;
+            //         mouseClick($('.ut-navigation-button-control'));
+            //         return;
+            //     }
 
-                if ($('.listFUTItem', searchResults).length > 0) {
-                    backButtonPressedOnResult = true;
-                    return;
-                }
-            }
+            //     if ($('.listFUTItem', searchResults).length > 0) {
+            //         backButtonPressedOnResult = true;
+            //         return;
+            //     }
+            // }
 
             if (new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD) {
                 return;
@@ -404,7 +406,7 @@
 
     addCss();
 
-    document.body.onkeydown = e => {
+    document.body.addEventListener('keydown', e => {
         if (e.keyCode == p.enableDisable) {
             enabled = !enabled;
             $('#paletools-status').css('color', enabled ? 'lime' : 'red').text(enabled ? 'ON' : 'OFF');
@@ -431,7 +433,7 @@
         catch (e) {
             log(e)
         }
-    };
+    });
 
     let donateHtml = `<form id="paletools-donate" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
     <input type="hidden" name="cmd" value="_donations" />

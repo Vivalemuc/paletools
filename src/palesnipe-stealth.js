@@ -28,7 +28,7 @@
             club: 67,
             pressEnter: true,
             autoBuy: false,
-            preventBack: true,
+            preventBack: false,
             sell: 81,
             decBid: 46,
             incBid: 34
@@ -43,16 +43,16 @@
         loc = window.services.Localization,
         BACK_BUTTON_THRESHOLD = 500,
         dispatchMouseEvent = ($target, eventName) => {
-            if ($target.length == 0) return;
+            if ($target.length == 0) return false;
             const mouseEvent = document.createEvent('MouseEvents');
             mouseEvent.initEvent(eventName);
-            $target[0].dispatchEvent(mouseEvent)
+            $target[0].dispatchEvent(mouseEvent);
+            return true;
         },
         mouseDown = target => dispatchMouseEvent(target, 'mousedown'),
         mouseUp = target => dispatchMouseEvent(target, 'mouseup'),
         mouseClick = target => {
-            mouseDown(target);
-            mouseUp(target);
+            return mouseDown(target) && mouseUp(target);
         },
         buyNow = () => {
             if (mouseClick($('.buyButton'))) {
@@ -67,27 +67,30 @@
                 setTimeout(tryPressOkBtn, 10);
                 return;
             }
+            backButtonPressedOnResult = false;
         },
         back = () => {
-            var searchResults = $('.SearchResults');
-            if (e.results.preventBack && searchResults.length > 0) {
-                if (backButtonPressedOnResult) {
-                    backButtonPressedOnResult = false;
-                    mouseClick($('.ut-navigation-button-control'));
-                    return;
-                }
+            // var searchResults = $('.SearchResults');
+            // if (e.results.preventBack && searchResults.length > 0) {
+            //     if (backButtonPressedOnResult) {
+            //         backButtonPressedOnResult = false;
+            //         mouseClick($('.ut-navigation-button-control'));
+            //         return;
+            //     }
 
-                if ($('.listFUTItem', searchResults).length > 0) {
-                    backButtonPressedOnResult = true;
-                    return;
-                }
-            }
+            //     if ($('.listFUTItem', searchResults).length > 0) {
+            //         backButtonPressedOnResult = true;
+            //         return;
+            //     }
+            // }
             // force double back when there is a card on the list
             if (new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD) {
                 return;
             }
             backButtonLastDate = new Date();
-            mouseClick($('.ut-navigation-button-control'));
+            if (!mouseClick($('.ut-navigation-button-control'))) {
+                setTimeout(back, 10);
+            }
         },
 
         transferBtn = () => $(`.ut-button-group > button:contains('${loc.localize('infopanel.label.sendTradePile')}')`),
@@ -154,7 +157,7 @@
             return b;
         };
 
-    document.body.onkeydown = e => {
+    document.body.addEventListener('keydown', e => {
         if (e.keyCode == p.enableDisable) {
             enabled = !enabled;
         }
@@ -170,10 +173,5 @@
 
         let action = keys()[e.keyCode];
         if (action) action();
-    };
-
-    $('.ut-root-view').css("border", "3px solid blue");
-    setTimeout(() => {
-        $(".ut-root-view").removeAttr("style");
-    }, 3000);
+    });
 })();
