@@ -144,7 +144,7 @@
                     }
                     else {
                         for (var playerAttr in playerAttrs) {
-                            let attrValueText = $(`#_${playerAttr}`).val();
+                            let attrValueText = $.trim($(`#_${playerAttr}`).val());
                             if (!attrValueText) continue;
 
                             let attrValue = parseInt(attrValueText);
@@ -156,7 +156,7 @@
                             else if (attrValueText.charAt(0) == '+' && playerAttrValue < attrValue) {
                                 removeElement = true;
                             }
-                            else if (attrValue == playerAttrValue) {
+                            else if (attrValue != playerAttrValue) {
                                 removeElement = true;
                             }
 
