@@ -100,6 +100,10 @@
         keys = () => {
             let b = {};
 
+            if($('.SearchResults').length > 0){
+                b[p.back] = () => back();
+            }
+
             if ($('.ut-market-search-filters-view').length > 0) {
                 b[p.search.decMinBid] = () => mouseClick($('.decrement-value'));
                 b[p.search.incMinBid] = () => mouseClick($('.increment-value'));
@@ -163,11 +167,6 @@
         }
 
         if (!enabled) {
-            return;
-        }
-
-        if (e.keyCode == p.back) {
-            back();
             return;
         }
 

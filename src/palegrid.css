@@ -1,0 +1,166 @@
+.listFUTItem {
+	display: inline-flex;
+	width: 24.75%;
+}
+
+.ui-layout-left .listFUTItem.has-auction-data .entityContainer {
+	width: auto;
+}
+
+.listFUTItem .entityContainer {
+	float: none;
+	padding: 0;
+	display: block;
+}
+
+.listFUTItem .auction {
+	float: none;
+	width: 43%;
+	position: absolute;
+	left: 50%;
+	display: block;
+	top: 35px;
+	margin: 0;
+}
+
+.player-stats-data-component {
+	display: none;
+}
+
+.listFUTItem .entityContainer .name {
+	padding: 0 !important;
+}
+
+.ui-layout-left .listFUTItem .auction .auctionValue {
+	float: left;
+	width: 100%;
+}
+
+.listFUTItem .auction .label {
+	display: inline-block;
+	width: 26px;
+	overflow: hidden;
+	white-space: nowrap;
+	font-size: .75rem;
+	text-align: left;
+}
+
+.listFUTItem .auction .value {
+	display: inline-block;
+	font-size: 14px;
+	float: right;
+}
+
+.listFUTItem .auction .time {
+	font-size: 14px;
+	float: right;
+}
+
+.listFUTItem .auction .auction-state {
+	float: right !important;
+	width: 100% !important;
+}
+
+.listFUTItem .rowContent.has-tap-callback::before,
+.listFUTItem.rowContent.has-tap-callback::before {
+	display: none;
+}
+
+.currency-coins::after {
+	display: none;
+}
+
+.listFUTItem.has-auction-data .entityContainer .dataString {
+	position: absolute;
+	top: 15px;
+	left: 35px;
+}
+
+.listFUTItem.chemistryStyle .styleView {
+	display: none;
+}
+
+.listFUTItem .rowContent {
+	border-top: 0 !important;
+}
+
+.listFUTItem .entityContainer .name {
+	font-size: 1rem;
+}
+
+.ut-club-search-results-view .player-stats-data-component {
+	display: block;
+}
+
+.ut-club-search-results-view .player-stats-data-component ul li:first-child {
+	padding-left: 4px !important
+}
+
+section.ui-layout-right .listFUTItem {
+	height: 110px;
+	width: 24.50%;
+	border-right-width: 1px;
+	display: inline-block;
+}
+
+section.ui-layout-right .listFUTItem .entityContainer {
+	height: 100%;
+	width: 100%;
+}
+
+section.ui-layout-right .listFUTItem .entityContainer .item {
+	width: 90px;
+	height: 106px;
+}
+
+section.ui-layout-right .listFUTItem .btnAction.add {
+	display: none;
+}
+
+section.ui-layout-right .listFUTItem .entityContainer .name {
+    display: none;
+}
+
+section.ui-layout-right .listFUTItem .entityContainer .consumable+.name {
+	display: block;
+	font-size: 10px;
+	max-width:100%;
+	position: absolute;
+	top:95px;
+	width:100%;
+	text-align: center;
+}
+
+section.ui-layout-right .listFUTItem .entityContainer .consumable+.name+.dataString {
+	display: block;
+	font-size: 10px;
+	max-width:100%;
+	position: absolute;
+	top:12px;
+	width:100%;
+	max-width:100%;
+	text-align:center;
+}
+
+
+section.ui-layout-right .listFUTItem .entityContainer .name.untradeable {
+	color: red;
+}
+
+
+section.ui-layout-right .listFUTItem .entityContainer .name.untradeable::before {
+	display: none;
+}
+
+section.ui-layout-right .listFUTItem .entityContainer .player-stats-data-component {
+	display: none;
+}
+
+.ut-transfer-list-view .sectioned-item-list:nth-child(3) .listFUTItem {
+	display: inline-block;
+    width: 90px;
+}
+
+.listFUTItem .entityContainer .name {
+    font-size: 14px;
+}

@@ -103,7 +103,18 @@
         // Palefilter logic
         getPlayerStat = (t, e) => $('.player-stats-data-component .value', t)[e].textContent,
         getContract = (t) => $(".contracts", t).hasClass('rare') ? 'rare' : 'common',
-        getCardType = (t) => $($("#card-type").val(), t).length,
+        getCardType = (t) => { 
+            let type = $("#card-type").val();
+            if(type.charAt(0) === '+'){
+                type = type.substr(1);
+                let dataUrl = $("canvas", t)[0].toDataURL("image/png").substr(84, 5);
+                log(dataUrl);
+                log(type);
+                return dataUrl == type ? 1 : 0;
+            }
+
+            return $(type, t).length;
+        },
         playerAttrs = {
             ovr: t => $('.rating', t)[0].textContent,
             pac: t => getPlayerStat(t, 0),
@@ -400,10 +411,10 @@
         },
 
         log = msg => {
-            //$('#log').val(`${new Date()}: ${msg}\n${$('#log').val()}`);
+            $('#log').val(`${new Date()}: ${msg}\n${$('#log').val()}`);
         };
 
-    //header.append("<textarea id='log' style='position:absolute;bottom:0;left:0;z-index:1000' rows='10' cols='200'></textarea>");
+    header.append("<textarea id='log' style='position:absolute;bottom:0;left:0;z-index:1000' rows='10' cols='200'></textarea>");
 
     // BEGIN: Attach Palefilter to the header
     let selectedFilter = 'player';
@@ -433,9 +444,26 @@
             <option value=".rare:not(.champions)">Rare</options>
             <option value=".common.champions">UCL Common</option>
             <option value=".rare.champions">UCL Rare</option>
-            <option value='.specials .playerOverview[style="color: rgb(255, 226, 140);"]'>Gold IF</option>
-            <option value='.specials .playerOverview[style="color: rgb(242, 242, 243);"]'>Silver IF</option>
-            <option value='.specials .playerOverview[style="color: rgb(252, 84, 97);"]'>OTW</option>
+            <option value="+SlaVU">BRONZE</option>
+            <option value="+Qk51U">BRONZE RARE</option>
+            <option value="+htZ3U">SILVER</option>
+            <option value="+hc1Xk">SILVER RARE</option>
+            <option value="+htZ1U">GOLD</option>
+            <option value="+wkWVk">GOLD RARE</option>
+            <option value="+hcVbn">SILVER IF</option>
+            <option value="+hdVdX">GOLD IF</option>
+            <option value="+hkZ3U">Scream</option>
+            <option value="+hlaVU">MOTM</option>
+            <option value="+hcVbn">FFS</option>
+            <option value="+hdZ3X">TOTGS</option>
+            <option value="+Qd93X">TOTYN</option>
+            <option value="+hcZbn">TOTY</option>
+            <option value="+hcZ3n">Headliner</option>
+            <option value="+hcZ3U">UCL Live</option>
+            <option value="+gdVfn">UEL Live</option>
+            <option value="+Bc53U">OTW</option>
+            <option value="+glZ3X">Heroe</option>
+            <option value="+gc5ZH">Icon</option>
         </select>
     `).appendTo(playerAttrsContainer);
 
