@@ -221,4 +221,9 @@ section.ui-layout-right .listFUTItem .entityContainer .player-stats-data-compone
 
 .ut-store-pack-details-view .purchasing {
 	display:block;
+	margin-left:0 !important;
+}
+
+.ut-store-pack-details-view .purchasing button.currency.points {
+    margin:0 !important;
 }
