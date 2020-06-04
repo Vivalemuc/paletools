@@ -114,7 +114,12 @@ section.ui-layout-right .listFUTItem .entityContainer .item {
 }
 
 section.ui-layout-right .listFUTItem .btnAction.add {
-	display: none;
+	display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    opacity: 0;
 }
 
 section.ui-layout-right .listFUTItem .entityContainer .name {
