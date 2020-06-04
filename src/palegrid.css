@@ -169,3 +169,56 @@ section.ui-layout-right .listFUTItem .entityContainer .player-stats-data-compone
 .listFUTItem .entityContainer .name {
     font-size: 14px;
 }
+
+.ut-store-hub-view--content {
+	text-align: center;
+	width:100%;
+}
+
+.ut-store-hub-view--content .ut-store-pack-details-view {
+	width: 170px;
+	display: inline-block;
+	margin-left:0;
+	margin-right:10px
+}
+
+.ut-store-pack-details-view .description {
+	display:none;
+}
+
+.ut-store-pack-details-view .purchasing {
+	margin-left:0;
+}
+
+.ut-store-pack-details-view .title {
+	font-size: 20px;
+}
+
+.ut-store-pack-details-view .quantity {
+	font-size:12px;
+}
+
+.ut-store-pack-details-view .expiry {
+	font-size:12px;
+}
+
+
+.ut-store-pack-details-view .content {
+	margin-left:0 !important;
+	min-height:140px;
+}
+
+.ut-store-pack-details-view .ut-pack-graphic-view {
+    display: none;
+}
+
+.ut-store-pack-details-view button.currency.coins, .ut-store-pack-details-view button.currency.points {
+	width: 100% !important;
+	/* flex-basis:100% !important; */
+	/* float: left; */
+	/* clear: both; */
+}
+
+.ut-store-pack-details-view .purchasing {
+	display:block;
+}
