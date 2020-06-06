@@ -29,6 +29,8 @@
 
 .listFUTItem .entityContainer .name {
 	padding: 0 !important;
+	max-width: 46% !important;
+    text-overflow: ellipsis !important;
 }
 
 .ui-layout-left .listFUTItem .auction .auctionValue {
