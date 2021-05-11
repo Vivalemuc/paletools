@@ -4,7 +4,7 @@ Original Source: https://github.com/sennedjem/fix-filters/blob/main/jeje.js
 */
 
 (function(){
-    const VERSION = "v1.1";
+    const VERSION = "v1.2";
 
     UTMarketSearchResultsViewController.prototype._requestItems = function _requestItems(l) {
         this._paginationViewModel.stopAuctionUpdates();
@@ -33,7 +33,6 @@ Original Source: https://github.com/sennedjem/fix-filters/blob/main/jeje.js
             UTItemEntityFactory.prototype.auctionFactory = new UTAuctionEntityFactory()
             var i = context._paginationViewModel.getNumItemsPerPage()
             var o = UTItemEntityFactory.prototype.generateItemsFromAuctionData(data.auctionInfo)
-            console.log(o)
             if (0 < context._searchCriteria.offset && 0 === data.auctionInfo.length)
                     context._requestItems(l - 1);
             else {
@@ -88,8 +87,14 @@ Original Source: https://github.com/sennedjem/fix-filters/blob/main/jeje.js
             if(context._searchCriteria.minBid){
                 url = url + "&micr="+ context._searchCriteria.minBid
             }
+            if(context._searchCriteria.minBid){
+                url = url + "&micr="+ context._searchCriteria.minBid
+            }
             if(context._searchCriteria.maxBid){
                 url = url + "&macr="+ context._searchCriteria.maxBid
+            }
+            if(context._searchCriteria.defId.length>0){
+                url = url + "&definitionId="+ context._searchCriteria.defId[0]
             }
             return url
         }
@@ -97,15 +102,12 @@ Original Source: https://github.com/sennedjem/fix-filters/blob/main/jeje.js
         function requestItems(){
             var url = `${services.Authentication.sessionUtas.url}/ut/game/fifa21/transfermarket?num=21&start=${(l-1)*20}&type=player`;
             url = addFilters(context,url)
-            console.log(url)
             fetch(url, {
                 headers: {
                 "X-UT-SID": services.Authentication.getUtasSession()["id"]
             }}).then(function(response) {
-                console.log('response =', response);
                 return response.json();
             }).then(function(data) {
-                console.log(data)
                 update(data,context)             
             }).catch(function(error){
                 services.Notification.queue([services.Localization.localize("popup.error.searcherror"),enums.UINotificationType.NEGATIVE])
