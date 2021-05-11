@@ -4,6 +4,8 @@ Original Source: https://github.com/sennedjem/fix-filters/blob/main/jeje.js
 */
 
 (function(){
+    const VERSION = "v1.1";
+
     UTMarketSearchResultsViewController.prototype._requestItems = function _requestItems(l) {
         this._paginationViewModel.stopAuctionUpdates();
         if(this._searchCriteria._type == "player"){
@@ -93,7 +95,7 @@ Original Source: https://github.com/sennedjem/fix-filters/blob/main/jeje.js
         }
     
         function requestItems(){
-            var url = "https://utas.external.s2.fut.ea.com/ut/game/fifa21/transfermarket?num=21&start="+(l-1)*20+"&type=player";
+            var url = `${services.Authentication.sessionUtas.url}/ut/game/fifa21/transfermarket?num=21&start=${(l-1)*20}&type=player`;
             url = addFilters(context,url)
             console.log(url)
             fetch(url, {
