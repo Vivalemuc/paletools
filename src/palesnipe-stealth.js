@@ -1,5 +1,5 @@
 (function (buttons) {
-    const ver = "v1.6-stealth";
+    const ver = "v1.7";
 
     buttons = $.extend({
         back: 49,
@@ -38,6 +38,8 @@
     let enabled = true;
     let backButtonLastDate = new Date();
     let backButtonPressedOnResult = false;
+
+    window.MAX_NEW_ITEMS = Number.MAX_VALUE;
 
     const
         loc = window.services.Localization,
