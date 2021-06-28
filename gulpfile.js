@@ -6,6 +6,7 @@ const wrap = require('gulp-wrap');
 const minifyJs = require('gulp-minify');
 const cleanCss = require('gulp-clean-css');
 const rename = require('gulp-rename');
+const obfuscateJs = require('gulp-javascript-obfuscator');
 
 function getJsCode(filePath, vinylFile){
     return vinylFile.contents;
@@ -59,6 +60,16 @@ gulp.task('build-css', function(){
 gulp.task('build-js', function () {
     return gulp.src(['./src/*.js'])
             .pipe(minifyJs())
+            .pipe(base64Encode(getJsCode))
+            .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('build-js-obfuscated', function () {
+    return gulp.src(['./src/*.js'])
+            .pipe(obfuscateJs({
+                compact: true,
+                selfDefending: true
+            }))
             .pipe(base64Encode(getJsCode))
             .pipe(gulp.dest('./dist/'));
 });
