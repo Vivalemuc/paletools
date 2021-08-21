@@ -6,6 +6,7 @@ const wrap = require('gulp-wrap');
 const minifyJs = require('gulp-minify');
 const cleanCss = require('gulp-clean-css');
 const rename = require('gulp-rename');
+const gulpCopy = require('gulp-copy');
 const obfuscateJs = require('gulp-javascript-obfuscator');
 
 function getJsCode(filePath, vinylFile){
