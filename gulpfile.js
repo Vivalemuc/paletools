@@ -8,6 +8,10 @@ const cleanCss = require('gulp-clean-css');
 const rename = require('gulp-rename');
 const gulpCopy = require('gulp-copy');
 const obfuscateJs = require('gulp-javascript-obfuscator');
+const scan = require('gulp-scan');
+
+
+const fileVersions = {};
 
 function getJsCode(filePath, vinylFile){
     return vinylFile.contents;
@@ -39,7 +43,7 @@ function base64Encode(getCode){
         // * contents can only be a Buffer, Stream, or null
         // * This allows us to modify the vinyl file in memory and prevents the need to write back to the file system.
         //transformedFile.contents = Buffer.from(`"${filename}": "${vinylFile.contents.toString('base64')}",`);
-        transformedFile.contents = Buffer.from(`window.paletools = window.paletools || {};\nwindow.paletools['${filePath.name}'] = "${getCode(filePath, vinylFile).toString('base64')}"`);
+        transformedFile.contents = Buffer.from(`window.paletools = window.paletools || {};\nwindow.paletools['${filePath.name}-${fileVersions[transformedFile.path]}'] = "${getCode(filePath, vinylFile).toString('base64')}"`);
         // 3. pass along transformed file for use in next `pipe()`
         callback(null, transformedFile);
       });
@@ -60,6 +64,10 @@ gulp.task('build-css', function(){
 
 gulp.task('build-js', function () {
     return gulp.src(['./src/*.js'])
+            .pipe(scan({ term: /const\s*VERSION\s*=\s*".*";/gm, fn: function (match, file) {
+                console.log(file.path);
+                fileVersions[file.path] = match.match(/(\d+\.\d+)/gm)[0];
+            }}))
             .pipe(minifyJs())
             .pipe(base64Encode(getJsCode))
             .pipe(gulp.dest('./dist/'));
@@ -67,6 +75,10 @@ gulp.task('build-js', function () {
 
 gulp.task('build-js-obfuscated', function () {
     return gulp.src(['./src/*.js'])
+            .pipe(scan({ term: /const\s*VERSION\s*=\s*".*";/gm, fn: function (match, file) {
+                console.log(file.path);
+                fileVersions[file.path] = match.match(/(\d+\.\d+)/gm)[0];
+            }}))
             .pipe(obfuscateJs({
                 compact: true,
                 selfDefending: true
