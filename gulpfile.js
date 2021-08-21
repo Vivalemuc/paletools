@@ -74,4 +74,11 @@ gulp.task('build-js-obfuscated', function () {
             .pipe(gulp.dest('./dist/'));
 });
 
+gulp.task('copy-to-dest', function() {
+    return gulp.src(['./dist/*.js'])
+                .pipe(gulpCopy('d:\\code\\eallegretta.github.io\\paletools\\'));
+
+});
+gulp.task('deploy', gulp.series('build-js', 'build-css', 'copy-to-dest'));
+
 gulp.task('default', gulp.parallel('build-js', 'build-css'));

@@ -1,5 +1,5 @@
 (function (buttons) {
-    const ver = "v1.8";
+    const ver = "v1.9";
 
     buttons = $.extend({
         back: 49,
@@ -39,27 +39,14 @@
     let backButtonLastDate = new Date();
     let backButtonPressedOnResult = false;
 
-    window.MAX_NEW_ITEMS = Number.MAX_VALUE;
-
-    UTItemDomainRepository.prototype.isPileFull = function(e) {
-        var t = 0
-          , i = this.pileSizes.get(e);
-        switch (e) {
-        case ItemPile.PURCHASED:
-            t = this.unassigned.length;
-            break;
-        case ItemPile.TRANSFER:
-            t = this.transfer.length;
-            break;
-        case ItemPile.INBOX:
-            return 0;
-        case ItemPile.CLUB:
-            return !1
-        }
-        return (i || 0) <= t
-    }
+    // reset console
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    window.console = iframe.contentWindow.console;
 
     const
+        l = console.log,
         loc = window.services.Localization,
         BACK_BUTTON_THRESHOLD = 500,
         dispatchMouseEvent = ($target, eventName) => {
@@ -71,58 +58,88 @@
         },
         mouseDown = target => dispatchMouseEvent(target, 'mousedown'),
         mouseUp = target => dispatchMouseEvent(target, 'mouseup'),
-        mouseClick = target => {
-            return mouseDown(target) && mouseUp(target);
+        mouseClick = (target, delay, callback) => {
+            if(delay){
+                setTimeout(() => {
+                    callback(mouseClick(target));
+                }, delay);
+            }
+            else {
+                return mouseDown(target) && mouseUp(target);
+            }
         },
-        buyNow = () => {
-            if (mouseClick($('.buyButton'))) {
+        buyNow = (callback) => {
+            if (mouseClick(buyBtn())) {
                 if (p.results.pressEnter) {
-                    tryPressOkBtn();
+                    tryPressOkBtn(callback);
                 }
             }
         },
-        tryPressOkBtn = () => {
-            let enter = $('.dialog-body .ut-button-group button:eq(0)')
-            if (!mouseClick(enter)) {
+        tryPressOkBtn = (callback) => {
+            if (!mouseClick(enterBtn())) {
+                if(callback){
+                    setTimeout(callback(false), 0);
+                }
+                
                 setTimeout(tryPressOkBtn, 10);
                 return;
             }
-            backButtonPressedOnResult = false;
+            else {
+                if(callback){
+                    callback(true);
+                }
+            }
         },
         back = () => {
-            // var searchResults = $('.SearchResults');
-            // if (e.results.preventBack && searchResults.length > 0) {
-            //     if (backButtonPressedOnResult) {
-            //         backButtonPressedOnResult = false;
-            //         mouseClick($('.ut-navigation-button-control'));
-            //         return;
-            //     }
-
-            //     if ($('.listFUTItem', searchResults).length > 0) {
-            //         backButtonPressedOnResult = true;
-            //         return;
-            //     }
-            // }
+            l('back');
             // force double back when there is a card on the list
-            if (new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD) {
-                return;
+            // if (new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD) {
+            //     return;
+            // }
+            // backButtonLastDate = new Date();
+            if (!mouseClick(backBtn())) {
+                setTimeout(back, 1);
             }
-            backButtonLastDate = new Date();
-            if (!mouseClick($('.ut-navigation-button-control'))) {
-                setTimeout(back, 10);
+        },
+
+        search = () => {
+            mouseClick(searchBtn());
+            if(p.results.autoBuy){
+                if(searchResults() == 0){
+                    l('researching');
+                    setTimeout(search, 10);
+                }
+                else {
+                    l($(".ut-no-results-view").length);
+                    if($(".ut-no-results-view").length > 0){
+                        l('no results');
+                        back();
+                    }
+                    else {
+                        l('buying');
+                        buyNow((bought) => {
+                            if(bought){
+                                mouseClick(transferBtn());
+                            }
+                        });
+                    }    
+                }
             }
         },
 
         transferBtn = () => $(`.ut-button-group > button:contains('${loc.localize('infopanel.label.sendTradePile')}')`),
         clubBtn = () => $(`.ut-button-group > button:contains('${loc.localize('infopanel.label.storeInClub')}')`),
         sellBtn = () => $(`.ut-button-group > button:contains('${loc.localize('infopanel.label.discard')}')`),
+        buyBtn = () => $('.buyButton'),
+        backBtn = () => $('.ut-navigation-button-control'),
+        enterBtn = () =>$('.dialog-body .ut-button-group button:eq(0)'),
+        searchBtn = () => $('.button-container .btn-standard.call-to-action'),
+        searchResults = () =>$('.SearchResults').length,
 
         keys = () => {
             let b = {};
 
-            if($('.SearchResults').length > 0){
-                b[p.back] = () => back();
-            }
+            b[p.back] = () => back();
 
             if ($('.ut-market-search-filters-view').length > 0) {
                 b[p.search.decMinBid] = () => mouseClick($('.decrement-value'));
@@ -133,7 +150,7 @@
                 b[p.search.incMinBuy] = () => mouseClick($('.increment-value:eq(2)'));
                 b[p.search.decMaxBuy] = () => mouseClick($('.decrement-value:eq(3)'));
                 b[p.search.incMaxBuy] = () => mouseClick($('.increment-value:eq(3)'));
-                b[p.search.search] = () => mouseClick($('.button-container .btn-standard.call-to-action'));
+                b[p.search.search] = () => search();
             }
             else {
                 let items = $(".listFUTItem");
@@ -159,6 +176,9 @@
                     b[p.lists.up] = () => {
                         let container = itemsContainer;
                         let selected = $('.listFUTItem.selected', container).prev();
+                        if(selected.length === 0){
+                            selected = $(".listFUTItem:last-child", container);
+                        }
                         mouseClick(selected);
                         container.css('position', 'relative');
                         container.scrollTop(container.scrollTop() + selected.position().top - selected.height());
@@ -166,6 +186,9 @@
                     b[p.lists.down] = () => {
                         let container = itemsContainer;
                         let selected = $('.listFUTItem.selected', container).next();
+                        if(selected.length === 0){
+                            selected = $(".listFUTItem:first-child", container);
+                        }
                         mouseClick(selected);
                         container.css('position', 'relative');
                         container.scrollTop(container.scrollTop() + selected.position().top);
