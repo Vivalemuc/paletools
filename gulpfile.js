@@ -66,7 +66,7 @@ gulp.task('build-js', function () {
     return gulp.src(['./src/*.js'])
             .pipe(scan({ term: /const\s*VERSION\s*=\s*".*";/gm, fn: function (match, file) {
                 console.log(file.path);
-                fileVersions[file.path] = match.match(/(\d+\.\d+)/gm)[0];
+                fileVersions[file.path] = match.match(/(\d+\.\d+.?\d*)/gm)[0];
             }}))
             .pipe(minifyJs())
             .pipe(base64Encode(getJsCode))

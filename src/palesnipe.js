@@ -1,5 +1,5 @@
 (function (buttons) {
-    const VERSION = "v1.9";
+    const VERSION = "v1.9.1";
 
     buttons = $.extend({
         back: 49,
