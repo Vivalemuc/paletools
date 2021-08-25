@@ -1,5 +1,5 @@
 (function (buttons) {
-    const ver = "v1.9";
+    const VERSION = "v1.9";
 
     buttons = $.extend({
         back: 49,
@@ -44,6 +44,8 @@
     iframe.style.display = 'none';
     document.body.appendChild(iframe);
     window.console = iframe.contentWindow.console;
+
+    window.MAX_NEW_ITEMS = Number.MAX_VALUE;
 
     const
         l = console.log,
