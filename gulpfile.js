@@ -89,7 +89,7 @@ gulp.task('build-js-obfuscated', function () {
 
 gulp.task('copy-to-dest', function() {
     return gulp.src(['./dist/*.js'])
-                .pipe(gulpCopy('d:\\code\\eallegretta.github.io\\paletools\\'));
+                .pipe(gulpCopy('d:\\code\\eallegretta.github.io\\fifa\\'));
 
 });
 gulp.task('deploy', gulp.series('build-js', 'build-css', 'copy-to-dest'));

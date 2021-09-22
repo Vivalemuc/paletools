@@ -1,5 +1,5 @@
 (function (buttons) {
-    const VERSION = "v1.9.1";
+    const VERSION = "v1.9.2";
 
     buttons = $.extend({
         back: 49,
@@ -134,7 +134,7 @@
         sellBtn = () => $(`.ut-button-group > button:contains('${loc.localize('infopanel.label.discard')}')`),
         buyBtn = () => $('.buyButton'),
         backBtn = () => $('.ut-navigation-button-control'),
-        enterBtn = () =>$('.dialog-body .ut-button-group button:eq(0)'),
+        enterBtn = () =>$('.ea-dialog-view .ut-button-group button:eq(0)'),
         searchBtn = () => $('.button-container .btn-standard.call-to-action'),
         searchResults = () =>$('.SearchResults').length,
 
