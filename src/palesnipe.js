@@ -242,7 +242,8 @@
             ${sp2(6, 'decMaxBuy', 'incMaxBuy')}
             ${btn('.DetailPanel > .bidOptions', 'results', 'decBid', false)}
             ${btn('.DetailPanel > .bidOptions', 'results', 'incBid', true)}
-            .ut-market-search-filters-view .call-to-action:after { content: '[ ${p.search.search} ]' }
+            .ut-market-search-filters-view .call-to-action:after { content: '[ ${p.search.search}]'}
+            .ut-market-search-filters-view .search-price-header:first-child > button:after { content: '[ ${p.search.resetBid}]';  font-size: 10px; display: block  }
             .ut-navigation-button-control:after { font-size:10px; float:right; margin-right:12px; content: '[ ${p.back} ]' }
             .pagingContainer .prev:after { font-size: 10px; display:block; content: '[ ${p.lists.prev} ]' }
             .pagingContainer .next:after { font-size: 10px; display:block; content: '[ ${p.lists.next} ]' }
