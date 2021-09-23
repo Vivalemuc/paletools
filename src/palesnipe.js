@@ -274,4 +274,4 @@
 
     services.Notification.queue(["Palesnipe Enabled", UINotificationType.POSITIVE])
     addCss();
-})();
+})(/*BUTTONS*/);
