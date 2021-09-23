@@ -366,7 +366,7 @@
 
             let upd = (t, tx) => {
                 if (!t) return;
-                let add = ` [ ${map[p.results[tx]]} ]`;
+                let add = ` [ ${p.results[tx]} ]`;
                 let html = t.html();
                 if (html && html.indexOf(add) == -1) {
                     t.html(t.html() + add);

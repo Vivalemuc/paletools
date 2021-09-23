@@ -1,5 +1,5 @@
 (function (buttons) {
-    const VERSION = "v1.9.3";
+    const VERSION = "v2.0.0";
 
     buttons = $.extend({
         back: 'Digit1',
@@ -62,7 +62,7 @@
         mouseDown = target => dispatchMouseEvent(target, 'mousedown'),
         mouseUp = target => dispatchMouseEvent(target, 'mouseup'),
         mouseClick = (target, delay, callback) => {
-            if(delay){
+            if (delay) {
                 setTimeout(() => {
                     callback(mouseClick(target));
                 }, delay);
@@ -80,17 +80,18 @@
         },
         tryPressOkBtn = (callback) => {
             if (!mouseClick(enterBtn())) {
-                if(callback){
+                if (callback) {
                     setTimeout(callback(false), 0);
                 }
-                
+
                 setTimeout(tryPressOkBtn, 10);
                 return;
             }
             else {
-                if(callback){
+                if (callback) {
                     callback(true);
                 }
+                updateBoughtUI();
             }
         },
         back = () => {
@@ -107,25 +108,25 @@
 
         search = () => {
             mouseClick(searchBtn());
-            if(p.results.autoBuy){
-                if(searchResults() == 0){
+            if (p.results.autoBuy) {
+                if (searchResults() == 0) {
                     l('researching');
                     setTimeout(search, 10);
                 }
                 else {
                     l($(".ut-no-results-view").length);
-                    if($(".ut-no-results-view").length > 0){
+                    if ($(".ut-no-results-view").length > 0) {
                         l('no results');
                         back();
                     }
                     else {
                         l('buying');
                         buyNow((bought) => {
-                            if(bought){
+                            if (bought) {
                                 mouseClick(transferBtn());
                             }
                         });
-                    }    
+                    }
                 }
             }
         },
@@ -135,9 +136,9 @@
         sellBtn = () => $(`.ut-button-group > button:contains('${loc.localize('infopanel.label.discard')}')`),
         buyBtn = () => $('.buyButton'),
         backBtn = () => $('.ut-navigation-button-control'),
-        enterBtn = () =>$('.ea-dialog-view .ut-button-group button:eq(0)'),
+        enterBtn = () => $('.ea-dialog-view .ut-button-group button:eq(0)'),
         searchBtn = () => $('.button-container .btn-standard.call-to-action'),
-        searchResults = () =>$('.SearchResults').length,
+        searchResults = () => $('.SearchResults').length,
 
         keys = () => {
             let b = {};
@@ -179,7 +180,7 @@
                     b[p.lists.up] = () => {
                         let container = itemsContainer;
                         let selected = $('.listFUTItem.selected', container).prev();
-                        if(selected.length === 0){
+                        if (selected.length === 0) {
                             selected = $(".listFUTItem:last-child", container);
                         }
                         mouseClick(selected);
@@ -189,7 +190,7 @@
                     b[p.lists.down] = () => {
                         let container = itemsContainer;
                         let selected = $('.listFUTItem.selected', container).next();
-                        if(selected.length === 0){
+                        if (selected.length === 0) {
                             selected = $(".listFUTItem:first-child", container);
                         }
                         mouseClick(selected);
@@ -207,6 +208,53 @@
             return b;
         };
 
+    // UI update after buy now
+    updateBoughtUI = () => {
+        var txBtn = transferBtn();
+        if (txBtn.length == 0) {
+            setTimeout(updateBoughtUI, 50);
+            return;
+        }
+
+        let upd = (t, tx) => {
+            if (!t) return;
+            let add = ` [ ${p.results[tx]} ]`;
+            let html = t.html();
+            if (html && html.indexOf(add) == -1) {
+                t.html(t.html() + add);
+            }
+        }
+
+        upd(txBtn, 'transfer');
+        upd(clubBtn(), 'club');
+        upd(sellBtn(), 'sell');
+    };
+
+    addCss = () => {
+        let btn = (q, k1, k2, inc) => `${q} .${(inc ? 'in' : 'de')}crement-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ ${p[k1][k2]} ]' }`;
+        let sp1 = (i, k, inc) => btn(`.search-prices .price-filter:nth-child(${i})`, 'search', k, inc);
+        let sp2 = (i, k1, k2) => `${sp1(i, k1)}${sp1(i, k2, true)}`;
+        let css = `
+            ${sp2(2, 'decMinBid', 'incMinBid')}
+            ${sp2(3, 'decMaxBid', 'incMaxBid')}
+            ${sp2(5, 'decMinBuy', 'incMinBuy')}
+            ${sp2(6, 'decMaxBuy', 'incMaxBuy')}
+            ${btn('.DetailPanel > .bidOptions', 'results', 'decBid', false)}
+            ${btn('.DetailPanel > .bidOptions', 'results', 'incBid', true)}
+            .ut-market-search-filters-view .call-to-action:after { content: '[ ${p.search.search} ]' }
+            .ut-navigation-button-control:after { font-size:10px; float:right; margin-right:12px; content: '[ ${p.back} ]' }
+            .pagingContainer .prev:after { font-size: 10px; display:block; content: '[ ${p.lists.prev} ]' }
+            .pagingContainer .next:after { font-size: 10px; display:block; content: '[ ${p.lists.next} ]' }
+            .bidButton:after { content: ' [ ${p.results.bid} ]' }
+            .buyButton:before { float:right; content: ' [ ${p.results.buy} ]' }
+            `;
+
+        var style = document.createElement("style");
+        style.type = "text/css";
+        style.innerText = css;
+        document.head.appendChild(style);
+    };
+
     document.body.addEventListener('keydown', e => {
         if (e.code == p.enableDisable) {
             enabled = !enabled;
@@ -223,4 +271,5 @@
     });
 
     services.Notification.queue(["Palesnipe Enabled", UINotificationType.POSITIVE])
+    addCss();
 })();
