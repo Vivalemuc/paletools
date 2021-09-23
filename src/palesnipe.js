@@ -155,6 +155,7 @@
                 b[p.search.decMaxBuy] = () => mouseClick($('.decrement-value:eq(3)'));
                 b[p.search.incMaxBuy] = () => mouseClick($('.increment-value:eq(3)'));
                 b[p.search.search] = () => search();
+                b[p.search.resetBid] = () => mouseClick($('.search-price-header > button:first'));
             }
             else {
                 let items = $(".listFUTItem");
