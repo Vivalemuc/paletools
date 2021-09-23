@@ -1,37 +1,38 @@
 (function (buttons) {
-    const VERSION = "v1.9.2";
+    const VERSION = "v1.9.3";
 
     buttons = $.extend({
-        back: 49,
-        enableDisable: 92,
+        back: 'Digit1',
+        enableDisable: 'Comma',
         lists: {
-            up: 38,
-            down: 40,
-            prev: 37,
-            next: 39,
+            up: 'ArrowUp',
+            down: 'ArrowDown',
+            prev: 'ArrowLeft',
+            next: 'ArrowRight',
         },
         search: {
-            decMinBid: 37,
-            incMinBid: 39,
-            decMaxBid: 35,
-            incMaxBid: 36,
-            decMinBuy: 46,
-            incMinBuy: 34,
-            decMaxBuy: 40,
-            incMaxBuy: 38,
-            search: 50
+            resetBid: 'Backquote',
+            decMinBid: 'ArrowLeft',
+            incMinBid: 'ArrowRight',
+            decMaxBid: 'End',
+            incMaxBid: 'Home',
+            decMinBuy: 'Delete',
+            incMinBuy: 'PageDown',
+            decMaxBuy: 'ArrowDown',
+            incMaxBuy: 'ArrowUp',
+            search: 'Digit2'
         },
         results: {
-            bid: 52,
-            buy: 51,
-            transfer: 82,
-            club: 67,
+            bid: 'Digit4',
+            buy: 'Digit3',
+            transfer: 'KeyR',
+            club: 'KeyC',
             pressEnter: true,
             autoBuy: false,
             preventBack: false,
-            sell: 81,
-            decBid: 46,
-            incBid: 34
+            sell: 'KeyQ',
+            decBid: 'Delete',
+            incBid: 'PageDown'
         }
     }, buttons || {});
     let p = buttons;
@@ -207,15 +208,19 @@
         };
 
     document.body.addEventListener('keydown', e => {
-        if (e.keyCode == p.enableDisable) {
+        if (e.code == p.enableDisable) {
             enabled = !enabled;
+
+            services.Notification.queue([`Palesnipe ${enabled ? "Enabled" : "Disabled"}`, enabled ? UINotificationType.POSITIVE : UINotificationType.NEUTRAL]);
         }
 
         if (!enabled) {
             return;
         }
 
-        let action = keys()[e.keyCode];
+        let action = keys()[e.code];
         if (action) action();
     });
+
+    services.Notification.queue(["Palesnipe Enabled", UINotificationType.POSITIVE])
 })();
