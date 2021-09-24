@@ -1,5 +1,5 @@
 (function (buttons) {
-    const VERSION = "v2.0.0";
+    const VERSION = "v2.0.1";
 
     buttons = $.extend({
         back: 'Digit1',
@@ -47,6 +47,24 @@
     window.console = iframe.contentWindow.console;
 
     window.MAX_NEW_ITEMS = Number.MAX_VALUE;
+
+    UTItemDomainRepository.prototype.isPileFull = function(e) {
+        var t = 0
+          , i = this.pileSizes.get(e);
+        switch (e) {
+        case ItemPile.PURCHASED:
+            t = this.unassigned.length;
+            break;
+        case ItemPile.TRANSFER:
+            t = this.transfer.length;
+            break;
+        case ItemPile.INBOX:
+            return 0;
+        case ItemPile.CLUB:
+            return !1
+        }
+        return (i || 0) <= t
+    }
 
     const
         l = console.log,
