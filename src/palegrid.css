@@ -29,8 +29,15 @@
 
 .listFUTItem .entityContainer .name {
 	padding: 0 !important;
-	max-width: 46% !important;
+	max-width: 35% !important;
     text-overflow: ellipsis !important;
+}
+
+.ut-transfer-list-view .listFUTItem .entityContainer .name,
+.ut-navigation-container-view--content .listFUTItem .entityContainer .name {
+	max-width: 100% !important;
+	width: 100%;
+	position: absolute;
 }
 
 .ui-layout-left .listFUTItem .auction .auctionValue {
@@ -92,6 +99,10 @@
 
 .ut-club-search-results-view .player-stats-data-component {
 	display: block;
+	position: absolute;
+	width: 50%;
+	top: 0;
+	right: 0;
 }
 
 .ut-club-search-results-view .player-stats-data-component ul li:first-child {
