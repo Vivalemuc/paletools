@@ -54,15 +54,15 @@ function base64Encode(getCode){
 //basic example
 gulp.task('build-css', function(){
     return gulp.src(['./src/*.css'])
-    .pipe(scan({ term: /\s*VERSION\s*=\s*".*";/gm, fn: function (match, file) {
-        console.log(file.path);
-        fileVersions[file.path] = match.match(/(\d+\.\d+.?\d*)/gm)[0];
+    .pipe(scan({ term: /v\d+\.\d+.\d+/gm, fn: function (match, file) {
+        console.log(`${file.path} ${JSON.stringify(match)}`);
+        fileVersions[file.path] = match.match(/(\d+\.\d+\.\d+)/gm)[0];
     }}))
     .pipe(cleanCss())
+    .pipe(base64Encode(getCssCode))
     .pipe(rename(path => {
         path.extname = '.js';
     }))
-    .pipe(base64Encode(getCssCode))
     .pipe(gulp.dest('./dist/'));
 });
 
