@@ -1,5 +1,5 @@
 (function (buttons) {
-    const VERSION = "v2.0.1";
+    const VERSION = "v2.1.0";
 
     buttons = $.extend({
         back: 'Digit1',
@@ -20,7 +20,9 @@
             incMinBuy: 'PageDown',
             decMaxBuy: 'ArrowDown',
             incMaxBuy: 'ArrowUp',
-            search: 'Digit2'
+            search: 'Digit2',
+            botModeMinBid: 'ControlRight',
+            botModeMinBuy: 'ControlLeft'
         },
         results: {
             bid: 'Digit4',
@@ -158,6 +160,7 @@
         searchBtn = () => $('.button-container .btn-standard.call-to-action'),
         searchResults = () => $('.SearchResults').length,
 
+
         keys = () => {
             let b = {};
 
@@ -174,6 +177,16 @@
                 b[p.search.incMaxBuy] = () => mouseClick($('.increment-value:eq(3)'));
                 b[p.search.search] = () => search();
                 b[p.search.resetBid] = () => mouseClick($('.search-price-header > button:first'));
+                b[p.search.botModeMinBid] = () => {
+                    if(b[p.search.incMinBid]()){
+                        search();
+                    }
+                };
+                b[p.search.botModeMinBuy] = () => {
+                    if(b[p.search.incMinBuy]()){
+                        search();
+                    }
+                }
             }
             else {
                 let items = $(".listFUTItem");
@@ -187,6 +200,8 @@
                     b[p.results.buy] = () => buyNow();
                     b[p.results.decBid] = () => mouseClick($('.bidOptions .decrement-value'));
                     b[p.results.incBid] = () => mouseClick($('.bidOptions .increment-value'));
+                    b[p.search.botModeMinBid] = () => buyNow();
+                    b[p.search.botModeMinBuy] = () => buyNow();
                 }
 
                 if (itemsExists && $('.DetailPanel > .ut-button-group').length > 0) {
@@ -216,6 +231,10 @@
                         container.css('position', 'relative');
                         container.scrollTop(container.scrollTop() + selected.position().top);
                     };
+                }
+                else {
+                    b[p.search.botModeMinBid] = () => back();
+                    b[p.search.botModeMinBuy] = () => back();
                 }
 
                 if ($('.pagingContainer').length > 0) {
