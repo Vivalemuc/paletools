@@ -1,5 +1,5 @@
 (function (buttons) {
-    const VERSION = "v2.1.0";
+    const VERSION = "v2.1.1";
 
     buttons = $.extend({
         back: 'Digit1',
@@ -41,6 +41,7 @@
     let enabled = true;
     let backButtonLastDate = new Date();
     let backButtonPressedOnResult = false;
+    let appStyles = document.createElement("style");
 
     // reset console
     var iframe = document.createElement('iframe');
@@ -248,6 +249,8 @@
 
     // UI update after buy now
     updateBoughtUI = () => {
+        if(!enabled) return;
+
         var txBtn = transferBtn();
         if (txBtn.length == 0) {
             setTimeout(updateBoughtUI, 50);
@@ -288,17 +291,33 @@
             .buyButton:before { float:right; content: ' [ ${p.results.buy} ]' }
             `;
 
-        var style = document.createElement("style");
-        style.type = "text/css";
-        style.innerText = css;
-        document.head.appendChild(style);
+        appStyles.innerText = css;
     };
+
+    function enableDisableApp(){
+        if(enabled){
+            disableApp();
+        }
+        else {
+            enableApp();
+        }
+    }
+
+    function enableApp(){
+        enabled = true;
+        document.body.appendChild(appStyles);
+        services.Notification.queue(["Palesnipe Enabled", UINotificationType.POSITIVE])
+    }
+
+    function disableApp(){
+        enabled = false;
+        document.body.removeChild(appStyles);
+        services.Notification.queue(["Palesnipe Disabled", UINotificationType.NEUTRAL])
+    }
 
     document.body.addEventListener('keydown', e => {
         if (e.code == p.enableDisable) {
-            enabled = !enabled;
-
-            services.Notification.queue([`Palesnipe ${enabled ? "Enabled" : "Disabled"}`, enabled ? UINotificationType.POSITIVE : UINotificationType.NEUTRAL]);
+            enableDisableApp();
         }
 
         if (!enabled) {
@@ -309,6 +328,6 @@
         if (action) action();
     });
 
-    services.Notification.queue(["Palesnipe Enabled", UINotificationType.POSITIVE])
     addCss();
+    enableApp();
 })(/*BUTTONS*/);
