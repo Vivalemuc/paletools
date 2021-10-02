@@ -178,16 +178,16 @@
                 b[p.search.incMaxBuy] = () => mouseClick($('.increment-value:eq(3)'));
                 b[p.search.search] = () => search();
                 b[p.search.resetBid] = () => mouseClick($('.search-price-header > button:first'));
-                b[p.search.botModeMinBid] = () => {
-                    if(b[p.search.incMinBid]()){
-                        search();
-                    }
-                };
-                b[p.search.botModeMinBuy] = () => {
-                    if(b[p.search.incMinBuy]()){
-                        search();
-                    }
-                }
+                // b[p.search.botModeMinBid] = () => {
+                //     if(b[p.search.incMinBid]()){
+                //         search();
+                //     }
+                // };
+                // b[p.search.botModeMinBuy] = () => {
+                //     if(b[p.search.incMinBuy]()){
+                //         search();
+                //     }
+                // }
             }
             else {
                 let items = $(".listFUTItem");
@@ -201,8 +201,8 @@
                     b[p.results.buy] = () => buyNow();
                     b[p.results.decBid] = () => mouseClick($('.bidOptions .decrement-value'));
                     b[p.results.incBid] = () => mouseClick($('.bidOptions .increment-value'));
-                    b[p.search.botModeMinBid] = () => buyNow();
-                    b[p.search.botModeMinBuy] = () => buyNow();
+                    // b[p.search.botModeMinBid] = () => buyNow();
+                    // b[p.search.botModeMinBuy] = () => buyNow();
                 }
 
                 if (itemsExists && $('.DetailPanel > .ut-button-group').length > 0) {
