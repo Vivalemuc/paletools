@@ -1,5 +1,5 @@
 (function (buttons) {
-    const VERSION = "v2.2.0";
+    const VERSION = "v2.5.0";
 
     buttons = $.extend({
         back: 'Digit1',
@@ -21,8 +21,9 @@
             decMaxBuy: 'ArrowDown',
             incMaxBuy: 'ArrowUp',
             search: 'Digit2',
-            botModeMinBid: 'ControlRight',
-            botModeMinBuy: 'ControlLeft'
+            botModeMinBid: 'BracketRight',
+            botModeMinBuy: 'BracketLeft',
+            enableBotMode: false
         },
         results: {
             bid: 'Digit4',
@@ -51,20 +52,71 @@
 
     window.MAX_NEW_ITEMS = Number.MAX_VALUE;
 
-    UTItemDomainRepository.prototype.isPileFull = function(e) {
+
+    UTPaginatedItemListView.prototype.setItems = function (e, i) {
+        var o = this;
+        return this.removeListRows(),
+            e.forEach(function (e) {
+                if (shouldRenderItem(e)) {
+                    var t = new UTItemTableCellView;
+                    t.setData(e, void 0, void 0, i),
+                        o.listRows.push(t)
+                }
+            }),
+            this.listRows
+    }
+
+    UTItemDAO.prototype._oldSearchTransferMarket = UTItemDAO.prototype.searchTransferMarket;
+    UTItemDAO.prototype.searchTransferMarket = function (criteria, args) {
+        let filters = getFilters();
+        criteria.defId = filters.resourceId ? [parseInt(filters.resourceId)] : [];
+        return this._oldSearchTransferMarket(criteria, args);
+    }
+
+    UTItemTableCellView.prototype._oldRender = UTItemTableCellView.prototype.render;
+    UTItemTableCellView.prototype.render = function (e) {
+        this._oldRender();
+        if (this.data.isPlayer()) {
+            $(".ut-item-view--main", this.__entityContainer).append(`<span class="player-definition-id">${this.data.definitionId}</span>`);
+        }
+    }
+
+    function shouldRenderItem(item) {
+        let rating = getFilters().rating;
+
+        if (!rating) {
+            return true;
+        }
+        else {
+            if (rating.charAt(0) === "+") {
+                rating = parseInt(rating.substr(1));
+                return item.rating >= rating;
+            }
+            else if (rating.charAt(0) === "-") {
+                rating = parseInt(rating.substr(1));
+                return item.rating <= rating;
+            }
+            else {
+                rating = parseInt(rating);
+                return item.rating == rating;
+            }
+        }
+    }
+
+    UTItemDomainRepository.prototype.isPileFull = function (e) {
         var t = 0
-          , i = this.pileSizes.get(e);
+            , i = this.pileSizes.get(e);
         switch (e) {
-        case ItemPile.PURCHASED:
-            t = this.unassigned.length;
-            break;
-        case ItemPile.TRANSFER:
-            t = this.transfer.length;
-            break;
-        case ItemPile.INBOX:
-            return 0;
-        case ItemPile.CLUB:
-            return !1
+            case ItemPile.PURCHASED:
+                t = this.unassigned.length;
+                break;
+            case ItemPile.TRANSFER:
+                t = this.transfer.length;
+                break;
+            case ItemPile.INBOX:
+                return 0;
+            case ItemPile.CLUB:
+                return !1
         }
         return (i || 0) <= t
     }
@@ -73,6 +125,13 @@
         l = console.log,
         loc = window.services.Localization,
         BACK_BUTTON_THRESHOLD = 500,
+        header = $('.ut-fifa-header-view'),
+        getFilters = () => {
+            return {
+                rating: $('#filter-player-rating').val(),
+                resourceId: $('#filter-player-resource-id').val()
+            }
+        },
         dispatchMouseEvent = ($target, eventName) => {
             if ($target.length == 0) return false;
             const mouseEvent = document.createEvent('MouseEvents');
@@ -178,16 +237,16 @@
                 b[p.search.incMaxBuy] = () => mouseClick($('.increment-value:eq(3)'));
                 b[p.search.search] = () => search();
                 b[p.search.resetBid] = () => mouseClick($('.search-price-header > button:first'));
-                // b[p.search.botModeMinBid] = () => {
-                //     if(b[p.search.incMinBid]()){
-                //         search();
-                //     }
-                // };
-                // b[p.search.botModeMinBuy] = () => {
-                //     if(b[p.search.incMinBuy]()){
-                //         search();
-                //     }
-                // }
+                b[p.search.botModeMinBid] = () => {
+                    if (b.search.enableBotMode && b[p.search.incMinBid]()) {
+                        search();
+                    }
+                };
+                b[p.search.botModeMinBuy] = () => {
+                    if (b.search.enableBotMode && b[p.search.incMinBuy]()) {
+                        search();
+                    }
+                }
             }
             else {
                 let items = $(".listFUTItem");
@@ -196,13 +255,14 @@
                 if (itemsContainer.length == 0) {
                     itemsContainer = items.parent();
                 }
+
                 if (itemsExists && $('.DetailPanel > .bidOptions').length > 0) {
                     b[p.results.bid] = () => mouseClick($('.bidButton'));
                     b[p.results.buy] = () => buyNow();
                     b[p.results.decBid] = () => mouseClick($('.bidOptions .decrement-value'));
                     b[p.results.incBid] = () => mouseClick($('.bidOptions .increment-value'));
-                    // b[p.search.botModeMinBid] = () => buyNow();
-                    // b[p.search.botModeMinBuy] = () => buyNow();
+                    b[p.search.botModeMinBid] = () => b.search.enableBotMode ? buyNow() : false;
+                    b[p.search.botModeMinBuy] = () => b.search.enableBotMode ? buyNow() : false;
                 }
 
                 if (itemsExists && $('.DetailPanel > .ut-button-group').length > 0) {
@@ -234,8 +294,8 @@
                     };
                 }
                 else {
-                    b[p.search.botModeMinBid] = () => back();
-                    b[p.search.botModeMinBuy] = () => back();
+                    b[p.search.botModeMinBid] = () => b.search.enableBotMode ? back() : false;
+                    b[p.search.botModeMinBuy] = () => b.search.enableBotMode ? back() : false;
                 }
 
                 if ($('.pagingContainer').length > 0) {
@@ -248,8 +308,8 @@
         };
 
     // UI update after buy now
-    updateBoughtUI = () => {
-        if(!enabled) return;
+    const updateBoughtUI = () => {
+        if (!enabled) return;
 
         var txBtn = transferBtn();
         if (txBtn.length == 0) {
@@ -271,7 +331,7 @@
         upd(sellBtn(), 'sell');
     };
 
-    addCss = () => {
+    const addCss = () => {
         let btn = (q, k1, k2, inc) => `${q} .${(inc ? 'in' : 'de')}crement-value:after { font-size:10px; display:block; margin-top:-30px; content: '[ ${p[k1][k2]} ]' }`;
         let sp1 = (i, k, inc) => btn(`.search-prices .price-filter:nth-child(${i})`, 'search', k, inc);
         let sp2 = (i, k1, k2) => `${sp1(i, k1)}${sp1(i, k2, true)}`;
@@ -294,8 +354,12 @@
         appStyles.innerText = css;
     };
 
-    function enableDisableApp(){
-        if(enabled){
+    const addFilters = () => {
+        header.append(`| Filter: Rating: <input type="text" id="filter-player-rating" style="width: 60px" /> | Id: <input type="text" id="filter-player-resource-id" style="width: 200px" />`);
+    };
+
+    function enableDisableApp() {
+        if (enabled) {
             disableApp();
         }
         else {
@@ -303,13 +367,13 @@
         }
     }
 
-    function enableApp(){
+    function enableApp() {
         enabled = true;
         document.body.appendChild(appStyles);
         services.Notification.queue(["Palesnipe Enabled", UINotificationType.POSITIVE])
     }
 
-    function disableApp(){
+    function disableApp() {
         enabled = false;
         document.body.removeChild(appStyles);
         services.Notification.queue(["Palesnipe Disabled", UINotificationType.NEUTRAL])
@@ -329,5 +393,6 @@
     });
 
     addCss();
+    addFilters();
     enableApp();
 })(/*BUTTONS*/);
