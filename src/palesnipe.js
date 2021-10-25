@@ -54,7 +54,7 @@
 
     const getCurrentController = () => getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController();
 
-    $(".ut-fifa-header-view").append(`<button id="throw">DEBUG</button>`);
+   // $(".ut-fifa-header-view").append(`<button id="throw">DEBUG</button>`);
 
     $("#throw").click(function () {
         throw new Error("debug error");
