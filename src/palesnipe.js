@@ -1,5 +1,5 @@
 (function (buttons) {
-    const VERSION = "v2.6.0";
+    const VERSION = "v3.0.0";
 
     buttons = $.extend({
         back: 'Digit1',
@@ -50,11 +50,12 @@
 
     window.MAX_NEW_ITEMS = Number.MAX_VALUE;
 
-    let _selectedRating = "";
+    let _selectedRating = null;
+    let _isMarketSearch = false;
 
     const getCurrentController = () => getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController();
 
-   // $(".ut-fifa-header-view").append(`<button id="throw">DEBUG</button>`);
+    // $(".ut-fifa-header-view").append(`<button id="throw">DEBUG</button>`);
 
     $("#throw").click(function () {
         throw new Error("debug error");
@@ -87,9 +88,11 @@
             const playerRatingContainer = createContainer(this._playerRating.getRootElement());
 
             let filtersContainer = document.createElement("div");
+            filtersContainer.classList.add("saved-filters");
 
             this._filterName = new UTTextInputControl();
             this._filterName.init();
+            this._filterName.setPlaceholder("Filter name");
 
             this._saveFilterButton = new UTStandardButtonControl();
             this._saveFilterButton.init();
@@ -111,9 +114,11 @@
                 .append(this._deleteFilterButton.getRootElement())
                 .append(this._savedFilters.getRootElement());
 
+
             $(container)
-                //.append(filtersContainer)
-                .append(playerIdContainer).append(playerRatingContainer);
+                .append(filtersContainer)
+                .append(playerIdContainer)
+                .append(playerRatingContainer);
             $(container).insertBefore($(".ut-item-search-view", this.__root));
 
             this._playerId.init();
@@ -143,7 +148,7 @@
 
     UTMarketSearchFiltersView.prototype.loadSavedFilters = function () {
         const searchFilters = this.getStoredFilters();
-        let filters = [{ label: '', value: '' }];
+        let filters = [{ label: '-- Select a filter to load --', value: '' }];
         for (let filterKey of Object.keys(searchFilters).sort()) {
             filters.push({ label: searchFilters[filterKey].name, value: filterKey });
         }
@@ -179,12 +184,25 @@
     UTMarketSearchFiltersView.prototype.loadFilter = function (filter) {
         const controller = getCurrentController();
         if (controller instanceof UTMarketSearchFiltersViewController) {
+            if (filter.criteria.defId && filter.criteria.defId.length > 0) {
+                this._playerId.setValue(filter.criteria.defId[0]);
+            }
             this._playerRating.setValue(filter.criteria.rating);
+            _selectedRating = filter.criteria.rating;
             for (let key of Object.keys(filter.criteria)) {
                 controller._viewmodel.searchCriteria[key] = filter.criteria[key];
                 this.setFilters(controller._viewmodel);
             }
         }
+    }
+
+    const UTMarketSearchFiltersView_setFilters = UTMarketSearchFiltersView.prototype.setFilters;
+    UTMarketSearchFiltersView.prototype.setFilters = function setFilters(e, t) {
+        if (e.searchCriteria.defId && e.searchCriteria.defId.length > 0) {
+            this.playerId.setValue(e.searchCriteria.defId[0])
+        }
+        this._playerRating.setValue(_selectedRating);
+        UTMarketSearchFiltersView_setFilters.call(this, e, t);
     }
 
     const UTMarketSearchFiltersView_destroyGeneratedElements = UTMarketSearchFiltersView.prototype.destroyGeneratedElements;
@@ -226,21 +244,88 @@
     UTMarketSearchFiltersViewController.prototype._eResetSelected = function _eResetSelected() {
         this.getView()._playerId.clear();
         this.getView()._playerRating.clear();
+        this.getView()._filterName.clear();
+        _selectedRating = null;
         UTMarketSearchFiltersViewController__eResetSelected.call(this);
     }
 
+    const UTMarketSearchFiltersView__eSearchButtonSelected = UTMarketSearchFiltersView.prototype._eSearchButtonSelected;
+    UTMarketSearchFiltersView.prototype._eSearchButtonSelected = function _eSearchButtonSelected() {
+        _isMarketSearch = true;
+        UTMarketSearchFiltersView__eSearchButtonSelected.call(this);
+    }
 
     UTPaginatedItemListView.prototype.setItems = function (e, i) {
         var o = this;
-        return this.removeListRows(),
-            e.forEach(function (e) {
-                if (shouldRenderItem(e)) {
-                    var t = new UTItemTableCellView;
-                    t.setData(e, void 0, void 0, i),
-                        o.listRows.push(t)
+        this.removeListRows();
+
+        e.forEach(function (e) {
+            if (shouldRenderItem(e)) {
+                var t = new UTItemTableCellView;
+                t.setData(e, void 0, void 0, i),
+                    o.listRows.push(t)
+            }
+        });
+
+        _isMarketSearch = false;
+
+        return this.listRows;
+    }
+
+    const UTMarketSearchView__generate = UTMarketSearchView.prototype._generate;
+    UTMarketSearchView.prototype._generate = function _generate() {
+        UTMarketSearchView__generate.call(this);
+        if (!this._generatePalesnipeCalled) {
+            this._minMaxPriceContainer = document.createElement("div");
+            this._minMaxPriceContainer.classList.add("min-max-prices");
+            this._minPriceText = document.createElement("span");
+            this._minPriceText.classList.add("min-price-value");
+            this._maxPriceText = document.createElement("span");
+            this._maxPriceText.classList.add("max-price-value");
+            const minPriceContainer = document.createElement("span");
+            minPriceContainer.classList.add("min-price");
+            $(minPriceContainer)
+                .append('<span class="min-price-label">Min Price</span>')
+                .append(this._minPriceText);
+            const maxPriceContainer = document.createElement("span");
+            maxPriceContainer.classList.add("max-price");
+            $(maxPriceContainer)
+                .append('<span class="min-price-label">Min Price</span>')
+                .append(this._maxPriceText);
+
+
+            $(this._minMaxPriceContainer)
+                .append(minPriceContainer)
+                .append(maxPriceContainer)
+                .insertBefore(this._list.getRootElement());
+            this._generatePalesnipeCalled = true;
+        }
+    }
+
+    const UTMarketSearchView_setItems = UTMarketSearchView.prototype.setItems;
+    UTMarketSearchView.prototype.setItems = function setItems(e, t) {
+        if (this._superview
+            && this._superview._superview
+            && this._superview._superview._rView instanceof UTNavigationContainerView) {
+            let minBuyNowPrice = Number.MAX_VALUE;
+            let maxBuyNowPrice = 0;
+            for (let entity of e) {
+                if (entity._auction.buyNowPrice > maxBuyNowPrice) {
+                    maxBuyNowPrice = entity._auction.buyNowPrice;
                 }
-            }),
-            this.listRows
+                if (entity._auction.buyNowPrice < minBuyNowPrice) {
+                    minBuyNowPrice = entity._auction.buyNowPrice;
+                }
+            }
+            this._minPriceText.textContent = minBuyNowPrice;
+            this._maxPriceText.textContent = maxBuyNowPrice;
+            $(this._minMaxPriceContainer).show();
+        }
+        else {
+            $(this._minMaxPriceContainer).hide();
+        }
+
+        UTMarketSearchView_setItems.call(this, e, t);
     }
 
     UTItemTableCellView.prototype._oldRender = UTItemTableCellView.prototype.render;
@@ -254,22 +339,20 @@
     function shouldRenderItem(item) {
         let rating = _selectedRating;
 
-        if (!rating) {
-            return true;
+        if (!_isMarketSearch) return true;
+        if (!rating) return true;
+
+        if (rating.charAt(0) === "+") {
+            rating = parseInt(rating.substr(1));
+            return item.rating >= rating;
+        }
+        else if (rating.charAt(0) === "-") {
+            rating = parseInt(rating.substr(1));
+            return item.rating <= rating;
         }
         else {
-            if (rating.charAt(0) === "+") {
-                rating = parseInt(rating.substr(1));
-                return item.rating >= rating;
-            }
-            else if (rating.charAt(0) === "-") {
-                rating = parseInt(rating.substr(1));
-                return item.rating <= rating;
-            }
-            else {
-                rating = parseInt(rating);
-                return item.rating == rating;
-            }
+            rating = parseInt(rating);
+            return item.rating == rating;
         }
     }
 
@@ -507,6 +590,14 @@
             .bidButton:after { content: ' [ ${p.results.bid} ]' }
             .buyButton:before { float:right; content: ' [ ${p.results.buy} ]' }
             .player-definition-id { position: absolute; bottom: 0; }
+            .saved-filters { display: inline-block; margin-left: 8px; margin-bottom: 8px;}
+            .saved-filters > input {display: inline-block; width: auto; }
+            .saved-filters > button { display: inline-block; margin-left: 8px;}
+            .saved-filters > div { float: right; margin-left: 8px;}
+            .min-price-label, .max-price-label { color: #88909b; margin-right: 2px; }
+            .min-price-label:after, .max-price-label:after { content: ':' }
+            .min-max-prices { font-size: 14px; }
+            .max-price { float: right; }
             `;
 
         appStyles.innerText = css;
