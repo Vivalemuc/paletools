@@ -598,10 +598,23 @@
             .min-price-label:after, .max-price-label:after { content: ':' }
             .min-max-prices { font-size: 14px; }
             .max-price { float: right; }
+            .donation-ui { float: left; margin-left: 20px; line-height: 50px;}
+            .donation-ui > h3, .donation-ui > div { display: inline }
+            .donation-ui > div:before { content: '|'; margin-right: 8px; }
+            .donation-ui a { color: white; }
             `;
 
         appStyles.innerText = css;
     };
+
+    function addDonationUI(){
+        $(".ut-fifa-header-view").append(`<div class='donation-ui'>
+                <h3 class="title">Powered by Paletools</h3>
+                <div><a href="https://streamlabs.com/paleta_ar/tip" target="_blank">PayPal Donation</a></div>
+                <div><a href="https://ceneka.net/mp/d/paletaeaa" target="_blank">MercadoPago Donation</a></div>
+                <div>Follow me at&nbsp;<a href="https://twitter.com/paleta" target="_blank">@paleta</a></div>
+            </div>`);
+    }
 
     function enableDisableApp() {
         if (enabled) {
@@ -638,5 +651,6 @@
     });
 
     addCss();
+    addDonationUI();
     enableApp();
 })(/*BUTTONS*/);
