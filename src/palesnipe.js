@@ -1,5 +1,5 @@
 (function (buttons) {
-    const VERSION = "v3.0.0";
+    const VERSION = "v3.0.1";
 
     buttons = $.extend({
         back: 'Digit1',
