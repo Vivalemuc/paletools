@@ -199,7 +199,7 @@
     const UTMarketSearchFiltersView_setFilters = UTMarketSearchFiltersView.prototype.setFilters;
     UTMarketSearchFiltersView.prototype.setFilters = function setFilters(e, t) {
         if (e.searchCriteria.defId && e.searchCriteria.defId.length > 0) {
-            this.playerId.setValue(e.searchCriteria.defId[0])
+            this._playerId.setValue(e.searchCriteria.defId[0])
         }
         this._playerRating.setValue(_selectedRating);
         UTMarketSearchFiltersView_setFilters.call(this, e, t);
