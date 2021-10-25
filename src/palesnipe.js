@@ -1,5 +1,5 @@
 (function (buttons) {
-    const VERSION = "v2.5.0";
+    const VERSION = "v2.6.0";
 
     buttons = $.extend({
         back: 'Digit1',
@@ -40,17 +40,194 @@
     }, buttons || {});
     let p = buttons;
     let enabled = true;
-    let backButtonLastDate = new Date();
-    let backButtonPressedOnResult = false;
     let appStyles = document.createElement("style");
 
     // reset console
-    var iframe = document.createElement('iframe');
+    let iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     document.body.appendChild(iframe);
     window.console = iframe.contentWindow.console;
 
     window.MAX_NEW_ITEMS = Number.MAX_VALUE;
+
+    let _selectedRating = "";
+
+    const getCurrentController = () => getAppMain().getRootViewController().getPresentedViewController().getCurrentViewController().getCurrentController();
+
+    $(".ut-fifa-header-view").append(`<button id="throw">DEBUG</button>`);
+
+    $("#throw").click(function () {
+        throw new Error("debug error");
+    });
+
+    const UTMarketSearchFiltersView__generate = UTMarketSearchFiltersView.prototype._generate
+    UTMarketSearchFiltersView.prototype._generate = function _generate() {
+        function createContainer(child) {
+            const container = document.createElement("div");
+            container.classList.add("inline-list-select");
+            container.classList.add("ut-player-search-control");
+            const inlineContainer = document.createElement("div")
+            inlineContainer.classList.add("inline-container");
+            container.appendChild(inlineContainer);
+            const inlineInlineContainer = document.createElement("div");
+            inlineContainer.appendChild(inlineInlineContainer);
+            inlineInlineContainer.classList.add("ut-player-search-control--input-container");
+            inlineInlineContainer.appendChild(child);
+            return container;
+        }
+
+        UTMarketSearchFiltersView__generate.call(this);
+        if (!this._generatePalesnipeCalled) {
+            const container = document.createElement("div");
+            container.classList.add("ut-item-search-view");
+            this._playerId = new UTTextInputControl();
+            const playerIdContainer = createContainer(this._playerId.getRootElement());
+
+            this._playerRating = new UTTextInputControl();
+            const playerRatingContainer = createContainer(this._playerRating.getRootElement());
+
+            let filtersContainer = document.createElement("div");
+
+            this._filterName = new UTTextInputControl();
+            this._filterName.init();
+
+            this._saveFilterButton = new UTStandardButtonControl();
+            this._saveFilterButton.init();
+            this._saveFilterButton.setText("Save");
+            this._saveFilterButton.addTarget(this, this.saveFilter, EventType.TAP);
+
+            this._deleteFilterButton = new UTStandardButtonControl();
+            this._deleteFilterButton.init();
+            this._deleteFilterButton.setText("Delete");
+            this._deleteFilterButton.addTarget(this, this.deleteFilter, EventType.TAP);
+
+            this._savedFilters = new UTDropDownControl();
+            this._savedFilters.init();
+            this._savedFilters.addTarget(this, this.onSavedFiltersChange, EventType.CHANGE);
+
+            $(filtersContainer)
+                .append(this._filterName.getRootElement())
+                .append(this._saveFilterButton.getRootElement())
+                .append(this._deleteFilterButton.getRootElement())
+                .append(this._savedFilters.getRootElement());
+
+            $(container)
+                //.append(filtersContainer)
+                .append(playerIdContainer).append(playerRatingContainer);
+            $(container).insertBefore($(".ut-item-search-view", this.__root));
+
+            this._playerId.init();
+            this._playerId.setPlaceholder("Player ID");
+            this._playerId.setMaxLength(25);
+            this._playerId.addTarget(this, this.handlePlayerIdChange, EventType.CHANGE);
+            this._playerRating.init();
+            this._playerRating.setPlaceholder("Player Rating");
+            this._playerRating.setMaxLength(3);
+            this._playerRating.addTarget(this, this.handlePlayerRatingChange, EventType.CHANGE);
+
+            this.loadSavedFilters();
+
+            this._generatePalesnipeCalled = true;
+        }
+    }
+
+    UTMarketSearchFiltersView.prototype.getStoredFilters = function () {
+        const data = localStorage.getItem("paletools:searchFilters");
+        if (!data) return {};
+        return JSON.parse(atob(data)) || {};
+    }
+
+    UTMarketSearchFiltersView.prototype.saveFilters = function (filters) {
+        localStorage.setItem("paletools:searchFilters", btoa(JSON.stringify(filters)));
+    }
+
+    UTMarketSearchFiltersView.prototype.loadSavedFilters = function () {
+        const searchFilters = this.getStoredFilters();
+        let filters = [{ label: '', value: '' }];
+        for (let filterKey of Object.keys(searchFilters).sort()) {
+            filters.push({ label: searchFilters[filterKey].name, value: filterKey });
+        }
+        this._savedFilters.setOptions(filters);
+    }
+
+    UTMarketSearchFiltersView.prototype.saveFilter = function () {
+        const controller = getCurrentController();
+        if (controller instanceof UTMarketSearchFiltersViewController) {
+            const searchCriteria = controller._viewmodel.searchCriteria;
+            const name = this._filterName.getValue();
+            const key = name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const filters = this.getStoredFilters();
+            searchCriteria.rating = this._playerRating.getValue();
+            filters[key] = { name: name, criteria: searchCriteria };
+            this.saveFilters(filters);
+            this.loadSavedFilters();
+        }
+    }
+
+    UTMarketSearchFiltersView.prototype.deleteFilter = function () {
+        const controller = getCurrentController();
+        if (controller instanceof UTMarketSearchFiltersViewController) {
+            const filterKey = this._savedFilters.getValue();
+            if (!filterKey) return;
+            const filters = this.getStoredFilters();
+            delete filters[filterKey];
+            this.saveFilters(filters);
+            this.loadSavedFilters();
+        }
+    }
+
+    UTMarketSearchFiltersView.prototype.loadFilter = function (filter) {
+        const controller = getCurrentController();
+        if (controller instanceof UTMarketSearchFiltersViewController) {
+            this._playerRating.setValue(filter.criteria.rating);
+            for (let key of Object.keys(filter.criteria)) {
+                controller._viewmodel.searchCriteria[key] = filter.criteria[key];
+                this.setFilters(controller._viewmodel);
+            }
+        }
+    }
+
+    const UTMarketSearchFiltersView_destroyGeneratedElements = UTMarketSearchFiltersView.prototype.destroyGeneratedElements;
+    UTMarketSearchFiltersView.prototype.destroyGeneratedElements = function destroyGeneratedElements() {
+        UTMarketSearchFiltersView_destroyGeneratedElements.call(this);
+        this._playerId.destroy();
+        this._playerRating.destroy();
+        this._filterName.destroy();
+        this._saveFilterButton.destroy();
+        this._deleteFilterButton.destroy();
+        this._savedFilters.destroy();
+    }
+
+    UTMarketSearchFiltersView.prototype.handlePlayerIdChange = function (_, __, elem) {
+        const controller = getCurrentController();
+        if (controller instanceof UTMarketSearchFiltersViewController) {
+            controller._viewmodel.searchCriteria.defId = [elem.value];
+        }
+    }
+
+    UTMarketSearchFiltersView.prototype.handlePlayerRatingChange = function (_, __, elem) {
+        _selectedRating = elem.value;
+    }
+
+    UTMarketSearchFiltersView.prototype.onSavedFiltersChange = function (_, __, elem) {
+        const filters = this.getStoredFilters();
+        if (filters[elem.value]) {
+            this.loadFilter(filters[elem.value]);
+        }
+        else {
+            const controller = getCurrentController();
+            if (controller instanceof UTMarketSearchFiltersViewController) {
+                controller._eResetSelected();
+            }
+        }
+    }
+
+    const UTMarketSearchFiltersViewController__eResetSelected = UTMarketSearchFiltersViewController.prototype._eResetSelected;
+    UTMarketSearchFiltersViewController.prototype._eResetSelected = function _eResetSelected() {
+        this.getView()._playerId.clear();
+        this.getView()._playerRating.clear();
+        UTMarketSearchFiltersViewController__eResetSelected.call(this);
+    }
 
 
     UTPaginatedItemListView.prototype.setItems = function (e, i) {
@@ -66,13 +243,6 @@
             this.listRows
     }
 
-    UTItemDAO.prototype._oldSearchTransferMarket = UTItemDAO.prototype.searchTransferMarket;
-    UTItemDAO.prototype.searchTransferMarket = function (criteria, args) {
-        let filters = getFilters();
-        criteria.defId = filters.resourceId ? [parseInt(filters.resourceId)] : [];
-        return this._oldSearchTransferMarket(criteria, args);
-    }
-
     UTItemTableCellView.prototype._oldRender = UTItemTableCellView.prototype.render;
     UTItemTableCellView.prototype.render = function (e) {
         this._oldRender();
@@ -82,7 +252,7 @@
     }
 
     function shouldRenderItem(item) {
-        let rating = getFilters().rating;
+        let rating = _selectedRating;
 
         if (!rating) {
             return true;
@@ -124,14 +294,6 @@
     const
         l = console.log,
         loc = window.services.Localization,
-        BACK_BUTTON_THRESHOLD = 500,
-        header = $('.ut-fifa-header-view'),
-        getFilters = () => {
-            return {
-                rating: $('#filter-player-rating').val(),
-                resourceId: $('#filter-player-resource-id').val()
-            }
-        },
         dispatchMouseEvent = ($target, eventName) => {
             if ($target.length == 0) return false;
             const mouseEvent = document.createEvent('MouseEvents');
@@ -176,11 +338,6 @@
         },
         back = () => {
             l('back');
-            // force double back when there is a card on the list
-            // if (new Date() - backButtonLastDate < BACK_BUTTON_THRESHOLD) {
-            //     return;
-            // }
-            // backButtonLastDate = new Date();
             if (!mouseClick(backBtn())) {
                 setTimeout(back, 1);
             }
@@ -349,13 +506,10 @@
             .pagingContainer .next:after { font-size: 10px; display:block; content: '[ ${p.lists.next} ]' }
             .bidButton:after { content: ' [ ${p.results.bid} ]' }
             .buyButton:before { float:right; content: ' [ ${p.results.buy} ]' }
+            .player-definition-id { position: absolute; bottom: 0; }
             `;
 
         appStyles.innerText = css;
-    };
-
-    const addFilters = () => {
-        header.append(`| Filter: Rating: <input type="text" id="filter-player-rating" style="width: 60px" /> | Id: <input type="text" id="filter-player-resource-id" style="width: 200px" />`);
     };
 
     function enableDisableApp() {
@@ -393,6 +547,5 @@
     });
 
     addCss();
-    addFilters();
     enableApp();
 })(/*BUTTONS*/);
