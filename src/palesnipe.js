@@ -699,52 +699,56 @@
         return (i || 0) <= t
     }
 
-    enums.UIItemActionEvent.COPY_PLAYER_ID = "copyPlayerId";
-    enums.UIItemActionEvent.FUTBIN_SEARCH = "futbinSearch";
+    function addActionsToActionPanel(className, buttonsContainerFunc){
+        const generate = className.prototype._generate;
+        className.prototype._generate = function _generate() {
+            generate.call(this);
+            if (!this._generatePalesnipeCalled) {
+    
+                this._copyPlayerIdButton = new UTGroupButtonControl();
+                this._copyPlayerIdButton.init();
+                this._copyPlayerIdButton.setText("Copy player ID to clipboard");
+                this._copyPlayerIdButton.addTarget(this, () => this.onCopyPlayerId.notify(), EventType.TAP);
+                this.onCopyPlayerId = new EAObservable();
 
-    const UTDefaultActionPanelView__generate = UTDefaultActionPanelView.prototype._generate;
-    UTDefaultActionPanelView.prototype._generate = function _generate() {
-        UTDefaultActionPanelView__generate.call(this);
-        if (!this._generatePalesnipeCalled) {
+                this._futbinSearchButton = new UTGroupButtonControl();
+                this._futbinSearchButton.init();
+                this._futbinSearchButton.setText("View in futbin");
+                this._futbinSearchButton.addTarget(this, () => this.onFutbinSearch.notify(), EventType.TAP);
+                this.onFutbinSearch = new EAObservable();
+    
+    
+                buttonsContainerFunc(this).appendChild(this._copyPlayerIdButton.getRootElement());
+                buttonsContainerFunc(this).appendChild(this._futbinSearchButton.getRootElement());
+    
+                this._generatePalesnipeCalled = true;
+            }
+        }
+    
+        const _destroyGeneratedElements = className.prototype.destroyGeneratedElements;
+        className.prototype.destroyGeneratedElements = function destroyGeneratedElements() {
+            _destroyGeneratedElements.call(this);
+            this._copyPlayerIdButton.destroy();
+            this._futbinSearchButton.destroy();
+        }
 
-            this._copyPlayerIdButton = new UTGroupButtonControl();
-            this._copyPlayerIdButton.init();
-            this._copyPlayerIdButton.setText("Copy player ID to clipboard");
-            this._copyPlayerIdButton.addTarget(this, this._onCopyPlayerId, EventType.TAP);
-
-            this._futbinSearchButton = new UTGroupButtonControl();
-            this._futbinSearchButton.init();
-            this._futbinSearchButton.setText("View in futbin");
-            this._futbinSearchButton.addTarget(this, this._onFutbinSearch, EventType.TAP);
-
-
-            this.__itemActions.appendChild(this._copyPlayerIdButton.getRootElement());
-            this.__itemActions.appendChild(this._futbinSearchButton.getRootElement());
-
-            this._generatePalesnipeCalled = true;
+        const dealloc = className.prototype.dealloc;
+        className.prototype.dealloc = function(){
+            dealloc.call(this);
+            this.onCopyPlayerId.dealloc();
+            this.onFutbinSearch.dealloc();
         }
     }
 
-    UTDefaultActionPanelView.prototype._onCopyPlayerId = function () {
-        this._triggerActions(enums.UIItemActionEvent.COPY_PLAYER_ID);
-    }
-
-    UTDefaultActionPanelView.prototype._onFutbinSearch = function () {
-        this._triggerActions(enums.UIItemActionEvent.FUTBIN_SEARCH);
-    }
-
-    const UTDefaultActionPanelView_destroyGeneratedElements = UTDefaultActionPanelView.prototype.destroyGeneratedElements;
-    UTDefaultActionPanelView.prototype.destroyGeneratedElements = function destroyGeneratedElements() {
-        UTDefaultActionPanelView_destroyGeneratedElements.call(this);
-        this._copyPlayerIdButton.destroy();
-    }
+    addActionsToActionPanel(UTDefaultActionPanelView, instance => instance.__itemActions);
+    addActionsToActionPanel(UTAuctionActionPanelView, instance => $(".ut-button-group", instance.getRootElement())[0]);
 
     const ItemDetails__getPanelViewInstanceFromData = controllers.items.ItemDetails.prototype._getPanelViewInstanceFromData;
     controllers.items.ItemDetails.prototype._getPanelViewInstanceFromData = function _getPanelViewInstanceFromData(e, t) {
         ItemDetails__getPanelViewInstanceFromData.call(this, e, t);
-        if(this._panel instanceof UTDefaultActionPanelView){
-            this._panel.addTarget(this, this._onCopyPlayerId, enums.UIItemActionEvent.COPY_PLAYER_ID);
-            this._panel.addTarget(this, this._onFutbinSearch, enums.UIItemActionEvent.FUTBIN_SEARCH);
+        if(this._panel instanceof UTDefaultActionPanelView || this._panel instanceof UTAuctionActionPanelView){
+            this._panel.onCopyPlayerId.observe(this, this._onCopyPlayerId);
+            this._panel.onFutbinSearch.observe(this, this._onFutbinSearch);
         }
     }
 
