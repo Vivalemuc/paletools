@@ -1,0 +1,4 @@
+#palesnipe-donation-ui { float: left; margin-left: 20px; line-height: 50px;}
+#palesnipe-donation-ui > h3, #palesnipe-donation-ui > div { display: inline }
+#palesnipe-donation-ui > div:before { content: '|'; margin-right: 8px; }
+#palesnipe-donation-ui a { color: white; }

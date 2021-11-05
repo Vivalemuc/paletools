@@ -38,7 +38,7 @@
             incBid: 'PageDown'
         }
     }, buttons || {});
-    if(window.__palesnipeActive) return;
+    if (window.__palesnipeActive) return;
     window.__palesnipeActive = true;
 
 
@@ -48,11 +48,21 @@
     let _palesnipeSettings = {
         appVersion: VERSION,
         gridMode: false,
-        buttons: buttons
+        buttons: buttons,
+        plugins: {
+            savedFilters: true,
+            playerIdFilter: true,
+            playerRatingFilter: true,
+            minMaxPrices: true,
+            playerIdValue: true,
+            futbinSearch: true
+        }
     };
 
     if (localStorage.getItem("palesnipe:settings")) {
-        _palesnipeSettings = JSON.parse(atob(localStorage.getItem("palesnipe:settings")));
+        const savedSettings = JSON.parse(atob(localStorage.getItem("palesnipe:settings")));
+
+        Object.assign(_palesnipeSettings, savedSettings)
     }
 
     function copyToClipboard(str) {
@@ -201,7 +211,7 @@
 
             this._toggle.init();
             this._toggle.addTarget(this, this._onToggled, EventType.TAP);
-            
+
 
             this.__root = container;
             this.generated = true;
@@ -225,8 +235,8 @@
         this.__root = null;
     }
 
-    UTLabelWithToggleControl.prototype._onToggled = function(elem, eventType, value){
-        if(this.onToggle){
+    UTLabelWithToggleControl.prototype._onToggled = function (elem, eventType, value) {
+        if (this.onToggle) {
             (this.onToggle)(elem, eventType, value);
         }
     }
@@ -246,7 +256,7 @@
         function addLabelWithInput(container, label, inputId) {
             const labelWithInput = new UTLabelWithTextInputControl();
             labelWithInput.setLabel(label);
-            labelWithInput.setInputId(`palesnipe-buttons-${inputId.replace(/\./g, "-")}`);
+            labelWithInput.setInputId(`palesnipe-settings-${inputId.replace(/\./g, "-")}`);
 
             let buttonValue = _palesnipeSettings.buttons;
             for (let level of inputId.split('.')) {
@@ -258,20 +268,20 @@
             container.appendChild(labelWithInput.getRootElement());
         }
 
-        function addLabelWithToggle(container, label, toggleId){
+        function addLabelWithToggle(container, label, toggleId) {
             const labelWithToggle = new UTLabelWithToggleControl();
             labelWithToggle.setLabel(label);
-            labelWithToggle.setToggleId(`palesnipe-buttons-${toggleId.replace(/\./g, "-")}`);
+            labelWithToggle.setToggleId(`palesnipe-settings-${toggleId.replace(/\./g, "-")}`);
 
             let buttonValue = _palesnipeSettings.buttons;
             for (let level of toggleId.split('.')) {
                 buttonValue = buttonValue[level];
             }
 
-            if(buttonValue){
+            if (buttonValue) {
                 labelWithToggle.toggle();
             }
-            
+
             labelWithToggle.onToggle = self.handleToggleChange;
             container.appendChild(labelWithToggle.getRootElement());
         }
@@ -293,24 +303,35 @@
             content.classList.add("ut-pinned-list");
             contentContainer.appendChild(content);
 
+            let visibilitySettingsContainer = document.createElement("div");
+
+            addLabelWithToggle(visibilitySettingsContainer, "Display Saved Filters", "plugins.savedFilters");
+            addLabelWithToggle(visibilitySettingsContainer, "Display Player Id Filter", "plugins.playerIdFilter");
+            addLabelWithToggle(visibilitySettingsContainer, "Display Player Rating Filter", "plugins.playerRatingFilter");
+            addLabelWithToggle(visibilitySettingsContainer, "Display Player Id on search results", "plugins.playerIdValue");
+            addLabelWithToggle(visibilitySettingsContainer, "Display Min & Max Prices on compare", "plugins.minMaxPrices");
+            addLabelWithToggle(visibilitySettingsContainer, "Display FUTBIN search", "plugins.futbinSearch");
+
+            let keyAssignmentsContainer = document.createElement("div");
+
             let generalContainer = document.createElement("div");
-            addLabelWithInput(generalContainer, "Enable / Disable Palesnipe", "enableDisable");
-            addLabelWithToggle(generalContainer, "Auto press ENTER after buy", "results.pressEnter");
-            addLabelWithToggle(generalContainer, "BOT Mode", "search.enableBotMode");
+            addLabelWithInput(generalContainer, "Enable / Disable Palesnipe", "buttons.enableDisable");
+            addLabelWithToggle(generalContainer, "Auto press ENTER after buy", "buttons.results.pressEnter");
+            addLabelWithToggle(generalContainer, "BOT Mode", "buttons.search.enableBotMode");
 
             let searchContainer = document.createElement("div");
-            addLabelWithInput(searchContainer, "Go back", "back");
-            addLabelWithInput(searchContainer, "Search", "search.search");
-            addLabelWithInput(searchContainer, "Buy now", "results.buy");
-            addLabelWithInput(searchContainer, "Reset bid", "search.resetBid");
-            addLabelWithInput(searchContainer, "Bid", "results.bid");
-            addLabelWithInput(searchContainer, "Send item to transfer list", "results.transfer");
-            addLabelWithInput(searchContainer, "Send item to club", "results.club");
-            addLabelWithInput(searchContainer, "Quick sell item", "results.sell");
-            addLabelWithInput(searchContainer, "Select previous player in lists", "lists.up");
-            addLabelWithInput(searchContainer, "Select next player in lists", "lists.down");
-            addLabelWithInput(searchContainer, "Go to previous page", "lists.prev");
-            addLabelWithInput(searchContainer, "Go to next page", "lists.next");
+            addLabelWithInput(searchContainer, "Go back", "buttons.back");
+            addLabelWithInput(searchContainer, "Search", "buttons.search.search");
+            addLabelWithInput(searchContainer, "Buy now", "buttons.results.buy");
+            addLabelWithInput(searchContainer, "Reset bid", "buttons.search.resetBid");
+            addLabelWithInput(searchContainer, "Bid", "buttons.results.bid");
+            addLabelWithInput(searchContainer, "Send item to transfer list", "buttons.results.transfer");
+            addLabelWithInput(searchContainer, "Send item to club", "buttons.results.club");
+            addLabelWithInput(searchContainer, "Quick sell item", "buttons.results.sell");
+            addLabelWithInput(searchContainer, "Select previous player in lists", "buttons.lists.up");
+            addLabelWithInput(searchContainer, "Select next player in lists", "buttons.lists.down");
+            addLabelWithInput(searchContainer, "Go to previous page", "buttons.lists.prev");
+            addLabelWithInput(searchContainer, "Go to next page", "buttons.lists.next");
             // add autopress enter setting
 
             let bidContainer = document.createElement("div");
@@ -326,10 +347,11 @@
             addLabelWithInput(bidContainer, "Bot mode, increment min buy now", "search.botModeMinBuy");
 
             // add toggle bot mode
+            content.appendChild(keyAssignmentsContainer);
 
-            content.appendChild(generalContainer);
-            content.appendChild(searchContainer);
-            content.appendChild(bidContainer);
+            keyAssignmentsContainer.appendChild(generalContainer);
+            keyAssignmentsContainer.appendChild(searchContainer);
+            keyAssignmentsContainer.appendChild(bidContainer);
 
             this.__root = container;
             this.generated = true;
@@ -337,15 +359,15 @@
     }
 
     PalesnipeSettingsView.prototype.handleInputChange = function (elem, code) {
-        let path = elem.id.replace("palesnipe-buttons-", "").replace(/-/g, ".");
-        setObjectPropertyByPath(_palesnipeSettings.buttons, path, code);
+        let path = elem.id.replace("palesnipe-settings-", "").replace(/-/g, ".");
+        setObjectPropertyByPath(_palesnipeSettings, path, code);
         elem.value = code;
         saveConfiguration();
     }
 
     PalesnipeSettingsView.prototype.handleToggleChange = function (elem, eventType, value) {
-        let path = elem.getRootElement().id.replace("palesnipe-buttons-", "").replace(/-/g, ".");
-        setObjectPropertyByPath(_palesnipeSettings.buttons, path, value.toggleState);
+        let path = elem.getRootElement().id.replace("palesnipe-settings-", "").replace(/-/g, ".");
+        setObjectPropertyByPath(_palesnipeSettings, path, value.toggleState);
         saveConfiguration();
     }
 
@@ -387,58 +409,64 @@
         UTMarketSearchFiltersView__generate.call(this);
         if (!this._generatePalesnipeCalled) {
             const container = document.createElement("div");
-            container.classList.add("ut-item-search-view");
-            this._playerId = new UTTextInputControl();
-            const playerIdContainer = createContainer(this._playerId.getRootElement());
+            $(container).addClass("ut-item-search-view").addClass("palesnipe-element");
 
-            this._playerRating = new UTTextInputControl();
-            const playerRatingContainer = createContainer(this._playerRating.getRootElement());
+            if (_palesnipeSettings.plugins.savedFilters) {
 
-            let filtersContainer = document.createElement("div");
-            filtersContainer.classList.add("saved-filters");
+                let filtersContainer = document.createElement("div");
+                filtersContainer.classList.add("saved-filters");
 
-            this._filterName = new UTTextInputControl();
-            this._filterName.init();
-            this._filterName.setPlaceholder("Filter name");
+                this._filterName = new UTTextInputControl();
+                this._filterName.init();
+                this._filterName.setPlaceholder("Filter name");
 
-            this._saveFilterButton = new UTStandardButtonControl();
-            this._saveFilterButton.init();
-            this._saveFilterButton.setText("Save");
-            this._saveFilterButton.addTarget(this, this.saveFilter, EventType.TAP);
+                this._saveFilterButton = new UTStandardButtonControl();
+                this._saveFilterButton.init();
+                this._saveFilterButton.setText("Save");
+                this._saveFilterButton.addTarget(this, this.saveFilter, EventType.TAP);
 
-            this._deleteFilterButton = new UTStandardButtonControl();
-            this._deleteFilterButton.init();
-            this._deleteFilterButton.setText("Delete");
-            this._deleteFilterButton.addTarget(this, this.deleteFilter, EventType.TAP);
+                this._deleteFilterButton = new UTStandardButtonControl();
+                this._deleteFilterButton.init();
+                this._deleteFilterButton.setText("Delete");
+                this._deleteFilterButton.addTarget(this, this.deleteFilter, EventType.TAP);
 
-            this._savedFilters = new UTDropDownControl();
-            this._savedFilters.init();
-            this._savedFilters.addTarget(this, this.onSavedFiltersChange, EventType.CHANGE);
+                this._savedFilters = new UTDropDownControl();
+                this._savedFilters.init();
+                this._savedFilters.addTarget(this, this.onSavedFiltersChange, EventType.CHANGE);
 
-            $(filtersContainer)
-                .append(this._filterName.getRootElement())
-                .append(this._saveFilterButton.getRootElement())
-                .append(this._deleteFilterButton.getRootElement())
-                .append(this._savedFilters.getRootElement());
+                $(filtersContainer)
+                    .append(this._filterName.getRootElement())
+                    .append(this._saveFilterButton.getRootElement())
+                    .append(this._deleteFilterButton.getRootElement())
+                    .append(this._savedFilters.getRootElement());
 
+                container.appendChild(filtersContainer);
 
-            $(container)
-                .addClass("palesnipe-element")
-                .append(filtersContainer)
-                .append(playerIdContainer)
-                .append(playerRatingContainer);
+                this.loadSavedFilters();
+            }
+
+            if (_palesnipeSettings.plugins.playerIdFilter) {
+                this._playerId = new UTTextInputControl();
+                const playerIdContainer = createContainer(this._playerId.getRootElement());
+                this._playerId.init();
+                this._playerId.setPlaceholder("Player ID");
+                this._playerId.setMaxLength(25);
+                this._playerId.addTarget(this, this.handlePlayerIdChange, EventType.CHANGE);
+                container.appendChild(playerIdContainer);
+            }
+
+            if (_palesnipeSettings.plugins.playerRatingFilter) {
+                this._playerRating = new UTTextInputControl();
+                const playerRatingContainer = createContainer(this._playerRating.getRootElement());
+                this._playerRating.init();
+                this._playerRating.setPlaceholder("Player Rating");
+                this._playerRating.setMaxLength(3);
+                this._playerRating.addTarget(this, this.handlePlayerRatingChange, EventType.CHANGE);
+
+                container.appendChild(playerRatingContainer);
+            }
+
             $(container).insertBefore($(".ut-item-search-view", this.__root));
-
-            this._playerId.init();
-            this._playerId.setPlaceholder("Player ID");
-            this._playerId.setMaxLength(25);
-            this._playerId.addTarget(this, this.handlePlayerIdChange, EventType.CHANGE);
-            this._playerRating.init();
-            this._playerRating.setPlaceholder("Player Rating");
-            this._playerRating.setMaxLength(3);
-            this._playerRating.addTarget(this, this.handlePlayerRatingChange, EventType.CHANGE);
-
-            this.loadSavedFilters();
 
             this._generatePalesnipeCalled = true;
         }
@@ -509,10 +537,10 @@
 
     const UTMarketSearchFiltersView_setFilters = UTMarketSearchFiltersView.prototype.setFilters;
     UTMarketSearchFiltersView.prototype.setFilters = function setFilters(e, t) {
-        if (_enabled && e.searchCriteria.defId && e.searchCriteria.defId.length > 0) {
+        if (_enabled && _palesnipeSettings.plugins.playerIdFilter && e.searchCriteria.defId && e.searchCriteria.defId.length > 0) {
             this._playerId.setValue(e.searchCriteria.defId[0])
         }
-        if (_enabled && e.searchCriteria.rating) {
+        if (_enabled && _palesnipeSettings.plugins.playerRatingFilter && e.searchCriteria.rating) {
             this._playerRating.setValue(e.searchCriteria.rating);
         }
         UTMarketSearchFiltersView_setFilters.call(this, e, t);
@@ -523,7 +551,13 @@
         UTMarketSearchFiltersView_destroyGeneratedElements.call(this);
         if (this._playerId) {
             this._playerId.destroy();
+        }
+
+        if (this._playerRating) {
             this._playerRating.destroy();
+        }
+
+        if (this._filterName) {
             this._filterName.destroy();
             this._saveFilterButton.destroy();
             this._deleteFilterButton.destroy();
@@ -560,9 +594,16 @@
 
     const UTMarketSearchFiltersViewController__eResetSelected = UTMarketSearchFiltersViewController.prototype._eResetSelected;
     UTMarketSearchFiltersViewController.prototype._eResetSelected = function _eResetSelected() {
-        this.getView()._playerId.clear();
-        this.getView()._playerRating.clear();
-        this.getView()._filterName.clear();
+        if (this.getView()._playerId) {
+            this.getView()._playerId.clear();
+        }
+        if (this.getView()._playerRating) {
+            this.getView()._playerRating.clear();
+        }
+        if (this.getView()._filterName) {
+            this.getView()._filterName.clear();
+        }
+
         UTMarketSearchFiltersViewController__eResetSelected.call(this);
     }
 
@@ -592,33 +633,35 @@
     UTMarketSearchView.prototype._generate = function _generate() {
         UTMarketSearchView__generate.call(this);
         if (!this._generatePalesnipeCalled) {
-            this._minMaxPriceContainer = document.createElement("div");
-            this._minMaxPriceContainer.classList.add("min-max-prices");
-            this._minPriceText = document.createElement("span");
-            this._minPriceText.classList.add("min-price-value");
-            this._maxPriceText = document.createElement("span");
-            this._maxPriceText.classList.add("max-price-value");
-            const minPriceContainer = document.createElement("span");
-            minPriceContainer.classList.add("min-price");
-            $(minPriceContainer)
-                .append('<span class="min-price-label">Min Buy Now</span>')
-                .append(this._minPriceText);
-            const maxPriceContainer = document.createElement("span");
-            maxPriceContainer.classList.add("max-price");
-            $(maxPriceContainer)
-                .append('<span class="max-price-label">Max Buy Now</span>')
-                .append(this._maxPriceText);
+            if (_palesnipeSettings.plugins.minMaxPrices) {
+                this._minMaxPriceContainer = document.createElement("div");
+                this._minPriceText = document.createElement("span");
+                this._minPriceText.classList.add("min-price-value");
+                this._maxPriceText = document.createElement("span");
+                this._maxPriceText.classList.add("max-price-value");
+                const minPriceContainer = document.createElement("span");
+                minPriceContainer.classList.add("min-price");
+                $(minPriceContainer)
+                    .append('<span class="min-price-label">Min Buy Now</span>')
+                    .append(this._minPriceText);
+                const maxPriceContainer = document.createElement("span");
+                maxPriceContainer.classList.add("max-price");
+                $(maxPriceContainer)
+                    .append('<span class="max-price-label">Max Buy Now</span>')
+                    .append(this._maxPriceText);
 
 
-            $(this._minMaxPriceContainer)
-                .addClass("palesnipe-element")
-                .hide()
-                .append(minPriceContainer)
-                .append(maxPriceContainer)
-                .insertBefore(this._list.getRootElement());
+                $(this._minMaxPriceContainer)
+                    .addClass("min-max-prices")
+                    .addClass("palesnipe-element")
+                    .hide()
+                    .append(minPriceContainer)
+                    .append(maxPriceContainer)
+                    .insertBefore(this._list.getRootElement());
 
-            this._minBuyNowPrice = Number.MAX_VALUE;
-            this._maxBuyNowPrice = 0;
+                this._minBuyNowPrice = Number.MAX_VALUE;
+                this._maxBuyNowPrice = 0;
+            }
 
             this._generatePalesnipeCalled = true;
         }
@@ -626,23 +669,25 @@
 
     const UTMarketSearchView_setItems = UTMarketSearchView.prototype.setItems;
     UTMarketSearchView.prototype.setItems = function setItems(e, t) {
-        if (this._superview
-            && this._superview._superview
-            && this._superview._superview._rView instanceof UTNavigationContainerView) {
-            for (let entity of e) {
-                if (entity._auction.buyNowPrice > this._maxBuyNowPrice) {
-                    this._maxBuyNowPrice = entity._auction.buyNowPrice;
+        if (_palesnipeSettings.plugins.minMaxPrices) {
+            if (this._superview
+                && this._superview._superview
+                && this._superview._superview._rView instanceof UTNavigationContainerView) {
+                for (let entity of e) {
+                    if (entity._auction.buyNowPrice > this._maxBuyNowPrice) {
+                        this._maxBuyNowPrice = entity._auction.buyNowPrice;
+                    }
+                    if (entity._auction.buyNowPrice < this._minBuyNowPrice) {
+                        this._minBuyNowPrice = entity._auction.buyNowPrice;
+                    }
                 }
-                if (entity._auction.buyNowPrice < this._minBuyNowPrice) {
-                    this._minBuyNowPrice = entity._auction.buyNowPrice;
-                }
+                this._minPriceText.textContent = this._minBuyNowPrice;
+                this._maxPriceText.textContent = this._maxBuyNowPrice;
+                $(this._minMaxPriceContainer).show();
             }
-            this._minPriceText.textContent = this._minBuyNowPrice;
-            this._maxPriceText.textContent = this._maxBuyNowPrice;
-            $(this._minMaxPriceContainer).show();
-        }
-        else {
-            $(this._minMaxPriceContainer).hide();
+            else {
+                $(this._minMaxPriceContainer).hide();
+            }
         }
 
         UTMarketSearchView_setItems.call(this, e, t);
@@ -651,7 +696,7 @@
     const UTItemTableCellView_render = UTItemTableCellView.prototype.render;
     UTItemTableCellView.prototype.render = function (e) {
         UTItemTableCellView_render.call(this, e);
-        if (_enabled && this.data.isPlayer()) {
+        if (_enabled && this.data.isPlayer() && _palesnipeSettings.plugins.playerIdValue) {
             $(".ut-item-view--main", this.__entityContainer).append(`<span class="player-definition-id">${this.data.definitionId}</span>`);
         }
     }
@@ -659,7 +704,7 @@
     function shouldRenderItem(item, searchCriteria) {
         let rating = searchCriteria.rating;
 
-        if (!_enabled || !rating) return true;
+        if (!_enabled || !rating || !_palesnipeSettings.plugins.playerRatingFilter) return true;
 
         if (rating.charAt(0) === "+") {
             rating = parseInt(rating.substr(1));
@@ -699,44 +744,57 @@
         return (i || 0) <= t
     }
 
-    function addActionsToActionPanel(className, buttonsContainerFunc){
+    function addActionsToActionPanel(className, buttonsContainerFunc) {
         const generate = className.prototype._generate;
         className.prototype._generate = function _generate() {
             generate.call(this);
             if (!this._generatePalesnipeCalled) {
-    
-                this._copyPlayerIdButton = new UTGroupButtonControl();
-                this._copyPlayerIdButton.init();
-                this._copyPlayerIdButton.setText("Copy player ID to clipboard");
-                this._copyPlayerIdButton.addTarget(this, () => this.onCopyPlayerId.notify(), EventType.TAP);
-                this.onCopyPlayerId = new EAObservable();
+                if (_palesnipeSettings.plugins.playerIdFilter) {
+                    this._copyPlayerIdButton = new UTGroupButtonControl();
+                    this._copyPlayerIdButton.init();
+                    this._copyPlayerIdButton.setText("Copy player ID to clipboard");
+                    this._copyPlayerIdButton.addTarget(this, () => this.onCopyPlayerId.notify(), EventType.TAP);
+                    this._copyPlayerIdButton.getRootElement().classList.add("palesnipe-element");
+                    this.onCopyPlayerId = new EAObservable();
+                    buttonsContainerFunc(this).appendChild(this._copyPlayerIdButton.getRootElement());
+                }
 
-                this._futbinSearchButton = new UTGroupButtonControl();
-                this._futbinSearchButton.init();
-                this._futbinSearchButton.setText("View in futbin");
-                this._futbinSearchButton.addTarget(this, () => this.onFutbinSearch.notify(), EventType.TAP);
-                this.onFutbinSearch = new EAObservable();
-    
-    
-                buttonsContainerFunc(this).appendChild(this._copyPlayerIdButton.getRootElement());
-                buttonsContainerFunc(this).appendChild(this._futbinSearchButton.getRootElement());
-    
+                if (_palesnipeSettings.plugins.futbinSearch) {
+                    this._futbinSearchButton = new UTGroupButtonControl();
+                    this._futbinSearchButton.init();
+                    this._futbinSearchButton.setText("View in FUTBIN");
+                    this._futbinSearchButton.addTarget(this, () => this.onFutbinSearch.notify(), EventType.TAP);
+                    this._futbinSearchButton.getRootElement().classList.add("palesnipe-element");
+                    this.onFutbinSearch = new EAObservable();
+                    buttonsContainerFunc(this).appendChild(this._futbinSearchButton.getRootElement());
+                }
+
                 this._generatePalesnipeCalled = true;
             }
         }
-    
+
         const _destroyGeneratedElements = className.prototype.destroyGeneratedElements;
         className.prototype.destroyGeneratedElements = function destroyGeneratedElements() {
             _destroyGeneratedElements.call(this);
-            this._copyPlayerIdButton.destroy();
-            this._futbinSearchButton.destroy();
+            if (this._copyPlayerIdButton) {
+                this._copyPlayerIdButton.destroy();
+            }
+
+            if (this._futbinSearchButton) {
+                this._futbinSearchButton.destroy();
+            }
         }
 
         const dealloc = className.prototype.dealloc;
-        className.prototype.dealloc = function(){
+        className.prototype.dealloc = function () {
             dealloc.call(this);
-            this.onCopyPlayerId.dealloc();
-            this.onFutbinSearch.dealloc();
+            if (this.onCopyPlayerId) {
+                this.onCopyPlayerId.dealloc();
+            }
+
+            if (this.onFutbinSearch) {
+                this.onFutbinSearch.dealloc();
+            }
         }
     }
 
@@ -746,18 +804,23 @@
     const ItemDetails__getPanelViewInstanceFromData = controllers.items.ItemDetails.prototype._getPanelViewInstanceFromData;
     controllers.items.ItemDetails.prototype._getPanelViewInstanceFromData = function _getPanelViewInstanceFromData(e, t) {
         ItemDetails__getPanelViewInstanceFromData.call(this, e, t);
-        if(this._panel instanceof UTDefaultActionPanelView || this._panel instanceof UTAuctionActionPanelView){
-            this._panel.onCopyPlayerId.observe(this, this._onCopyPlayerId);
-            this._panel.onFutbinSearch.observe(this, this._onFutbinSearch);
+        if (this._panel instanceof UTDefaultActionPanelView || this._panel instanceof UTAuctionActionPanelView) {
+            if (this._panel.onCopyPlayerId) {
+                this._panel.onCopyPlayerId.observe(this, this._onCopyPlayerId);
+            }
+
+            if (this._panel.onFutbinSearch) {
+                this._panel.onFutbinSearch.observe(this, this._onFutbinSearch);
+            }
         }
     }
 
-    controllers.items.ItemDetails.prototype._onCopyPlayerId = function(){
+    controllers.items.ItemDetails.prototype._onCopyPlayerId = function () {
         copyToClipboard(this._viewmodel.current().definitionId);
         notifySuccess("Player ID copied to clipboard!");
     }
 
-    controllers.items.ItemDetails.prototype._onFutbinSearch = function(){
+    controllers.items.ItemDetails.prototype._onFutbinSearch = function () {
         window.open(`https://www.futbin.com/players?page=1&search=${this._viewmodel.current()._staticData.firstName}%20${this._viewmodel.current()._staticData.lastName}`);
     }
 
@@ -1042,11 +1105,11 @@
         }
     }
 
-    function notifySuccess(msg){
+    function notifySuccess(msg) {
         services.Notification.queue([msg, UINotificationType.POSITIVE]);
     }
 
-    function notifyNeutral(msg){
+    function notifyNeutral(msg) {
         services.Notification.queue([msg, UINotificationType.NEUTRAL])
     }
 
@@ -1058,7 +1121,7 @@
 
     function disableApp() {
         _enabled = false;
-        _appStyles.innerText = ".palesnipe-element { display: none; }";
+        _appStyles.innerText = ".palesnipe-element { display: none !important; }";
         notifyNeutral("Palesnipe Disabled");
     }
 

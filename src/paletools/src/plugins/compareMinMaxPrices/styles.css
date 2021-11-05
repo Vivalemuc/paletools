@@ -1,0 +1,4 @@
+.min-price-label, .max-price-label { color: #88909b; margin-right: 2px; }
+.min-price-label:after, .max-price-label:after { content: ':' }
+.min-max-prices { font-size: 14px; }
+.max-price { float: right; }

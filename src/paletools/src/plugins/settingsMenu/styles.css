@@ -1,0 +1,7 @@
+.palesnipe-settings-wrapper input { width: 150px; margin-left: 8px; display: table-cell; margin-bottom: 2px; }
+.palesnipe-settings-wrapper > div { display: table; float: left; margin-left: 8px; }
+.palesnipe-settings-wrapper > div > div { display: table-row; }
+.palesnipe-settings-wrapper > div > div > label { display: table-cell; }
+.palesnipe-settings-wrapper > div:nth-child(4) { clear:left;}
+.palesnipe-settings-wrapper .ut-toggle-control { width: 30px; float:right; }
+.palesnipe-settings-wrapper > div > div { line-height: 40px;}

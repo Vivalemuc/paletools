@@ -1,0 +1,5 @@
+.player-definition-id { position: absolute; bottom: 0; }
+.saved-filters { display: inline-block; margin-left: 8px; margin-bottom: 8px;}
+.saved-filters > input {display: inline-block; width: auto; }
+.saved-filters > button { display: inline-block; margin-left: 8px;}
+.saved-filters > div { float: right; margin-left: 8px;}
