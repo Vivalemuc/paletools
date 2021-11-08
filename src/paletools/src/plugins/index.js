@@ -21,12 +21,13 @@ const plugins = [
     gridMode,
     duplicatedToSbc,
     selectCheapest,
-    snipe,
+    snipe
     ];
 
 const menus = [];
 
 export default function runPlugins() {
+    plugins.sort(x => x.order);
     for (let plugin of plugins) {
         plugin.run();
         if(plugin.settings){
