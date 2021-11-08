@@ -1,0 +1,12 @@
+.ut-market-search-filters-view .ut-content-container {
+	padding: 0;
+}
+
+.ut-content {
+	max-height:100% !important;
+	max-width:100% !important;
+}
+
+.ut-split-view {
+	padding: 0 !important;	
+}

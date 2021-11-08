@@ -1,13 +1,18 @@
 import copyPlayerIdAction from "./copyPlayerIdAction";
 import futbinSearchAction from "./futbinSearchAction";
+import { addLabelWithToggle } from "../../controls";
+import settings, { saveConfiguration } from "../../settings";
 
-export default function runPlayerActions() {
+const cfg = settings.plugins.playerActions;
+
+function run() {
     let actions = [copyPlayerIdAction, futbinSearchAction];
 
     function addActionsToActionPanel(className, buttonsContainerFunc) {
         const generate = className.prototype._generate;
         className.prototype._generate = function _generate() {
             generate.call(this);
+            if(!settings.enabled) return;
             if (!this._generateAddActionsToPanelCalled) {
                 for (let action of actions) {
                     action.generate(this, buttonsContainerFunc);
@@ -49,5 +54,30 @@ export default function runPlayerActions() {
 
     for (let action of actions) {
         action.createEvent(controllers.items.ItemDetails.prototype);
+    }
+}
+
+function menu(){
+    var container = document.createElement("div");
+    function add(id){
+        addLabelWithToggle(container, `plugins.playerActions.settings.${id}`, cfg[id], toggleState => {
+            cfg[id] = toggleState;
+            saveConfiguration();
+        });
+    }
+
+    add('copyPlayerId');
+    add('futbinSearch');
+
+    return container;
+}
+
+export default {
+    run: run,
+    order: 6,
+    settings: {
+        name: 'player-actions',
+        title: 'plugins.playerActions.settings.title',
+        menu: menu
     }
 }

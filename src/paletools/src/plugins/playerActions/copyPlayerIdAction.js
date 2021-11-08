@@ -1,12 +1,15 @@
 import settings from "../../settings";
 import { copyToClipboard } from "../../utils/clipboard";
+import localize from "../../localization";
+
+const cfg = settings.plugins.playerActions;
 
 const copyPlayerIdAction = {
     generate: (instance, buttonsContainerFunc) => {
-        if (settings.palesnipe.plugins.playerIdFilter) {
+        if (cfg.copyPlayerId) {
             instance._copyPlayerIdButton = new UTGroupButtonControl();
             instance._copyPlayerIdButton.init();
-            instance._copyPlayerIdButton.setText("Copy player ID to clipboard");
+            instance._copyPlayerIdButton.setText(localize("plugins.playerActions.copyPlayerId"));
             instance._copyPlayerIdButton.addTarget(instance, () => instance.onCopyPlayerId.notify(), EventType.TAP);
             instance._copyPlayerIdButton.getRootElement().classList.add("palesnipe-element");
             instance.onCopyPlayerId = new EAObservable();

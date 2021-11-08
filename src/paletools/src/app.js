@@ -1,5 +1,6 @@
 import settings from "./settings";
 import { triggerEvent } from "./events";
+import { notifyNeutral, notifySuccess } from "./utils/notifications";
 
 export default function enableDisableApp() {
     if (settings.enabled) {

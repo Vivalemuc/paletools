@@ -1,6 +1,6 @@
 import settings from "../settings";
 
-export default function runTransferTagetsLimbo() {
+function run() {
     const UTItemDomainRepository_isPileFull = UTItemDomainRepository.prototype.isPileFull;
     UTItemDomainRepository.prototype.isPileFull = function (e) {
         if (!settings.enabled) {
@@ -25,3 +25,7 @@ export default function runTransferTagetsLimbo() {
         return (i || 0) <= t
     }
 }
+
+export default {
+    run: run
+};

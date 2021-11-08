@@ -23,6 +23,10 @@ UTLabelWithToggleControl.prototype._generate = function _generate() {
     }
 }
 
+UTLabelWithToggleControl.prototype.setLabelLocale = function(localeKey){
+    this._label.getRootElement().dataset.locale = localeKey;
+}
+
 UTLabelWithToggleControl.prototype.setLabel = function (text) {
     this._label.setText(text);
 }
@@ -33,6 +37,13 @@ UTLabelWithToggleControl.prototype.setToggleId = function (value) {
 
 UTLabelWithToggleControl.prototype.toggle = function () {
     this._toggle.toggle();
+    this._toggle._triggerActions(EventType.TAP, {
+        toggleState: this._toggle.getToggleState()
+    });
+}
+
+UTLabelWithToggleControl.prototype.getToggleState = function(){
+    return this._toggle.getToggleState();
 }
 
 UTLabelWithToggleControl.prototype.destroyGeneratedElements = function destroyGeneratedElements() {

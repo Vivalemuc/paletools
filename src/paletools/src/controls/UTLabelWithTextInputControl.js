@@ -34,6 +34,10 @@ UTLabelWithTextInputControl.prototype._generate = function _generate() {
     }
 }
 
+UTLabelWithTextInputControl.prototype.setLabelLocale = function(localeKey){
+    this._label.getRootElement().dataset.locale = localeKey;
+}
+
 UTLabelWithTextInputControl.prototype.setLabel = function (text) {
     this._label.setText(text);
 }

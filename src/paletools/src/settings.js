@@ -42,25 +42,43 @@ const buttons = {
 let settings = {
     enabled: true,
     appVersion: VERSION,
-    palegrid: {
-        enabled: false
-    },
-    palesnipe: {
-        buttons: buttons,
-        plugins: {
-            savedFilters: true,
-            playerIdFilter: true,
-            playerRatingFilter: true,
-            minMaxPrices: true,
-            playerIdValue: true,
+    plugins: {
+        gridMode: {
+            enabled: false
+        },
+        compareMinMaxPrices: {
+            enabled: true
+        },
+        marketSearchFilters: {
+            playerId: true,
+            playerRating: true,
+            savedFilters: true
+        },
+        donation: {
+            enabled: true
+        },
+        playerActions: {
+            copyPlayerId: true,
             futbinSearch: true
+        },
+        snipe: {
+            buttons: buttons
+        },
+        duplicatedToSbc: {
+            enabled: true
+        },
+        selectCheapest: {
+            enabled: false
+        },
+        pristinePlayers: {
+            enabled: true
         }
     }
 };
 
 if (localStorage.getItem("paletools:settings")) {
     const savedSettings = JSON.parse(atob(localStorage.getItem("paletools:settings")));
-    Object.assign(settings, savedSettings)
+    $.extend(true, settings, savedSettings);
     triggerEvent("configurationLoaded", settings);
 }
 

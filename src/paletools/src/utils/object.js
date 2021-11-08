@@ -1,3 +1,11 @@
+export function getObjectPropertyValueByPath(obj, path){
+    let value = obj;
+    for(let subPath of path.split('.')){
+        value = value[subPath];
+    }
+    return value;
+}
+
 export function setObjectPropertyByPath(obj, path, value) {
     var schema = obj;
     var pList = path.split('.');

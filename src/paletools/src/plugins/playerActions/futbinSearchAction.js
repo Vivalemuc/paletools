@@ -1,11 +1,14 @@
+import localize from "../../localization";
 import settings from "../../settings";
+
+const cfg = settings.plugins.playerActions;
 
 const futBinSearchAction = {
     generate: (instance, buttonsContainerFunc) => {
-        if (settings.palesnipe.plugins.futbinSearch) {
+        if (cfg.futbinSearch) {
             instance._futbinSearchButton = new UTGroupButtonControl();
             instance._futbinSearchButton.init();
-            instance._futbinSearchButton.setText("View in FUTBIN");
+            instance._futbinSearchButton.setText(localize("plugins.playerActions.futbinSearch"));
             instance._futbinSearchButton.addTarget(instance, () => instance.onFutbinSearch.notify(), EventType.TAP);
             instance._futbinSearchButton.getRootElement().classList.add("palesnipe-element");
             instance.onFutbinSearch = new EAObservable();

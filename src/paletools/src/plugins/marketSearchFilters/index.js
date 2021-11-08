@@ -1,10 +1,15 @@
-import settings from "../../settings";
+import settings, { saveConfiguration } from "../../settings";
 import getCurrentController from "../../utils/controller";
 import { notifySuccess } from "../../utils/notifications";
 import { addStyle } from "../../utils/styles";
 import styles from "./styles.css";
+import { addLabelWithToggle } from "../../controls";
+import localize from "../../localization";
+import UTMarketSearchResultsSplitViewControllerHelpers from "../../helpers/UTMarketSearchResultsSplitViewControllerHelpers";
 
-export default function runMarketSearchFilters() {
+const cfg = settings.plugins.marketSearchFilters;
+
+function run() {
     const UTMarketSearchFiltersView__generate = UTMarketSearchFiltersView.prototype._generate
     UTMarketSearchFiltersView.prototype._generate = function _generate() {
         function createContainer(child) {
@@ -22,27 +27,30 @@ export default function runMarketSearchFilters() {
         }
 
         UTMarketSearchFiltersView__generate.call(this);
+
+        if (!settings.enabled) return;
+
         if (!this._generateMarketSearchFilters) {
             const container = document.createElement("div");
             $(container).addClass("ut-item-search-view").addClass("palesnipe-element");
 
-            if (settings.palesnipe.plugins.savedFilters) {
+            if (cfg.savedFilters) {
 
                 let filtersContainer = document.createElement("div");
                 filtersContainer.classList.add("saved-filters");
 
                 this._filterName = new UTTextInputControl();
                 this._filterName.init();
-                this._filterName.setPlaceholder("Filter name");
+                this._filterName.setPlaceholder(localize("plugins.marketSearchFilters.filter.name"));
 
                 this._saveFilterButton = new UTStandardButtonControl();
                 this._saveFilterButton.init();
-                this._saveFilterButton.setText("Save");
+                this._saveFilterButton.setText(localize("plugins.marketSearchFilters.filter.save"));
                 this._saveFilterButton.addTarget(this, this.saveFilter, EventType.TAP);
 
                 this._deleteFilterButton = new UTStandardButtonControl();
                 this._deleteFilterButton.init();
-                this._deleteFilterButton.setText("Delete");
+                this._deleteFilterButton.setText(localize("plugins.marketSearchFilters.filter.delete"));
                 this._deleteFilterButton.addTarget(this, this.deleteFilter, EventType.TAP);
 
                 this._savedFilters = new UTDropDownControl();
@@ -60,21 +68,21 @@ export default function runMarketSearchFilters() {
                 this.loadSavedFilters();
             }
 
-            if (settings.palesnipe.plugins.playerIdFilter) {
+            if (cfg.playerId) {
                 this._playerId = new UTTextInputControl();
                 const playerIdContainer = createContainer(this._playerId.getRootElement());
                 this._playerId.init();
-                this._playerId.setPlaceholder("Player ID");
+                this._playerId.setPlaceholder(localize("plugins.marketSearchFilters.playerId"));
                 this._playerId.setMaxLength(25);
                 this._playerId.addTarget(this, this.handlePlayerIdChange, EventType.CHANGE);
                 container.appendChild(playerIdContainer);
             }
 
-            if (settings.palesnipe.plugins.playerRatingFilter) {
+            if (cfg.playerRating) {
                 this._playerRating = new UTTextInputControl();
                 const playerRatingContainer = createContainer(this._playerRating.getRootElement());
                 this._playerRating.init();
-                this._playerRating.setPlaceholder("Player Rating");
+                this._playerRating.setPlaceholder(localize("plugins.marketSearchFilters.playerRating"));
                 this._playerRating.setMaxLength(3);
                 this._playerRating.addTarget(this, this.handlePlayerRatingChange, EventType.CHANGE);
 
@@ -99,7 +107,7 @@ export default function runMarketSearchFilters() {
 
     UTMarketSearchFiltersView.prototype.loadSavedFilters = function () {
         const searchFilters = this.getStoredFilters();
-        let filters = [{ label: '-- Select a filter to load --', value: '' }];
+        let filters = [{ label: localize("plugins.marketSearchFilters.loadFilters"), value: '' }];
         for (let filterKey of Object.keys(searchFilters).sort()) {
             filters.push({ label: searchFilters[filterKey].name, value: filterKey });
         }
@@ -117,7 +125,7 @@ export default function runMarketSearchFilters() {
             filters[key] = { name: name, criteria: searchCriteria };
             this.saveFilters(filters);
             this.loadSavedFilters();
-            notifySuccess("Filter saved");
+            notifySuccess(localize("plugins.marketSearchFilters.filterSaved"));
         }
     }
 
@@ -130,7 +138,7 @@ export default function runMarketSearchFilters() {
             delete filters[filterKey];
             this.saveFilters(filters);
             this.loadSavedFilters();
-            notifySuccess("Filter deleted");
+            notifySuccess(localize("plugins.marketSearchFilters.filterDeleted"));
         }
     }
 
@@ -143,19 +151,28 @@ export default function runMarketSearchFilters() {
             if (filter.criteria.rating) {
                 this._playerRating.setValue(filter.criteria.rating);
             }
+
+            if (filter.criteria.maskedDefId) {
+                let playerData = repositories.Item.getStaticDataByDefId(filter.criteria.maskedDefId);
+                controller._viewmodel.playerData = playerData;
+                //this._searchFilters.setPlayerSearch(playerData);
+            }
+
+
             for (let key of Object.keys(filter.criteria)) {
                 controller._viewmodel.searchCriteria[key] = filter.criteria[key];
-                this.setFilters(controller._viewmodel);
             }
+
+            this.setFilters(controller._viewmodel);
         }
     }
 
     const UTMarketSearchFiltersView_setFilters = UTMarketSearchFiltersView.prototype.setFilters;
     UTMarketSearchFiltersView.prototype.setFilters = function setFilters(e, t) {
-        if (settings.enabled && settings.palesnipe.plugins.playerIdFilter && e.searchCriteria.defId && e.searchCriteria.defId.length > 0) {
+        if (settings.enabled && cfg.playerId && this._playerId && e.searchCriteria.defId && e.searchCriteria.defId.length > 0) {
             this._playerId.setValue(e.searchCriteria.defId[0])
         }
-        if (settings.enabled && settings.palesnipe.plugins.playerRatingFilter && e.searchCriteria.rating) {
+        if (settings.enabled && cfg.playerRating && this._playerRating && e.searchCriteria.rating) {
             this._playerRating.setValue(e.searchCriteria.rating);
         }
         UTMarketSearchFiltersView_setFilters.call(this, e, t);
@@ -207,6 +224,14 @@ export default function runMarketSearchFilters() {
         }
     }
 
+    const UTMarketSearchResultsSplitViewController_eListDataChanged = UTMarketSearchResultsSplitViewController.prototype._eListDataChanged;
+    UTMarketSearchResultsSplitViewController.prototype._eListDataChanged = function _eListDataChanged(e, t) {
+        UTMarketSearchResultsSplitViewController_eListDataChanged.call(this, e, t);
+        if (!settings.enabled || !cfg.playerRating) return;
+
+        UTMarketSearchResultsSplitViewControllerHelpers.selectListItemByIndex(0);
+    }
+
     const UTMarketSearchFiltersViewController__eResetSelected = UTMarketSearchFiltersViewController.prototype._eResetSelected;
     UTMarketSearchFiltersViewController.prototype._eResetSelected = function _eResetSelected() {
         if (this.getView()._playerId) {
@@ -247,7 +272,7 @@ export default function runMarketSearchFilters() {
     const UTItemTableCellView_render = UTItemTableCellView.prototype.render;
     UTItemTableCellView.prototype.render = function (e) {
         UTItemTableCellView_render.call(this, e);
-        if (settings.enabled && this.data.isPlayer() && _palesnipeSettings.plugins.playerIdValue) {
+        if (settings.enabled && this.data.isPlayer() && cfg.playerId) {
             $(".ut-item-view--main", this.__entityContainer).append(`<span class="player-definition-id">${this.data.definitionId}</span>`);
         }
     }
@@ -255,7 +280,7 @@ export default function runMarketSearchFilters() {
     function shouldRenderItem(item, searchCriteria) {
         let rating = searchCriteria.rating;
 
-        if (!settings.enabled || !rating || !_palesnipeSettings.plugins.playerRatingFilter) return true;
+        if (!settings.enabled || !rating || !cfg.playerRating) return true;
 
         if (rating.charAt(0) === "+") {
             rating = parseInt(rating.substr(1));
@@ -272,4 +297,30 @@ export default function runMarketSearchFilters() {
     }
 
     addStyle('paletools-marketsearch-filters', styles);
+}
+
+function menu() {
+    var container = document.createElement("div");
+    function add(id) {
+        addLabelWithToggle(container, `plugins.marketSearchFilters.settings.${id}`, cfg[id], toggleState => {
+            cfg[id] = toggleState;
+            saveConfiguration();
+        });
+    }
+
+    add('savedFilters');
+    add('playerId');
+    add('playerRating');
+
+    return container;
+}
+
+export default {
+    run: run,
+    order: 5,
+    settings: {
+        name: 'market-search-filters',
+        title: 'plugins.marketSearchFilters.settings.title',
+        menu: menu
+    }
 }

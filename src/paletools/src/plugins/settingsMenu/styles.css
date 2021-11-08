@@ -1,7 +1,62 @@
-.palesnipe-settings-wrapper input { width: 150px; margin-left: 8px; display: table-cell; margin-bottom: 2px; }
-.palesnipe-settings-wrapper > div { display: table; float: left; margin-left: 8px; }
-.palesnipe-settings-wrapper > div > div { display: table-row; }
-.palesnipe-settings-wrapper > div > div > label { display: table-cell; }
-.palesnipe-settings-wrapper > div:nth-child(4) { clear:left;}
-.palesnipe-settings-wrapper .ut-toggle-control { width: 30px; float:right; }
-.palesnipe-settings-wrapper > div > div { line-height: 40px;}
+.palesnipe-settings-wrapper {
+    flex-flow: column;
+}
+
+.palesnipe-settings-wrapper .tile {
+    margin-bottom: 20px;
+}
+
+.palesnipe-settings-wrapper .tile > div {
+    display: table;
+    width: 300px;
+    padding-left: 10px;
+    
+}
+
+.palesnipe-settings-wrapper .tile > div > div {
+    display: table-row;
+    height: 40px;
+}
+
+.palesnipe-settings-wrapper .tile > div > div > label {
+    display: table-cell;
+    width: 80%;
+}
+
+.palesnipe-settings-wrapper .tile > div > div > input {
+    display: table-cell;
+}
+
+.palesnipe-settings-wrapper .tile > div > div > .ut-toggle-control {
+    display: table-cell;
+}
+
+#paletools-settings-snipe-container > div {
+    display: flex;
+    width: 100%;
+}
+
+#paletools-settings-snipe-container > div > div {
+    display: table;
+    float: left;
+    margin-right: 40px;
+}
+
+#paletools-settings-snipe-container > div > div > div {
+    display: table-row;
+    height: 50px;
+}
+
+
+#paletools-settings-snipe-container > div > div > div > label {
+    display: table-cell;
+    width: 70%;
+}
+
+#paletools-settings-snipe-container > div > div > div > input {
+    display: table-cell;
+}
+
+#paletools-settings-snipe-container > div > div > div > .ut-toggle-control {
+    display: table-cell;
+}
