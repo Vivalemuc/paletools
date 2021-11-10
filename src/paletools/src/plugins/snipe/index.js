@@ -55,6 +55,10 @@ function run() {
             view._eMinBuyPriceChanged();
             view._eMaxBuyPriceChanged();
 
+            if(view.updateSearchCriteria){
+                (view.updateSearchCriteria)();
+            }
+
             getCurrentController().getView()._eSearchButtonSelected();
         },
 
@@ -173,18 +177,20 @@ function run() {
                         UTMarketSearchResultsSplitViewControllerHelpers.selectListItemByIndex(selectedIndex);
                     };
 
-                    if (list.__botPagination.style.display !== "none") {
-                        b[p.lists.prev] = () => {
-                            searchResultsController._ePrevPage();
-                        }
-                        b[p.lists.next] = () => {
-                            searchResultsController._eNextPage();
-                        }
-                    }
+
                 }
                 else {
                     b[p.search.botModeMinBid] = () => p.search.enableBotMode ? back() : false;
                     b[p.search.botModeMinBuy] = () => p.search.enableBotMode ? back() : false;
+                }
+
+                if (list.__botPagination.style.display !== "none") {
+                    b[p.lists.prev] = () => {
+                        searchResultsController._ePrevPage();
+                    }
+                    b[p.lists.next] = () => {
+                        searchResultsController._eNextPage();
+                    }
                 }
             }
 

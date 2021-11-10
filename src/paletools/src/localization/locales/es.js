@@ -30,6 +30,7 @@ export default {
     'plugins.marketSearchFilters.filter.name': 'Nombre del filtro',
     'plugins.marketSearchFilters.filter.save': 'Guardar',
     'plugins.marketSearchFilters.filter.delete': 'Eliminar',
+    'plugins.marketSearchFilters.playerIdWarning': 'Esta funcionalidad es EXPERIMENTAL y podría llevar a que tu cuenta sea suspendida, ¿estas seguro de querer activarla?',
 
     'plugins.snipe.settings.title': 'Sniping',
     'plugins.snipe.settings.enableDisable': 'Habilitar / Deshabilitar',
@@ -63,6 +64,14 @@ export default {
     'plugins.duplicatedToSbc.button.textLoading': 'Cargado club... {count} jugadores cargados',
 
     'plugins.selectCheapest.settings.title': 'Elegir el jugador mas barato automáticamente',
+
+    'plugins.fillSbcFromFutbin.settings.title': 'Completar SBC con FUTBIN',
+    'plugins.fillSbcFromFutbin.settings.importToolLabel': 'Link de instalación',
+    'plugins.fillSbcFromFutbin.settings.importToolLinkText': 'Exportar SBC de FUTBIN',
+    'plugins.fillSbcFromFutbin.settings.installInstructions': 'Arrastre el link de instalación a la barra de marcadores',
+    'plugins.fillSbcFromFutbin.button.text': 'Importar SBC desde FUTBIN',
+    'plugins.fillSbcFromFutbin.button.textLoading': 'Cargando club... {count} jugadores cargados',
+
 
     'plugins.settings.title': 'Configuración de Paletools'
 };

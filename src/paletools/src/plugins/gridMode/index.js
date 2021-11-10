@@ -38,13 +38,8 @@ function run(){
                 })
                 .insertBefore(this.__currencies);
             
-            on('appEnabled', () => {
-                $(this._gridModeToggle.getRootElement()).show();
-            });
-
-            on('appDisabled', () => {
-                $(this._gridModeToggle.getRootElement()).hide();
-            });
+            on('appEnabled', () => $(this._gridModeToggle.getRootElement()).show());
+            on('appDisabled', () => $(this._gridModeToggle.getRootElement()).hide());
 
             this._gridModeGenerated = true;
         }

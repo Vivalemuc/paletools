@@ -9,6 +9,7 @@ import snipe from "./snipe";
 import duplicatedToSbc from "./duplicatedToSbc";
 import selectCheapest from "./selectCheapest";
 import settingsMenu from "./settingsMenu";
+import fillSbcFromFutbin from "./fillSbcFromFutbin";
 
 
 const plugins = [
@@ -21,16 +22,19 @@ const plugins = [
     gridMode,
     duplicatedToSbc,
     selectCheapest,
-    snipe
-    ];
+    snipe,
+    fillSbcFromFutbin
+];
 
 const menus = [];
 
 export default function runPlugins() {
-    plugins.sort(x => x.order);
+    plugins.sort((a, b) => {
+        return a.order - b.order;
+    });
     for (let plugin of plugins) {
         plugin.run();
-        if(plugin.settings){
+        if (plugin.settings) {
             menus.push(plugin.settings);
         }
     }

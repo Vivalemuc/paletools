@@ -3,6 +3,7 @@ import { addStyle } from "../../utils/styles";
 import styles from "./styles.css";
 import { addLabelWithToggle } from "../../controls";
 import localize from "../../localization";
+import { on } from "../../events";
 
 const cfg = settings.plugins.compareMinMaxPrices;
 
@@ -39,6 +40,9 @@ function run() {
 
                 this._minBuyNowPrice = Number.MAX_VALUE;
                 this._maxBuyNowPrice = 0;
+
+                on("appEnabled", () => $(this._minMaxPriceContainer).show());
+                on("appDisabled", () => $(this._minMaxPriceContainer).show());
             }
 
             this._generateCompareMinMaxPrices = true;

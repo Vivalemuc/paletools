@@ -1,4 +1,5 @@
 import { triggerEvent } from "../events";
+import delay from "../utils/delay";
 import http from "./http";
 
 const MAX_ITEMS_REQUEST = 150;
@@ -44,7 +45,7 @@ export function getAllClubPlayers(filterLoaned, playerId, onBachLoadedCallback) 
                         if(onBachLoadedCallback){
                             (onBachLoadedCallback)(searchCriteria.offset);    
                         }
-                        getAllSquadMembers();
+                        delay(100).then(() => getAllSquadMembers());
                     } else {
                         if(onBachLoadedCallback){
                             (onBachLoadedCallback)(searchCriteria.offset);    

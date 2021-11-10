@@ -3,6 +3,7 @@ import localize from "../../localization";
 import { getAllClubPlayers, getClubPlayers, getUnnasignedPlayers } from "../../services/club";
 import getCurrentController from "../../utils/controller";
 import settings from "../../settings";
+import { on } from "../../events";
 
 const cfg = settings.plugins.duplicatedToSbc;
 
@@ -29,6 +30,9 @@ function run() {
             } , EventType.TAP);
             this.__content.appendChild(this._useUnnasignedPlayersButton.getRootElement());
 
+
+            on("appEnabled", () => $(this)._useUnnasignedPlayersButton.getRootElement().show());
+            on("appDisabled", () => $(this)._useUnnasignedPlayersButton.getRootElement().hide());
 
             this._unnasignedToSbcCalled = true;
         }

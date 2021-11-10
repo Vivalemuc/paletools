@@ -1,6 +1,7 @@
 import UTLabelWithTextInputControl from "./UTLabelWithTextInputControl";
 import UTLabelWithToggleControl from "./UTLabelWithToggleControl";
 import localize from "../localization";
+import UTLabelWithLinkControl from "./UTLabelWithLinkControl";
 
 export function addLabelWithInput(container, labelLocaleKey, defaultValue, onInputChange, inputId) {
     const labelWithInput = new UTLabelWithTextInputControl();
@@ -12,6 +13,14 @@ export function addLabelWithInput(container, labelLocaleKey, defaultValue, onInp
     labelWithInput.setInputValue(defaultValue);
     labelWithInput.onInputChange(onInputChange);
     container.appendChild(labelWithInput.getRootElement());
+}
+
+export function addLabelWithLink(container, labelLocaleKey, linkLocaleKey, linkUrl) {
+    const labelWithLink = new UTLabelWithLinkControl();
+    labelWithLink.setLabel(localize(labelLocaleKey));
+    labelWithLink.setLinkText(localize(linkLocaleKey));
+    labelWithLink.setLinkUrl(linkUrl);
+    container.appendChild(labelWithLink.getRootElement());
 }
 
 export function addLabelWithToggle(container, labelLocaleKey, toggled, onToggleChange, toggleId) {
@@ -27,7 +36,10 @@ export function addLabelWithToggle(container, labelLocaleKey, toggled, onToggleC
 
     labelWithToggle.onToggle = (elem, eventType, value) => {
         if(onToggleChange){
-            (onToggleChange)(value.toggleState);
+            const returnValue = (onToggleChange)(value.toggleState);
+            if(returnValue === false){
+                labelWithToggle.toggle(false);
+            }
         }
     } ;
 

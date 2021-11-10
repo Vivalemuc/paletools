@@ -5,7 +5,7 @@ import { addStyle } from "../../utils/styles";
 import styles from "./styles.css";
 import { addLabelWithToggle } from "../../controls";
 import localize from "../../localization";
-import UTMarketSearchResultsSplitViewControllerHelpers from "../../helpers/UTMarketSearchResultsSplitViewControllerHelpers";
+import { on } from "../../events";
 
 const cfg = settings.plugins.marketSearchFilters;
 
@@ -90,6 +90,9 @@ function run() {
             }
 
             $(container).insertBefore($(".ut-item-search-view", this.__root));
+
+            on("appEnabled", () => $(container).show());
+            on("appDisabled", () => $(container).hide());
 
             this._generateMarketSearchFilters = true;
         }
@@ -197,6 +200,15 @@ function run() {
         }
     }
 
+    UTMarketSearchFiltersView.prototype.updateSearchCriteria = function () {
+        if (this._playerId) {
+            this.handlePlayerIdChange(null, null, this._playerId.getRootElement());
+        }
+        if (this._playerRating) {
+            this.handlePlayerRatingChange(null, null, this._playerRating.getRootElement());
+        }
+    }
+
     UTMarketSearchFiltersView.prototype.handlePlayerIdChange = function (_, __, elem) {
         const controller = getCurrentController();
         if (controller instanceof UTMarketSearchFiltersViewController) {
@@ -224,21 +236,15 @@ function run() {
         }
     }
 
-    const UTMarketSearchResultsSplitViewController_eListDataChanged = UTMarketSearchResultsSplitViewController.prototype._eListDataChanged;
-    UTMarketSearchResultsSplitViewController.prototype._eListDataChanged = function _eListDataChanged(e, t) {
-        UTMarketSearchResultsSplitViewController_eListDataChanged.call(this, e, t);
-        if (!settings.enabled || !cfg.playerRating) return;
-
-        UTMarketSearchResultsSplitViewControllerHelpers.selectListItemByIndex(0);
-    }
-
     const UTMarketSearchFiltersViewController__eResetSelected = UTMarketSearchFiltersViewController.prototype._eResetSelected;
     UTMarketSearchFiltersViewController.prototype._eResetSelected = function _eResetSelected() {
         if (this.getView()._playerId) {
             this.getView()._playerId.clear();
+            this._viewmodel._searchCriteria.defId = [];
         }
         if (this.getView()._playerRating) {
             this.getView()._playerRating.clear();
+            this._viewmodel._searchCriteria.rating = null;
         }
         if (this.getView()._filterName) {
             this.getView()._filterName.clear();
@@ -247,26 +253,52 @@ function run() {
         UTMarketSearchFiltersViewController__eResetSelected.call(this);
     }
 
-    const UTPaginatedItemListView_setItems = UTPaginatedItemListView.prototype.setItems;
-    UTPaginatedItemListView.prototype.setItems = function (e, i) {
-        const controller = getCurrentController();
-        if (settings.enabled && controller._listController && controller._listController && controller._listController._searchCriteria) {
-            var o = this;
-            this.removeListRows();
+    const UTMarketSearchResultsViewController_requestItems = UTMarketSearchResultsViewController.prototype._requestItems;
+    UTMarketSearchResultsViewController.prototype._requestItems = function _requestItems(l) {
+        if (!settings.enabled || !cfg.playerRating) {
+            UTMarketSearchResultsViewController_requestItems(this, l);
+            return;
+        }
 
-            e.forEach(function (e) {
-                if (shouldRenderItem(e, controller._listController._searchCriteria)) {
-                    var t = new UTItemTableCellView;
-                    t.setData(e, void 0, void 0, i),
-                        o.listRows.push(t)
+        services.Module.set(3355443200),
+            this._paginationViewModel.stopAuctionUpdates(),
+            services.Item.searchTransferMarket(this._searchCriteria, l).observe(this, function _onRequestItemsComplete(e, t) {
+                if (e.unobserve(this),
+                    !t.success)
+                    return NetworkErrorManager.checkCriticalStatus(t.status) ? void NetworkErrorManager.handleStatus(t.status) : (services.Notification.queue([services.Localization.localize("popup.error.searcherror"), UINotificationType.NEGATIVE]),
+                        void this.getNavigationController().popViewController());
+                if (0 < this._searchCriteria.offset && 0 === t.data.items.length)
+                    this._requestItems(l - 1);
+                else {
+                    var i = this._paginationViewModel.getNumItemsPerPage()
+                        , o = t.data.items.slice().filter(x => shouldRenderItem(x, this._searchCriteria)) // added .filter
+                    if (this.onDataChange.notify({
+                        items: o
+                    }),
+                        o.length > i && (o = o.slice(0, i)),
+                        this._paginationViewModel.setPageItems(o),
+                        this._paginationViewModel.setPageIndex(l),
+                        this._selectedItem && 0 < o.length) {
+                        var n = this._paginationViewModel.getIndexByItemId(this._selectedItem.id);
+                        0 < n && this._paginationViewModel.setIndex(n),
+                            this._selectedItem = null
+                    }
+                    var r = this.getView()
+                        , s = null;
+                    if (!this._stadiumViewmodel || this._searchCriteria.type !== SearchType.VANITY && this._searchCriteria.type !== SearchType.CLUB_INFO && this._searchCriteria.type !== SearchType.BALL || (s = this._stadiumViewmodel.getStadiumProgression(this._searchCriteria.subtypes)),
+                        r.setItems(this._paginationViewModel.getCurrentPageItems(), s),
+                        r.setPaginationState(1 < l, t.data.items.length > i),
+                        JSUtils.isValid(this._compareItem) && !this._squadContext) {
+                        var a = JSUtils.find(o, function (e) {
+                            return e.getAuctionData().tradeId === this._compareItem.getAuctionData().tradeId
+                        }
+                            .bind(this));
+                        JSUtils.isValid(a) ? this._pinnedListItem.setItem(a) : this._paginationViewModel.setPinnedItem(this._compareItem)
+                    } else
+                        !isPhone() && 0 < o.length && r.selectListRow(this._paginationViewModel.getCurrentItem().id)
                 }
-            });
-
-            return this.listRows;
-        }
-        else {
-            return UTPaginatedItemListView_setItems.call(this, e, i);
-        }
+                this._paginationViewModel.startAuctionUpdates()
+            })
     }
 
     const UTItemTableCellView_render = UTItemTableCellView.prototype.render;
@@ -303,8 +335,24 @@ function menu() {
     var container = document.createElement("div");
     function add(id) {
         addLabelWithToggle(container, `plugins.marketSearchFilters.settings.${id}`, cfg[id], toggleState => {
-            cfg[id] = toggleState;
-            saveConfiguration();
+            if (toggleState) {
+                if (id === "playerId") {
+                    if (confirm(localize("plugins.marketSearchFilters.playerIdWarning"))) {
+                        cfg[id] = toggleState;
+                        saveConfiguration();
+                    }
+                    else {
+                        return false;
+                    }
+                } else {
+                    cfg[id] = toggleState;
+                    saveConfiguration();
+                }
+            }
+            else {
+                cfg[id] = toggleState;
+                saveConfiguration();
+            }
         });
     }
 

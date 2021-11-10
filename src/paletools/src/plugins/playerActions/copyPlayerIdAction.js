@@ -1,6 +1,7 @@
 import settings from "../../settings";
 import { copyToClipboard } from "../../utils/clipboard";
 import localize from "../../localization";
+import { on } from "../../events";
 
 const cfg = settings.plugins.playerActions;
 
@@ -14,6 +15,8 @@ const copyPlayerIdAction = {
             instance._copyPlayerIdButton.getRootElement().classList.add("palesnipe-element");
             instance.onCopyPlayerId = new EAObservable();
             buttonsContainerFunc(instance).appendChild(instance._copyPlayerIdButton.getRootElement());
+            on("appEnabled", $(instance._copyPlayerIdButton.getRootElement()).show());
+            on("appDisabled", $(instance._copyPlayerIdButton.getRootElement()).hide());
         }
     },
     destroyGeneratedElements: (instance) => {

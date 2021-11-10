@@ -50,7 +50,7 @@ let settings = {
             enabled: true
         },
         marketSearchFilters: {
-            playerId: true,
+            playerId: false,
             playerRating: true,
             savedFilters: true
         },
@@ -71,6 +71,9 @@ let settings = {
             enabled: false
         },
         pristinePlayers: {
+            enabled: true
+        },
+        fillSbcFromFutbin: {
             enabled: true
         }
     }

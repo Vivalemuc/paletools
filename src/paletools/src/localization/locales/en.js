@@ -30,6 +30,7 @@ export default {
     'plugins.marketSearchFilters.filter.name': 'Filter name',
     'plugins.marketSearchFilters.filter.save': 'Save',
     'plugins.marketSearchFilters.filter.delete': 'Delete',
+    'plugins.marketSearchFilters.playerIdWarning': 'This is an experimental feature and could potentially lead to you account being banned, are you sure you want to enable it?',
 
     'plugins.snipe.settings.title': 'Sniping',
     'plugins.snipe.settings.enableDisable': 'Enable / Disable',
@@ -63,6 +64,14 @@ export default {
     'plugins.duplicatedToSbc.button.textLoading': 'Loading players from club... {count} loaded',
 
     'plugins.selectCheapest.settings.title': 'Select cheapest player automatically',
+
+    'plugins.fillSbcFromFutbin.settings.title': 'Fill SBC with FUTBIN',
+
+    'plugins.fillSbcFromFutbin.settings.importToolLabel': 'Install FUTBIN Link',
+    'plugins.fillSbcFromFutbin.settings.importToolLinkText': 'Export FUTBIN SBC',
+    'plugins.fillSbcFromFutbin.settings.installInstructions': 'Drag the install link to the bookmarks bar',
+    'plugins.duplicatedToSbc.button.text': 'Import SBC from FUTBIN',
+    'plugins.duplicatedToSbc.button.textLoading': 'Loading players from club... {count} loaded',
 
     'plugins.settings.title': 'Paletools Settings'
 };

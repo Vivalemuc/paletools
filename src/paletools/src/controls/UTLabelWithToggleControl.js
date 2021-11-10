@@ -23,7 +23,7 @@ UTLabelWithToggleControl.prototype._generate = function _generate() {
     }
 }
 
-UTLabelWithToggleControl.prototype.setLabelLocale = function(localeKey){
+UTLabelWithToggleControl.prototype.setLabelLocale = function (localeKey) {
     this._label.getRootElement().dataset.locale = localeKey;
 }
 
@@ -35,14 +35,20 @@ UTLabelWithToggleControl.prototype.setToggleId = function (value) {
     this._toggle.getRootElement().id = value;
 }
 
-UTLabelWithToggleControl.prototype.toggle = function () {
+UTLabelWithToggleControl.prototype.toggle = function (triggerOnToggle) {
+    if (triggerOnToggle !== false) {
+        triggerOnToggle = true;
+    }
+
     this._toggle.toggle();
-    this._toggle._triggerActions(EventType.TAP, {
-        toggleState: this._toggle.getToggleState()
-    });
+    if (triggerOnToggle) {
+        this._toggle._triggerActions(EventType.TAP, {
+            toggleState: this._toggle.getToggleState()
+        });
+    }
 }
 
-UTLabelWithToggleControl.prototype.getToggleState = function(){
+UTLabelWithToggleControl.prototype.getToggleState = function () {
     return this._toggle.getToggleState();
 }
 
