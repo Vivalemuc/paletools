@@ -211,7 +211,7 @@ function run() {
 
     UTMarketSearchFiltersView.prototype.handlePlayerIdChange = function (_, __, elem) {
         const controller = getCurrentController();
-        if (controller instanceof UTMarketSearchFiltersViewController) {
+        if (controller instanceof UTMarketSearchFiltersViewController && elem.value && elem.value.length > 0) {
             controller._viewmodel.searchCriteria.defId = [elem.value];
         }
     }
@@ -240,11 +240,11 @@ function run() {
     UTMarketSearchFiltersViewController.prototype._eResetSelected = function _eResetSelected() {
         if (this.getView()._playerId) {
             this.getView()._playerId.clear();
-            this._viewmodel._searchCriteria.defId = [];
+            this._viewmodel.searchCriteria.defId = [];
         }
         if (this.getView()._playerRating) {
             this.getView()._playerRating.clear();
-            this._viewmodel._searchCriteria.rating = null;
+            this._viewmodel.searchCriteria.rating = null;
         }
         if (this.getView()._filterName) {
             this.getView()._filterName.clear();
