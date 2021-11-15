@@ -55,146 +55,185 @@ function run() {
             view._eMinBuyPriceChanged();
             view._eMaxBuyPriceChanged();
 
-            if(view.updateSearchCriteria){
+            if (view.updateSearchCriteria) {
                 (view.updateSearchCriteria)();
             }
 
             getCurrentController().getView()._eSearchButtonSelected();
         },
 
-        transferBtn = () => $(`.ut-button-group > button:contains('${localize('infopanel.label.sendTradePile')}')`),
-        clubBtn = () => $(`.ut-button-group > button:contains('${localize('infopanel.label.storeInClub')}')`),
-        sellBtn = () => $(`.ut-button-group > button:contains('${localize('infopanel.label.discard')}')`),
+        transferBtn = () => $("button.send-to-transfer-list"),
+        clubBtn = () => $("button.send-to-club"),
+        sellBtn = () => $("button.quick-sell"),
 
-        keys = (p) => {
-            let b = {};
+        addMarketSearchKeys = (keys, buttons, controller) => {
+            if (!(controller instanceof UTMarketSearchFiltersViewController)) return;
+
+            keys[buttons.search.decMinBid] = () => {
+                controller.getView()._minBidPriceRow._currencyInput.beginDecrease();
+                controller.getView()._minBidPriceRow._currencyInput.endDecrease();
+            };
+            keys[buttons.search.incMinBid] = () => {
+                controller.getView()._minBidPriceRow._currencyInput.beginIncrease();
+                controller.getView()._minBidPriceRow._currencyInput.endIncrease();
+            };
+            keys[buttons.search.decMaxBid] = () => {
+                controller.getView()._maxBidPriceRow._currencyInput.beginDecrease();
+                controller.getView()._maxBidPriceRow._currencyInput.endDecrease();
+            };
+            keys[buttons.search.incMaxBid] = () => {
+                controller.getView()._maxBidPriceRow._currencyInput.beginIncrease();
+                controller.getView()._maxBidPriceRow._currencyInput.endIncrease();
+            };
+            keys[buttons.search.decMinBuy] = () => {
+                controller.getView()._minBuyNowPriceRow._currencyInput.beginDecrease();
+                controller.getView()._minBuyNowPriceRow._currencyInput.endDecrease();
+            };
+            keys[buttons.search.incMinBuy] = () => {
+                controller.getView()._minBuyNowPriceRow._currencyInput.beginIncrease();
+                controller.getView()._minBuyNowPriceRow._currencyInput.endIncrease();
+            };
+            keys[buttons.search.decMaxBuy] = () => {
+                controller.getView()._maxBuyNowPriceRow._currencyInput.beginDecrease();
+                controller.getView()._maxBuyNowPriceRow._currencyInput.endDecrease();
+            };
+            keys[buttons.search.incMaxBuy] = () => {
+                controller.getView()._maxBuyNowPriceRow._currencyInput.beginIncrease();
+                controller.getView()._maxBuyNowPriceRow._currencyInput.endIncrease();
+            };
+            keys[buttons.search.search] = () => search();
+            keys[buttons.search.resetBid] = () => {
+                controller.getView()._minBidPriceRow.value = 0;
+                controller.getView()._maxBidPriceRow.value = 0;
+            };
+            keys[buttons.search.botModeMinBid] = () => {
+                if (buttons.search.enableBotMode && keys[buttons.search.incMinBid]()) {
+                    search();
+                }
+            };
+            keys[buttons.search.botModeMinBuy] = () => {
+                if (buttons.search.enableBotMode && keys[buttons.search.incMinBuy]()) {
+                    search();
+                }
+            }
+        },
+
+        addMarketSearchResultsKeys = (keys, buttons, controller) => {
+            if (!(controller instanceof UTMarketSearchResultsSplitViewController)) return;
+
+            const list = controller._leftController.getView()._list;
+            const items = list.listRows;
+            let itemsExists = items.length > 0;
+
+            if (itemsExists) {
+                let selectedIndex = list.listRows.findIndex(x => x.__root.classList.contains("selected"));
+
+                keys[buttons.lists.up] = () => {
+                    if (selectedIndex - 1 < 0) {
+                        selectedIndex = items.length - 1;
+                    }
+                    else {
+                        selectedIndex--;
+                    }
+
+                    UTMarketSearchResultsSplitViewControllerHelpers.selectListItemByIndex(selectedIndex);
+                };
+                keys[buttons.lists.down] = () => {
+                    if (selectedIndex + 1 >= items.length) {
+                        selectedIndex = 0;
+                    }
+                    else {
+                        selectedIndex++;
+                    }
+
+                    UTMarketSearchResultsSplitViewControllerHelpers.selectListItemByIndex(selectedIndex);
+                };
+            }
+            else {
+                keys[buttons.search.botModeMinBid] = () => buttons.search.enableBotMode ? back() : false;
+                keys[buttons.search.botModeMinBuy] = () => buttons.search.enableBotMode ? back() : false;
+            }
+        },
+
+        addItemDetailsViewKeys = (keys, buttons, controller) => {
+            if (!controller._rightController
+                || !controller._rightController._currentController
+                || controller._rightController._currentController.className !== "ItemDetailsViewController")
+                return;
+
+            const itemDetailsController = controller._rightController._currentController;
+            const { _bidState, _tradeState, tradeId } = itemDetailsController._currentAuction;
+            if (_tradeState === "active" && _bidState !== "highest") {
+                keys[buttons.results.bid] = () => bid();
+                keys[buttons.results.buy] = () => buyNow();
+                keys[buttons.results.decBid] = () => {
+                    const stepper = itemDetailsController._panel._bidNumericStepper;
+                    stepper.beginDecrease();
+                    stepper.endDecrease();
+                };
+                keys[buttons.results.incBid] = () => {
+                    const stepper = itemDetailsController._panel._bidNumericStepper;
+                    stepper.beginIncrease();
+                    stepper.endIncrease();
+                };
+
+                if (buttons.search.enableBotMode) {
+                    keys[buttons.search.botModeMinBid] = keys[buttons.search.botModeMinBuy] = () => buyNow();
+                }
+            }
+
+            // Bid won
+            if (_tradeState === "closed" && _bidState === "highest") {
+                keys[buttons.results.transfer] = () => mouseClick(transferBtn());
+                keys[buttons.results.club] = () => mouseClick(clubBtn());
+                keys[buttons.results.sell] = () => mouseClick(sellBtn());
+            }
+
+            // club player
+            if (tradeId === "0") {
+                const player = itemDetailsController._viewmodel._collection[itemDetailsController._viewmodel._index];
+                if (!player.untradeable) {
+                    keys[buttons.results.transfer] = () => mouseClick(transferBtn());
+                }
+
+                keys[buttons.results.club] = () => mouseClick(clubBtn());
+
+                if (player.discardable) {
+                    keys[buttons.results.sell] = () => mouseClick(sellBtn());
+                }
+            }
+        },
+
+        addPaginationKeys = (keys, buttons, controller) => {
+            const list = controller._leftController
+                && controller._leftController.getView
+                && controller._leftController.getView()._list;
+
+            if (!list) return;
+
+            if (list.__botPagination.style.display !== "none") {
+                keys[buttons.lists.prev] = () => {
+                    controller._leftController._ePrevPage();
+                }
+                keys[buttons.lists.next] = () => {
+                    controller._leftController._eNextPage();
+                }
+            }
+        },
+
+        keys = (buttons) => {
+            let keys = {};
 
             const controller = getCurrentController();
 
-            b[p.back] = () => back();
+            keys[buttons.back] = () => back();
 
-            if (controller instanceof UTMarketSearchFiltersViewController) {
-                b[p.search.decMinBid] = () => {
-                    controller.getView()._minBidPriceRow._currencyInput.beginDecrease();
-                    controller.getView()._minBidPriceRow._currencyInput.endDecrease();
-                };
-                b[p.search.incMinBid] = () => {
-                    controller.getView()._minBidPriceRow._currencyInput.beginIncrease();
-                    controller.getView()._minBidPriceRow._currencyInput.endIncrease();
-                };
-                b[p.search.decMaxBid] = () => {
-                    controller.getView()._maxBidPriceRow._currencyInput.beginDecrease();
-                    controller.getView()._maxBidPriceRow._currencyInput.endDecrease();
-                };
-                b[p.search.incMaxBid] = () => {
-                    controller.getView()._maxBidPriceRow._currencyInput.beginIncrease();
-                    controller.getView()._maxBidPriceRow._currencyInput.endIncrease();
-                };
-                b[p.search.decMinBuy] = () => {
-                    controller.getView()._minBuyNowPriceRow._currencyInput.beginDecrease();
-                    controller.getView()._minBuyNowPriceRow._currencyInput.endDecrease();
-                };
-                b[p.search.incMinBuy] = () => {
-                    controller.getView()._minBuyNowPriceRow._currencyInput.beginIncrease();
-                    controller.getView()._minBuyNowPriceRow._currencyInput.endIncrease();
-                };
-                b[p.search.decMaxBuy] = () => {
-                    controller.getView()._maxBuyNowPriceRow._currencyInput.beginDecrease();
-                    controller.getView()._maxBuyNowPriceRow._currencyInput.endDecrease();
-                };
-                b[p.search.incMaxBuy] = () => {
-                    controller.getView()._maxBuyNowPriceRow._currencyInput.beginIncrease();
-                    controller.getView()._maxBuyNowPriceRow._currencyInput.endIncrease();
-                };
-                b[p.search.search] = () => search();
-                b[p.search.resetBid] = () => {
-                    controller.getView()._minBidPriceRow.value = 0;
-                    controller.getView()._maxBidPriceRow.value = 0;
-                };
-                b[p.search.botModeMinBid] = () => {
-                    if (p.search.enableBotMode && b[p.search.incMinBid]()) {
-                        search();
-                    }
-                };
-                b[p.search.botModeMinBuy] = () => {
-                    if (p.search.enableBotMode && b[p.search.incMinBuy]()) {
-                        search();
-                    }
-                }
-            }
-            else if (controller instanceof UTMarketSearchResultsSplitViewController) {
-                const searchResultsController = controller._leftController;
-                const list = searchResultsController.getView()._list;
-                const items = list.listRows;
-                let itemsExists = items.length > 0;
+            addMarketSearchKeys(keys, buttons, controller);
+            addMarketSearchResultsKeys(keys, buttons, controller);
+            addItemDetailsViewKeys(keys, buttons, controller);
+            addPaginationKeys(keys, buttons, controller);
 
-                if (itemsExists) {
-                    let selectedIndex = list.listRows.findIndex(x => x.__root.classList.contains("selected"));
-
-                    const itemDetailsController = controller._rightController._currentController;
-                    const tradeState = itemDetailsController._currentAuction._tradeState;
-                    if (tradeState === "active") {
-                        b[p.results.bid] = () => bid();
-                        b[p.results.buy] = () => buyNow();
-                        b[p.results.decBid] = () => {
-                            const stepper = itemDetailsController._panel._bidNumericStepper;
-                            stepper.beginDecrease();
-                            stepper.endDecrease();
-                        };
-                        b[p.results.incBid] = () => {
-                            const stepper = itemDetailsController._panel._bidNumericStepper;
-                            stepper.beginIncrease();
-                            stepper.endIncrease();
-                        };
-                        b[p.search.botModeMinBid] = () => p.search.enableBotMode ? buyNow() : false;
-                        b[p.search.botModeMinBuy] = () => p.search.enableBotMode ? buyNow() : false;
-                    }
-
-                    if (tradeState === "closed") {
-                        b[p.results.transfer] = () => mouseClick(transferBtn());
-                        b[p.results.club] = () => mouseClick(clubBtn());
-                        b[p.results.sell] = () => mouseClick(sellBtn());
-                    }
-
-                    b[p.lists.up] = () => {
-                        if (selectedIndex - 1 < 0) {
-                            selectedIndex = items.length - 1;
-                        }
-                        else {
-                            selectedIndex--;
-                        }
-
-                        UTMarketSearchResultsSplitViewControllerHelpers.selectListItemByIndex(selectedIndex);
-                    };
-                    b[p.lists.down] = () => {
-                        if (selectedIndex + 1 >= items.length) {
-                            selectedIndex = 0;
-                        }
-                        else {
-                            selectedIndex++;
-                        }
-
-                        UTMarketSearchResultsSplitViewControllerHelpers.selectListItemByIndex(selectedIndex);
-                    };
-
-
-                }
-                else {
-                    b[p.search.botModeMinBid] = () => p.search.enableBotMode ? back() : false;
-                    b[p.search.botModeMinBuy] = () => p.search.enableBotMode ? back() : false;
-                }
-
-                if (list.__botPagination.style.display !== "none") {
-                    b[p.lists.prev] = () => {
-                        searchResultsController._ePrevPage();
-                    }
-                    b[p.lists.next] = () => {
-                        searchResultsController._eNextPage();
-                    }
-                }
-            }
-
-            return b;
+            return keys;
         },
 
         addCss = (p) => {

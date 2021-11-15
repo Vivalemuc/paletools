@@ -3,5 +3,9 @@ export function notifySuccess(msg) {
 }
 
 export function notifyNeutral(msg) {
-    services.Notification.queue([msg, UINotificationType.NEUTRAL])
+    services.Notification.queue([msg, UINotificationType.NEUTRAL]);
+}
+
+export function notifyFailure(msg) {
+    services.Notification.queue([msg, UINotificationType.NEGATIVE]);
 }

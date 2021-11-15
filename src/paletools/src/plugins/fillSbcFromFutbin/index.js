@@ -7,6 +7,7 @@ import { on } from "../../events";
 import styles from "./styles.css";
 import { addStyle } from "../../utils/styles";
 import { getConceptPlayers } from "../../services/players";
+import { notifyFailure } from "../../utils/notifications";
 
 const cfg = settings.plugins.fillSbcFromFutbin;
 
@@ -61,6 +62,7 @@ function run() {
                         }
                         catch
                         {
+                            notifyFailure(localize("plugins.fillSbcFromFutbin.copyError"));
                             reject();
                         }
                     });

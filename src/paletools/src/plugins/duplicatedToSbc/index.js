@@ -77,7 +77,7 @@ function run() {
                     const players = new Array(23);
                     for (const player of club) {
                         const preferredPosition = positionIndexes[PlayerPosition[player.preferredPosition]];
-                        if (preferredPosition) {
+                        if (preferredPosition && preferredPosition.length > 0) {
                             players[preferredPosition.shift()] = player;
                             if (preferredPosition.length === 0) {
                                 delete positionIndexes[player.preferredPosition];
