@@ -18,6 +18,7 @@ UTDefaultActionPanelView.prototype.render = function (e, t, i, o, n, r, s) {
         this._sendClubButton.getRootElement().classList.add("send-to-club");
         this._sendTransferButton.getRootElement().classList.add("send-to-transfer-list");
         this._discardButton.getRootElement().classList.add("quick-sell");
+        this._comparePriceButton.getRootElement().classList.add("compare-price");
         this.snipeGenerated = true;
     }
 }
@@ -65,6 +66,7 @@ function run() {
         transferBtn = () => $("button.send-to-transfer-list"),
         clubBtn = () => $("button.send-to-club"),
         sellBtn = () => $("button.quick-sell"),
+        compareBtn = () => $("button.compare-price"),
 
         addMarketSearchKeys = (keys, buttons, controller) => {
             if (!(controller instanceof UTMarketSearchFiltersViewController)) return;
@@ -182,6 +184,8 @@ function run() {
                 }
             }
 
+            keys[buttons.results.compare] = () => mouseClick(compareBtn());
+
             // Bid won
             if (_tradeState === "closed" && _bidState === "highest") {
                 keys[buttons.results.transfer] = () => mouseClick(transferBtn());
@@ -205,18 +209,18 @@ function run() {
         },
 
         addPaginationKeys = (keys, buttons, controller) => {
-            const list = controller._leftController
-                && controller._leftController.getView
-                && controller._leftController.getView()._list;
-
-            if (!list) return;
-
-            if (list.__botPagination.style.display !== "none") {
+            if ($(".pagingContainer").is(":visible")) {
                 keys[buttons.lists.prev] = () => {
-                    controller._leftController._ePrevPage();
+                    const prevPage = $(".pagingContainer > button.pagination.prev");
+                    if(prevPage.is(":visible")){
+                        mouseClick(prevPage);
+                    }
                 }
                 keys[buttons.lists.next] = () => {
-                    controller._leftController._eNextPage();
+                    const nextPage = $(".pagingContainer > button.pagination.next");
+                    if(nextPage.is(":visible")){
+                        mouseClick(nextPage);
+                    }
                 }
             }
         },
@@ -257,6 +261,7 @@ function run() {
         .send-to-transfer-list .btn-text:after { content: ' [ ${p.results.transfer} ]' }
         .send-to-club .btn-text:after { content: ' [ ${p.results.club} ]' }
         .quick-sell .btn-text:after { content: ' [ ${p.results.sell} ]' }
+        .compare-price .btn-text:after { content: ' [ ${p.results.compare} ]' }
         `;
 
             addStyle('palesnipe-styles', css);

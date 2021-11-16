@@ -35,7 +35,8 @@ const buttons = {
         preventBack: false,
         sell: 'KeyQ',
         decBid: 'Delete',
-        incBid: 'PageDown'
+        incBid: 'PageDown',
+        compare: 'KeyM'
     }
 };
 

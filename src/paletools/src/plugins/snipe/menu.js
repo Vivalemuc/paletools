@@ -39,6 +39,7 @@ export default function menu(){
     input(searchContainer, "buttons.results.transfer");
     input(searchContainer, "buttons.results.club");
     input(searchContainer, "buttons.results.sell");
+    input(searchContainer, "buttons.results.compare");
     input(searchContainer, "buttons.lists.up");
     input(searchContainer, "buttons.lists.down");
     input(searchContainer, "buttons.lists.prev");

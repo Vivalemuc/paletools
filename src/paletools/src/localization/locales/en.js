@@ -44,6 +44,7 @@ export default {
     "plugins.snipe.settings.results.transfer": "Send item to transfer list",
     "plugins.snipe.settings.results.club": "Send item to club",
     "plugins.snipe.settings.results.sell": "Quick sell item",
+    "plugins.snipe.settings.results.compare": "Compare price",
     "plugins.snipe.settings.lists.up": "Select previous player in lists",
     "plugins.snipe.settings.lists.down": "Select next player in lists",
     "plugins.snipe.settings.lists.prev": "Go to previous page",
