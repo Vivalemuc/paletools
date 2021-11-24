@@ -10,7 +10,9 @@ import duplicatedToSbc from "./duplicatedToSbc";
 import selectCheapest from "./selectCheapest";
 import settingsMenu from "./settingsMenu";
 import fillSbcFromFutbin from "./fillSbcFromFutbin";
-
+import improvedPlayerSearch from "./improvedPlayerSearch";
+import markDuplicated from "./markDuplicated";
+import sbcSelectMultiplePlayers from "./sbcSelectMultiplePlayers";
 
 const plugins = [
     minMaxPrices,
@@ -23,8 +25,11 @@ const plugins = [
     duplicatedToSbc,
     selectCheapest,
     snipe,
-    fillSbcFromFutbin
-];
+    fillSbcFromFutbin,
+    improvedPlayerSearch,
+    markDuplicated,
+    //sbcSelectMultiplePlayers
+].filter(x => x);
 
 const menus = [];
 
@@ -39,5 +44,7 @@ export default function runPlugins() {
         }
     }
 
-    settingsMenu.run(menus);
+    if(settingsMenu){
+        settingsMenu.run(menus);
+    }
 }

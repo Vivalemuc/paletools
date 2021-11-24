@@ -76,6 +76,15 @@ let settings = {
         },
         fillSbcFromFutbin: {
             enabled: true
+        },
+        improvedPlayerSearch: {
+            enabled: true
+        },
+        markDuplicated: {
+            enabled: true
+        },
+        sbcSelectMultiplePlayers: {
+            enabled: true
         }
     }
 };

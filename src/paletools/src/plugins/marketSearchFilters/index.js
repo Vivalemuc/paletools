@@ -1,3 +1,6 @@
+let plugin;
+
+// #if process.env.MARKET_SEARCH_FILTERS
 import settings, { saveConfiguration } from "../../settings";
 import getCurrentController from "../../utils/controller";
 import { notifySuccess } from "../../utils/notifications";
@@ -363,7 +366,7 @@ function menu() {
     return container;
 }
 
-export default {
+plugin = {
     run: run,
     order: 5,
     settings: {
@@ -372,3 +375,6 @@ export default {
         menu: menu
     }
 }
+// #endif
+
+export default plugin;

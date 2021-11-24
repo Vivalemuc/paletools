@@ -1,3 +1,6 @@
+let plugin;
+
+/// #if process.env.DUPLICATED_TO_SBC
 import { addLabelWithToggle } from "../../controls";
 import localize from "../../localization";
 import { getAllClubPlayers, getClubPlayers, getUnnasignedPlayers } from "../../services/club";
@@ -110,7 +113,7 @@ function menu() {
     return container;
 }
 
-export default {
+plugin = {
     run: run,
     order: 3,
     settings: {
@@ -119,3 +122,6 @@ export default {
         menu: menu
     }
 };
+/// #endif
+
+export default plugin;

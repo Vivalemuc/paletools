@@ -1,3 +1,6 @@
+let plugin;
+
+// #if process.env.GRID_MODE
 import styles from "./styles.css";
 import UTLabelWithToggleControl from "../../controls/UTLabelWithToggleControl";
 import settings, { saveConfiguration } from "../../settings";
@@ -62,7 +65,10 @@ function run(){
     }
 }
 
-export default {
+plugin = {
     run: run,
     order: 4
 };
+// #endif
+
+export default plugin;

@@ -1,3 +1,5 @@
+let plugin;
+/// #if process.env.COMPARE_MIN_MAX_PRICES
 import settings, { saveConfiguration } from "../../settings";
 import { addStyle } from "../../utils/styles";
 import styles from "./styles.css";
@@ -87,7 +89,7 @@ function menu(){
     return container;
 }
 
-export default {
+plugin = {
     run: run,
     order: 1,
     settings: {
@@ -96,3 +98,6 @@ export default {
         menu: menu
     }
 };
+/// #endif
+
+export default plugin;

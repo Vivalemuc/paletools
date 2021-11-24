@@ -1,3 +1,6 @@
+let plugin;
+
+// #if process.env.PLAYER_ACTIONS
 import copyPlayerIdAction from "./copyPlayerIdAction";
 import futbinSearchAction from "./futbinSearchAction";
 import { addLabelWithToggle } from "../../controls";
@@ -72,7 +75,7 @@ function menu(){
     return container;
 }
 
-export default {
+plugin =  {
     run: run,
     order: 6,
     settings: {
@@ -81,3 +84,6 @@ export default {
         menu: menu
     }
 }
+// #endif
+
+export default plugin;

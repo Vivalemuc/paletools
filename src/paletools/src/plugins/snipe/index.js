@@ -1,3 +1,6 @@
+let plugin;
+
+/// #if process.env.SNIPE
 import mouseClick from "../../utils/mouse";
 import localize from "../../localization";
 import settings from "../../settings";
@@ -109,12 +112,14 @@ function run() {
                 controller.getView()._maxBidPriceRow.value = 0;
             };
             keys[buttons.search.botModeMinBid] = () => {
-                if (buttons.search.enableBotMode && keys[buttons.search.incMinBid]()) {
+                if (buttons.search.enableBotMode) {
+                    keys[buttons.search.incMinBid]();
                     search();
                 }
             };
             keys[buttons.search.botModeMinBuy] = () => {
-                if (buttons.search.enableBotMode && keys[buttons.search.incMinBuy]()) {
+                if (buttons.search.enableBotMode) {
+                    keys[buttons.search.incMinBuy]()
                     search();
                 }
             }
@@ -187,7 +192,7 @@ function run() {
             keys[buttons.results.compare] = () => mouseClick(compareBtn());
 
             // Bid won
-            if (_tradeState === "closed" && _bidState === "highest") {
+            if (_tradeState === "closed" && (_bidState === "highest" || _bidState === "buyNow")) {
                 keys[buttons.results.transfer] = () => mouseClick(transferBtn());
                 keys[buttons.results.club] = () => mouseClick(clubBtn());
                 keys[buttons.results.sell] = () => mouseClick(sellBtn());
@@ -301,7 +306,7 @@ function run() {
     addCss(cfg.buttons);
 }
 
-export default {
+plugin = {
     run: run,
     order: 7,
     settings: {
@@ -310,3 +315,6 @@ export default {
         menu: menu
     }
 };
+/// #endif
+
+export default plugin;

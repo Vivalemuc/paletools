@@ -1,3 +1,6 @@
+let plugin;
+
+/// #if process.env.TRANSFER_TARGETS_LIMBO
 import settings from "../settings";
 
 function run() {
@@ -26,6 +29,9 @@ function run() {
     }
 }
 
-export default {
+plugin = {
     run: run
 };
+/// #endif
+
+export default plugin;

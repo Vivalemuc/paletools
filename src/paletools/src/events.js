@@ -8,5 +8,6 @@ export function triggerEvent(eventName, data) {
 
 export const EVENTS = {
     APP_ENABLED: "appEnabled",
-    APP_DISABLED: "appDisabled"
+    APP_DISABLED: "appDisabled",
+    APP_STARTED: "appStarted",
 }

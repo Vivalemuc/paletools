@@ -1,5 +1,6 @@
 import { triggerEvent } from "../events";
 import delay from "../utils/delay";
+import promiseState from "../utils/promiseState";
 import http from "./http";
 
 const MAX_ITEMS_REQUEST = 150;
@@ -22,7 +23,9 @@ export function getClubPlayers(playerIds) {
     });
 }
 
-export function getAllClubPlayers(filterLoaned, playerId, onBachLoadedCallback) {
+let getAllClubPlayersExecutingPromise = null;
+
+function internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback){
     return new Promise((resolve, reject) => {
         const searchCriteria = new viewmodels.BucketedItemSearch().searchCriteria;
         if (playerId) {
@@ -42,13 +45,13 @@ export function getAllClubPlayers(filterLoaned, playerId, onBachLoadedCallback) 
                     ];
                     if (response.status !== 400 && !response.data.retrievedAll) {
                         searchCriteria.offset += searchCriteria.count;
-                        if(onBachLoadedCallback){
-                            (onBachLoadedCallback)(searchCriteria.offset);    
+                        if(onBatchLoadedCallback){
+                            (onBatchLoadedCallback)(searchCriteria.offset);    
                         }
-                        delay(100).then(() => getAllSquadMembers());
+                        delay(100 + (Math.random() * 100)).then(() => getAllSquadMembers());
                     } else {
-                        if(onBachLoadedCallback){
-                            (onBachLoadedCallback)(searchCriteria.offset);    
+                        if(onBatchLoadedCallback){
+                            (onBatchLoadedCallback)(searchCriteria.offset, gatheredSquad);    
                         }
                         resolve(gatheredSquad);
                     }
@@ -56,6 +59,24 @@ export function getAllClubPlayers(filterLoaned, playerId, onBachLoadedCallback) 
             );
         };
         getAllSquadMembers();
+    });
+}
+
+export function getAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback) {
+    return new Promise(resolve => {
+        if(getAllClubPlayersExecutingPromise){
+            promiseState(getAllClubPlayersExecutingPromise, state => {
+                if(state !== "pending"){
+                    getAllClubPlayersExecutingPromise = internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback);
+                }
+
+                getAllClubPlayersExecutingPromise.then(resolve);
+            });
+        }
+        else {
+            getAllClubPlayersExecutingPromise = internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback);
+            getAllClubPlayersExecutingPromise.then(resolve);
+        }
     });
 };
 

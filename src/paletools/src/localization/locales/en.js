@@ -1,23 +1,29 @@
 export default {
     "enabled": "Enabled",
 
+    /// #if process.env.GRID_MODE
     "plugins.gridMode.title": "Grid Mode",
+    /// #endif
 
     "plugins.donation.title": "Powered by Paletools",
     "plugins.donation.paypal": "PayPal Donation",
     "plugins.donation.mercadopago": "MercadoPago Donation",
 
+    /// #if process.env.COMPARE_MIN_MAX_PRICES
     "plugins.compareMinMaxPrices.settings.title": "Compare Prices",
     "plugins.compareMinMaxPrices.minPriceLabel": "Min Buy Now",
     "plugins.compareMinMaxPrices.maxPriceLabel": "Max Buy Now",
+    /// #endif
 
+    /// #if process.env.PLAYER_ACTIONS
     "plugins.playerActions.settings.title": "Player Actions",
     "plugins.playerActions.settings.copyPlayerId": "Enable Copy Player Id",
     "plugins.playerActions.settings.futbinSearch": "Enable FUTBIN search",
     "plugins.playerActions.copyPlayerId": "Copy Player Id to clipbpard",
     "plugins.playerActions.futbinSearch": "FUTBIN search",
+    /// #endif
 
-
+    /// #if process.env.MARKET_SEARCH_FILTERS
     "plugins.marketSearchFilters.settings.title": "Market Search Filters",
     "plugins.marketSearchFilters.settings.savedFilters": "Enable Saved Filters",
     "plugins.marketSearchFilters.settings.playerId": "Enable Player Id",
@@ -31,7 +37,9 @@ export default {
     "plugins.marketSearchFilters.filter.save": "Save",
     "plugins.marketSearchFilters.filter.delete": "Delete",
     "plugins.marketSearchFilters.playerIdWarning": "This is an experimental feature and could potentially lead to you account being banned, are you sure you want to enable it?",
+    /// #endif
 
+    /// #if process.env.SNIPE
     "plugins.snipe.settings.title": "Sniping",
     "plugins.snipe.settings.enableDisable": "Enable / Disable",
     "plugins.snipe.settings.results.pressEnter": "Auto press ENTER after buy",
@@ -59,22 +67,43 @@ export default {
     "plugins.snipe.settings.search.incMaxBuy": "Increase max buy now value",
     "plugins.snipe.settings.search.botModeMinBid": "Bot mode, increment min bid",
     "plugins.snipe.settings.search.botModeMinBuy": "Bot mode, increment min buy now",
+    /// #endif
 
+    // #if process.env.DUPLICATED_TO_SBC
     "plugins.duplicatedToSbc.button.text": "Use duplicated players",
     "plugins.duplicatedToSbc.settings.title": "Duplicated to SBC",
     "plugins.duplicatedToSbc.button.textLoading": "Loading players from club... {count} loaded",
+    /// #endif
 
+    /// #if process.env.SELECT_CHEAPEST
     "plugins.selectCheapest.settings.title": "Select cheapest player automatically",
+    /// #endif
 
+    /// #if process.env.FILL_SBC_FROM_FUTBIN
     "plugins.fillSbcFromFutbin.settings.title": "Fill SBC with FUTBIN",
-
     "plugins.fillSbcFromFutbin.settings.importToolLabel": "Install FUTBIN Link",
     "plugins.fillSbcFromFutbin.settings.importToolLinkText": "Export FUTBIN SBC",
     "plugins.fillSbcFromFutbin.settings.installInstructions": "Drag the install link to the bookmarks bar",
     "plugins.fillSbcFromFutbin.button.text": "Import SBC from FUTBIN",
     "plugins.fillSbcFromFutbin.button.textLoading": "Loading players from club... {count} loaded",
     "plugins.fillSbcFromFutbin.copyError": "There was an error importing SBC from FUTBIN, make sure you use the Export FUTBIN SBC first",
+    /// #endif
 
+    /// #if process.env.MARK_DUPLICATED
+    "plugins.markDuplicated.settings.title": "Highlight duplicated players",
+    "plugins.markDuplicated.loading": "Loading club players: {count} loaded",
+    /// #endif
+
+    /// #if process.env.IMPROVED_PLAYER_SEARCH
+    "plugins.improvedPlayerSearch.settings.title": "Improved player search",
+    /// #endif
+
+    /// #if process.env.SBC_SELECT_MULTIPLE_PLAYERS
+    "plugins.sbcSelectMultiplePlayers.settings.title": "Select Multiple Players on SBCs",
+    // #endif
+
+    /// #if process.env.SETTINGS_MENU
     "plugins.settings.title": "Paletools Settings"
+    /// #endif
 };
 

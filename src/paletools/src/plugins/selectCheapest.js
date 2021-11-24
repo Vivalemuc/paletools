@@ -1,3 +1,5 @@
+let plugin;
+/// #if process.env.SELECT_CHEAPEST
 import { addLabelWithToggle } from "../controls";
 import UTMarketSearchResultsSplitViewControllerHelpers from "../helpers/UTMarketSearchResultsSplitViewControllerHelpers";
 import settings, { saveConfiguration } from "../settings";
@@ -40,7 +42,7 @@ function menu() {
     return container;
 }
 
-export default {
+plugin = {
     run: run,
     order: 100,
     settings: {
@@ -49,3 +51,6 @@ export default {
         menu: menu
     }
 };
+/// #endif
+
+export default plugin;

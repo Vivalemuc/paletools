@@ -6,17 +6,11 @@ module.exports = (env) => {
     process.env = {
         ...(process.env || {}),
         COMPARE_MIN_MAX_PRICES: true,
-        DUPLICATED_TO_SBC: true,
-        FILL_SBC_FROM_FUTBIN: true,
         GRID_MODE: true,
-        IMPROVED_PLAYER_SEARCH: true,
-        MARK_DUPLICATED: true,
         MARKET_SEARCH_FILTERS: true,
         PLAYER_ACTIONS: true,
-        SBC_SELECT_MULTIPLE_PLAYERS: true,
         SETTINGS_MENU: true,
         SNIPE: true,
-        SELECT_CHEAPEST: true,
         TRANSFER_TARGETS_LIMBO: true,
         UNASSIGNED_LIMBO: true,
         ...env
@@ -28,7 +22,7 @@ module.exports = (env) => {
             entry: "./src/index.js",
             output: {
                 path: path.resolve(__dirname, "dist"),
-                filename: "paletools.js"
+                filename: "paletools-lite.js"
             },
             module: {
                 rules: [
@@ -49,18 +43,13 @@ module.exports = (env) => {
             entry: "./src/index.js",
             output: {
                 path: path.resolve(__dirname, "dist"),
-                filename: "paletools.prod.js"
+                filename: "paletools-lite.prod.js"
             },
             module: {
                 rules: [
                     {
                         test: /\.css$/i,
                         use: ["raw-loader"]
-                    },
-                    {
-                        test: /\.js$/i,
-                        exclude: [/node_modules/],
-                        use: [path.resolve("webpack/loaders/conditional.js")]
                     }
                 ]
             }
@@ -70,13 +59,17 @@ module.exports = (env) => {
             entry: "./src/index.js",
             output: {
                 path: path.resolve(__dirname, "dist"),
-                filename: "paletools.prod.obfuscated.js"
+                filename: "paletools-lite.prod.obfuscated.js"
             },
             plugins: [
                 new WebpackObfuscator({ rotateStringArray: true, reservedStrings: ["\s*"] }, [])
             ],
             module: {
                 rules: [
+                    {
+                        test: /\.css$/i,
+                        use: ["raw-loader"]
+                    },
                     {
                         enforce: "post",
                         use: {
@@ -86,15 +79,6 @@ module.exports = (env) => {
                                 rotateStringArray: true
                             }
                         }
-                    },
-                    {
-                        test: /\.css$/i,
-                        use: ["raw-loader"]
-                    },
-                    {
-                        test: /\.js$/i,
-                        exclude: [/node_modules/],
-                        use: [path.resolve("webpack/loaders/conditional.js")]
                     }
                 ]
             }

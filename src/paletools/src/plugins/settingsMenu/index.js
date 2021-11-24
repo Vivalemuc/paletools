@@ -1,9 +1,12 @@
+let plugin;
+
+/// #if process.env.SETTINGS_MENU
 import PalesnipeSettingsController from "./PalesnipeSettingsController";
 import styles from "./styles.css";
 import { addStyle } from "../../utils/styles";
 import localize from "../../localization";
 
-export default {
+plugin = {
     run: (menus) => {
         const UTGameTabBarController_initWithViewControllers = UTGameTabBarController.prototype.initWithViewControllers;
         UTGameTabBarController.prototype.initWithViewControllers = function (tabs) {
@@ -27,3 +30,6 @@ export default {
         addStyle('paletools-settings', styles);
     }
 }
+/// #endif
+
+export default plugin;
