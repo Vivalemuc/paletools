@@ -4,11 +4,18 @@ let plugin;
 /// #if process.env.IMPROVED_PLAYER_SEARCH
 import { addLabelWithToggle } from "../../controls";
 import settings from "../../settings";
+import { removeDiacritics } from "../../utils/diacritics";
 const cfg = settings.plugins.improvedPlayerSearch;
 
 function run() {
     function ImprovedSearchEngine() {
         this._players = repositories.Item.getStaticData();
+
+        for(const player of this._players){
+            player.cleanedLastName = removeDiacritics(player.lastName);
+            player.cleanedFirstName = removeDiacritics(player.firstName);
+            player.cleanedCommonName = player.commonName ? removeDiacritics(player.commonName) : player.commonName;
+        }
     }
 
     ImprovedSearchEngine.prototype.getEntriesForString = function (str) {
@@ -46,9 +53,9 @@ function run() {
             }
         }
         else {
-            where = x => x.lastName.toLowerCase().indexOf(str) > -1
-                || x.firstName.toLowerCase().indexOf(str) > -1
-                || (x.commonName && x.commonName.toLowerCase().indexOf(str) > -1);
+            where = x => x.cleanedLastName.toLowerCase().indexOf(str) > -1
+                || x.cleanedFirstName.toLowerCase().indexOf(str) > -1
+                || (x.commonName && x.cleanedCommonName.toLowerCase().indexOf(str) > -1);
             sort = ratingSort;
         }
 
