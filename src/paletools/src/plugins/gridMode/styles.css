@@ -183,10 +183,22 @@ section.ui-layout-right .listFUTItem .entityContainer .player-stats-data-compone
 }
 
 .ut-store-hub-view--content .ut-store-pack-details-view {
-	width: 170px;
 	display: inline-block;
 	margin-left:0;
-	margin-right:10px
+	margin-right:10px;
+	width: 16%;
+}
+
+.ut-store-pack-details-view--title {
+	min-height: 86px;
+}
+
+.ut-store-pack-details-view--content {
+	margin-left: 0 !important;
+}
+
+.ut-store-pack-details-view--footer {
+	margin-left: 0 !important;
 }
 
 .ut-store-pack-details-view .description {

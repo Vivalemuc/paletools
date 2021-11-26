@@ -44,7 +44,7 @@ function run() {
             } else {
                 const controller = getCurrentController();
                 if (controller instanceof UTMarketSearchResultsSplitViewController) {
-                    if (club.find(x => x.definitionId === this.data.definitionId)) {
+                    if (club && club.find(x => x.definitionId === this.data.definitionId)) {
                         $(this.__entityContainer).addClass("club-duplicated");
                     }
                 }
