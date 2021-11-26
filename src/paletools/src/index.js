@@ -12,11 +12,11 @@ function init() {
     }
 
     runPlugins();
-    let currentController = getCurrentController();
+    //let currentController = getCurrentController();
     getAppMain().getRootViewController().showGameView();
-    setTimeout(() => {
-        getCurrentController().getNavigationController()._showController(currentController);
-    }, 1000);
+    // setTimeout(() => {
+    //     getCurrentController().getNavigationController()._showController(currentController);
+    // }, 1000);
     addStyle("paletools", styles);
     triggerEvent(EVENTS.APP_STARTED);
     initialized = true;
