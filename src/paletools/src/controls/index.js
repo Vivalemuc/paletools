@@ -1,10 +1,11 @@
-import UTLabelWithTextInputControl from "./UTLabelWithTextInputControl";
+import UTLabelWithTextInputWithKeyPressControl from "./UTLabelWithTextInputWithKeyPressControl";
 import UTLabelWithToggleControl from "./UTLabelWithToggleControl";
 import localize from "../localization";
 import UTLabelWithLinkControl from "./UTLabelWithLinkControl";
+import UTLabelWithTextInputControl from "./UTLabelWithTextInputControl";
 
-export function addLabelWithInput(container, labelLocaleKey, defaultValue, onInputChange, inputId) {
-    const labelWithInput = new UTLabelWithTextInputControl();
+export function addLabelWithTextInputWithKeyPress(container, labelLocaleKey, defaultValue, onInputChange, inputId) {
+    const labelWithInput = new UTLabelWithTextInputWithKeyPressControl();
     labelWithInput.setLabel(localize(labelLocaleKey));
     if(inputId){
         labelWithInput.setInputId(inputId);
@@ -12,6 +13,13 @@ export function addLabelWithInput(container, labelLocaleKey, defaultValue, onInp
 
     labelWithInput.setInputValue(defaultValue);
     labelWithInput.onInputChange(onInputChange);
+    container.appendChild(labelWithInput.getRootElement());
+}
+
+export function addLabelWithTextInput(container, lableLocaleKey, onKeyDown){
+    const labelWithInput = new UTLabelWithTextInputControl();
+    labelWithInput.setLabel(localize(lableLocaleKey));
+    labelWithInput.onKeyDown(onKeyDown);
     container.appendChild(labelWithInput.getRootElement());
 }
 

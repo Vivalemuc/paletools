@@ -19,6 +19,7 @@ module.exports = (env) => {
         SELECT_CHEAPEST: true,
         TRANSFER_TARGETS_LIMBO: true,
         UNASSIGNED_LIMBO: true,
+        FILTER_SBCS: true,
         ...env
     };
 

@@ -85,6 +85,9 @@ let settings = {
         },
         sbcSelectMultiplePlayers: {
             enabled: true
+        },
+        filterSbcs: {
+            enabled: true
         }
     }
 };

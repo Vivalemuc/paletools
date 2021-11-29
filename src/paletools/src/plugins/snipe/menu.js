@@ -1,4 +1,4 @@
-import { addLabelWithInput, addLabelWithToggle } from "../../controls";
+import { addLabelWithTextInputWithKeyPress, addLabelWithToggle } from "../../controls";
 import { getObjectPropertyValueByPath, setObjectPropertyByPath } from "../../utils/object";
 import settings, { saveConfiguration } from "../../settings";
 
@@ -7,7 +7,7 @@ export default function menu(){
 
     function input(container, path){
         const value = getObjectPropertyValueByPath(cfg, path)
-        addLabelWithInput(container, `plugins.snipe.settings.${path.replace('buttons.','')}`, value, (elem, code) => {
+        addLabelWithTextInputWithKeyPress(container, `plugins.snipe.settings.${path.replace('buttons.','')}`, value, (elem, code) => {
             elem.value = code;
             setObjectPropertyByPath(cfg, path, code);
             saveConfiguration();

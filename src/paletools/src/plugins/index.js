@@ -13,6 +13,7 @@ import fillSbcFromFutbin from "./fillSbcFromFutbin";
 import improvedPlayerSearch from "./improvedPlayerSearch";
 import markDuplicated from "./markDuplicated";
 import sbcSelectMultiplePlayers from "./sbcSelectMultiplePlayers";
+import filterSbcs from "./filterSbcs";
 
 const plugins = [
     minMaxPrices,
@@ -28,6 +29,7 @@ const plugins = [
     fillSbcFromFutbin,
     improvedPlayerSearch,
     markDuplicated,
+    filterSbcs
     //sbcSelectMultiplePlayers
 ].filter(x => x);
 

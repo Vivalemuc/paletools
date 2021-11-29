@@ -3,7 +3,7 @@ let plugin;
 
 /// #if process.env.MARK_DUPLICATED
 import styles from "./styles.css";
-import settings from "../../settings";
+import settings, { saveConfiguration } from "../../settings";
 import { addStyle, removeStyle } from "../../utils/styles";
 import { EVENTS, on } from "../../events";
 import { addLabelWithToggle } from "../../controls";

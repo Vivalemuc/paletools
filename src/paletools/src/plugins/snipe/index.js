@@ -13,6 +13,21 @@ import UTMarketSearchResultsSplitViewControllerHelpers from "../../helpers/UTMar
 
 const cfg = settings.plugins.snipe;
 
+const utils_PopupManager_showConfirmation = utils.PopupManager.showConfirmation;
+utils.PopupManager.showConfirmation = function showConfirmation(e, t, i, o) {
+    if (!cfg.buttons.results.pressEnter) {
+        utils_PopupManager_showConfirmation(this, e, t, i, o);
+    }
+    else {
+        if (e !== utils.PopupManager.Confirmations.CONFIRM_BUY_NOW) {
+            utils_PopupManager_showConfirmation.call(this, e, t, i, o);
+        }
+        else {
+            i();
+        }
+    }
+}
+
 const UTDefaultActionPanelView_render = UTDefaultActionPanelView.prototype.render;
 UTDefaultActionPanelView.prototype.render = function (e, t, i, o, n, r, s) {
     UTDefaultActionPanelView_render.call(this, e, t, i, o, n, r, s);
@@ -30,18 +45,19 @@ function run() {
 
     const
         buyNow = () => {
-            if (cfg.buttons.results.pressEnter) {
-                let controller = getCurrentController();
-                let itemDetailsController = controller._rightController._currentController;
-                const currentAuction = itemDetailsController._currentAuction;
-                if (currentAuction._tradeState !== "expired") {
-                    itemDetailsController._requestedBid = currentAuction.buyNowPrice;
-                    itemDetailsController._eBidConfirmed();
-                }
-            }
-            else {
+            // if (cfg.buttons.results.pressEnter) {
+            //     let controller = getCurrentController();
+            //     let itemDetailsController = controller._rightController._currentController;
+            //     const currentAuction = itemDetailsController._currentAuction;
+            //     if (currentAuction._tradeState !== "expired") {
+            //         itemDetailsController._onBuyNow();
+            //         // itemDetailsController._requestedBid = currentAuction.buyNowPrice;
+            //         // itemDetailsController._eBidConfirmed();
+            //     }
+            // }
+            // else {
                 getCurrentController()._rightController._currentController._panel.onBuyNow.notify();
-            }
+            // }
         },
         bid = () => {
             const itemDetailsController = getCurrentController()._rightController._currentController;
@@ -217,13 +233,13 @@ function run() {
             if ($(".pagingContainer").is(":visible")) {
                 keys[buttons.lists.prev] = () => {
                     const prevPage = $(".pagingContainer > button.pagination.prev");
-                    if(prevPage.is(":visible")){
+                    if (prevPage.is(":visible")) {
                         mouseClick(prevPage);
                     }
                 }
                 keys[buttons.lists.next] = () => {
                     const nextPage = $(".pagingContainer > button.pagination.next");
-                    if(nextPage.is(":visible")){
+                    if (nextPage.is(":visible")) {
                         mouseClick(nextPage);
                     }
                 }

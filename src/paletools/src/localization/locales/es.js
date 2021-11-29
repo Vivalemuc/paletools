@@ -102,6 +102,11 @@ export default {
     "plugins.sbcSelectMultiplePlayers.settings.title": "Elegir multiples jugadores en un SBC",
     // #endif
 
+   /// #if process.env.FILTER_SBCS
+   "plugins.filterSbcs.settings.title": "Filtrar SBCs",
+   "plugins.filterSbcs.label": "Buscar",
+   // #endif
+
     /// #if process.env.SETTINGS_MENU
     "plugins.settings.title": "Configuración de Paletools"
     /// #endif

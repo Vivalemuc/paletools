@@ -13,6 +13,7 @@ module.exports = (env) => {
         SNIPE: true,
         TRANSFER_TARGETS_LIMBO: true,
         UNASSIGNED_LIMBO: true,
+        FILTER_SBCS: true,
         ...env
     };
 
