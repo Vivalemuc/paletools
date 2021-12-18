@@ -22,7 +22,7 @@ export function getConceptPlayer(playerId){
 
 function getConceptPlayersByDefinitionId(playerId) {
     return new Promise((resolve, reject) => {
-      const searchCriteria = new viewmodels.BucketedItemSearch().searchCriteria;
+      const searchCriteria = new UTItemSearchViewModel().searchCriteria;
       if (playerId) {
         searchCriteria.defId = [playerId];
       }
