@@ -10,4 +10,6 @@ export const EVENTS = {
     APP_ENABLED: "appEnabled",
     APP_DISABLED: "appDisabled",
     APP_STARTED: "appStarted",
+    CONFIGURATION_SAVED: "configurationSaved",
+    CONFIGURATION_LOADED: "configurationLoaded"
 }

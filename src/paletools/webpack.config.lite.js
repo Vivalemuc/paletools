@@ -13,7 +13,6 @@ module.exports = (env) => {
         SNIPE: true,
         TRANSFER_TARGETS_LIMBO: true,
         UNASSIGNED_LIMBO: true,
-        FILTER_SBCS: true,
         ...env
     };
 
@@ -51,6 +50,11 @@ module.exports = (env) => {
                     {
                         test: /\.css$/i,
                         use: ["raw-loader"]
+                    },
+                    {
+                        test: /\.js$/i,
+                        exclude: [/node_modules/],
+                        use: [path.resolve("webpack/loaders/conditional.js")]
                     }
                 ]
             }
@@ -80,6 +84,11 @@ module.exports = (env) => {
                                 rotateStringArray: true
                             }
                         }
+                    },
+                    {
+                        test: /\.js$/i,
+                        exclude: [/node_modules/],
+                        use: [path.resolve("webpack/loaders/conditional.js")]
                     }
                 ]
             }

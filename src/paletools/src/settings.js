@@ -1,5 +1,5 @@
 import VERSION from "./version";
-import { triggerEvent } from "./events";
+import { EVENTS, triggerEvent } from "./events";
 
 const buttons = {
     back: 'Digit1',
@@ -95,12 +95,12 @@ let settings = {
 if (localStorage.getItem("paletools:settings")) {
     const savedSettings = JSON.parse(atob(localStorage.getItem("paletools:settings")));
     $.extend(true, settings, savedSettings);
-    triggerEvent("configurationLoaded", settings);
+    triggerEvent(EVENTS.CONFIGURATION_LOADED, settings);
 }
 
 export function saveConfiguration() {
     localStorage.setItem("paletools:settings", btoa(JSON.stringify(settings)));
-    triggerEvent("configurationSaved", settings);
+    triggerEvent(EVENTS.CONFIGURATION_SAVED, settings);
 }
 
 export default settings;

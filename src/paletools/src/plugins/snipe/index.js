@@ -4,7 +4,7 @@ let plugin;
 import mouseClick from "../../utils/mouse";
 import localize from "../../localization";
 import settings from "../../settings";
-import { on } from "../../events";
+import { EVENTS, on } from "../../events";
 import enableDisableApp from "../../app";
 import { addStyle, removeStyle } from "../../utils/styles";
 import menu from "./menu";
@@ -70,16 +70,16 @@ function run() {
         search = () => {
             const view = getCurrentController().getView();
 
-            view._eMinBidPriceChanged();
-            view._eMaxBidPriceChanged();
-            view._eMinBuyPriceChanged();
-            view._eMaxBuyPriceChanged();
+            view.eMinBidPriceChanged();
+            view.eMaxBidPriceChanged();
+            view.eMinBuyPriceChanged();
+            view.eMaxBuyPriceChanged();
 
             if (view.updateSearchCriteria) {
                 (view.updateSearchCriteria)();
             }
 
-            getCurrentController().getView()._eSearchButtonSelected();
+            view.eSearchButtonSelected();
         },
 
         transferBtn = () => $("button.send-to-transfer-list"),
@@ -292,20 +292,25 @@ function run() {
             addCss(cfg.buttons);
         };
 
-    on('appEnabled', () => {
+    on(EVENTS.APP_ENABLED, () => {
         resetCss();
     });
 
-    on('appDisabled', () => {
+    on(EVENTS.APP_DISABLED, () => {
         removeStyle('palesnipe-styles');
         addStyle('palesnipe-styles', '.palesnipe-element { display: none !important; }');
     })
 
-    on('configurationSaved', () => {
+    on(EVENTS.CONFIGURATION_SAVED, () => {
         resetCss();
     });
 
     document.body.addEventListener('keydown', e => {
+        if(e.target.tagName === "INPUT" && e.target.type.toUpperCase() === "TEXT"){
+            return;
+        }
+
+
         if (e.code === cfg.buttons.enableDisable) {
             enableDisableApp();
         }

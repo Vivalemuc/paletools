@@ -27,7 +27,7 @@ let getAllClubPlayersExecutingPromise = null;
 
 function internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback){
     return new Promise((resolve, reject) => {
-        const searchCriteria = new viewmodels.BucketedItemSearch().searchCriteria;
+        const searchCriteria = new UTItemSearchViewModel().searchCriteria;
         if (playerId) {
             searchCriteria.defId = [parseInt(playerId)];
         }
