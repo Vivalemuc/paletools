@@ -12,8 +12,10 @@ import settingsMenu from "./settingsMenu";
 import fillSbcFromFutbin from "./fillSbcFromFutbin";
 import improvedPlayerSearch from "./improvedPlayerSearch";
 import markDuplicated from "./markDuplicated";
-import sbcSelectMultiplePlayers from "./sbcSelectMultiplePlayers";
 import filterSbcs from "./filterSbcs";
+import sbcTimesCompleted from "./sbcTimesCompleted";
+import clubAnalyzer from "./clubAnalyzer";
+import showConsoleOutput from "./showConsoleOutput";
 
 const plugins = [
     minMaxPrices,
@@ -29,8 +31,10 @@ const plugins = [
     fillSbcFromFutbin,
     improvedPlayerSearch,
     markDuplicated,
-    filterSbcs
-    //sbcSelectMultiplePlayers
+    filterSbcs,
+    sbcTimesCompleted,
+    clubAnalyzer,
+    showConsoleOutput
 ].filter(x => x);
 
 const menus = [];

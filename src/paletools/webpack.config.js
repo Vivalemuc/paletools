@@ -20,6 +20,9 @@ module.exports = (env) => {
         TRANSFER_TARGETS_LIMBO: true,
         UNASSIGNED_LIMBO: true,
         FILTER_SBCS: true,
+        SBC_TIMES_COMPLETED: true,
+        CLUB_ANALYZER: true,
+        SHOW_CONSOLE_OUTPUT: true,
         ...env
     };
 
@@ -30,27 +33,6 @@ module.exports = (env) => {
             output: {
                 path: path.resolve(__dirname, "dist"),
                 filename: "paletools.js"
-            },
-            module: {
-                rules: [
-                    {
-                        test: /\.css$/i,
-                        use: ["raw-loader"]
-                    },
-                    {
-                        test: /\.js$/i,
-                        exclude: [/node_modules/],
-                        use: [path.resolve("webpack/loaders/conditional.js")]
-                    }
-                ]
-            }
-        },
-        {
-            mode: "production",
-            entry: "./src/index.js",
-            output: {
-                path: path.resolve(__dirname, "dist"),
-                filename: "paletools.prod.js"
             },
             module: {
                 rules: [

@@ -108,7 +108,28 @@ export default {
     // #endif
 
     /// #if process.env.SETTINGS_MENU
-    "plugins.settings.title": "Paletools Settings"
+    "plugins.settings.title": "Paletools Settings",
+    /// #endif
+
+    /// #if process.env.CLUB_ANALYZER
+    "plugins.clubAnalyzer.settings.title": "Club Analyzer",
+    "plugins.clubAnalyzer.view.dashboard.description": "Players count (including duplicated, not including loans) in club + unnasigned up to 50, watchlist (won) up to 100 and tradepile",
+    "plugins.clubAnalyzer.view.loading.players": "Loading players #COUNT# loaded...",
+    "plugins.clubAnalyzer.view.loading.usermassinfo": "Loading unassigned players data...",
+    "plugins.clubAnalyzer.view.loading.watchlist": "Loading watchlist data...",
+    "plugins.clubAnalyzer.view.loading.tradepile": "Loading tradepile data...",
+    "plugins.clubAnalyzer.view.loading.process": "Processing information",
+    "plugins.clubAnalyzer.view.buttons.reload": "Reload",
+    "plugins.clubAnalyzer.view.buttons.exportCsv": "Export as CSV",
+    "plugins.clubAnalyzer.view.buttons.exportHtml": "Export as HTML",
+    /// #endif
+
+    /// #if process.env.SHOW_CONSOLE_OUTPUT
+    "plugins.showConsoleOutput.settings.title": "Show Console Output",
+    /// #endif
+
+    /// #if process.env.SBC_TIMES_COMPLETED
+    "plugins.sbcTimesCompleted.settings.title": "SBC times completed notification"
     /// #endif
 };
 

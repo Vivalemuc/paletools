@@ -88,6 +88,15 @@ let settings = {
         },
         filterSbcs: {
             enabled: true
+        },
+        clubAnalyzer: {
+            enabled: true
+        },
+        sbcTimesCompleted: {
+            enabled: true
+        },
+        showConsoleOutput: {
+            enabled: true
         }
     }
 };

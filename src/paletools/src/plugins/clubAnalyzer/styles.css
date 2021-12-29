@@ -1,0 +1,201 @@
+.playerResultsList .club-analyzer-exists {
+    display: flex !important;
+}
+
+.playerResultsList .club-analyzer-exists:after {
+    color: #00ff00;
+    order: 2;
+    position: initial;
+    margin-left: 0;
+}
+
+.playerResultsList .club-analyzer-untradeable:before {
+    color: #ffd100;
+    order: 3;
+    position: initial;
+    margin-left: 0;
+}
+
+.club-analyzer-untradeable:before {
+    color: #ffd100;
+    margin-left: 22px;
+    position: absolute;
+    top: 5px;
+    z-index: 20;
+}
+
+.ut-club-search-results-view .club-analyzer-untradeable:before {
+    display: none;
+}
+
+.hide { display: none; }
+.club-analyzer { margin-top: 4px; }
+.club-analyzer .inline-list { padding: 6px; display: inline-block; width: 30%; margin-right: 4px; margin-bottom: 1px; font-size: 14px; }
+.club-analyzer .inline-list li { line-height: 30px; }
+.club-analyzer .value:after { content: ':'; margin-right: 4px; }
+
+.club-analyzer .player .untradeable {
+    margin-right: 4px;
+    display: inline-flex;
+}
+.club-analyzer .untradeable:before {
+        color: #ffd100;
+}
+
+.club-analyzer .player {
+    display: flex;
+    align-items: center;
+}
+
+.club-analyzer .player .fullname {
+    flex-grow: 1;
+    color: white;
+}
+
+.club-analyzer .player .rating {
+    order: 4;
+}
+
+.club-analyzer-auctionreport .player {
+    width: 100%;
+}
+
+.club-analyzer-auctionreport .player .fullname {
+    order: 0;
+    flex-grow: inherit;
+    margin-right: 4px;
+}
+
+.club-analyzer-auctionreport .player .rating {
+    order: 1;
+    margin-right: 8px;
+}
+
+
+.club-analyzer-auctionreport .player .rarity {
+    order: 2;
+    margin-right: 8px;
+}
+
+.club-analyzer-auctionreport .player .count {
+    order: 3;
+    margin-right: 8px;
+    border-left: 1px solid #275261;
+    padding-left: 8px;
+    color: yellow;
+}
+
+.club-analyzer-auctionreport .player .count:before {
+    content: '#EXTENDED_PLAYER_INFO.TOTAL#';
+    margin-right: 4px;
+    color: white;
+}
+
+.club-analyzer-auctionreport .player .avg {
+    order: 4;
+    margin-right: 8px;
+    border-left: 1px solid #275261;
+    padding-left: 8px;
+    color: yellow;
+}
+
+.club-analyzer-auctionreport .player .avg:before {
+    content: 'AVG';
+    margin-right: 4px;
+    color: white;
+}
+
+.club-analyzer .loans {
+    z-index: 3;
+    font-size: 80%;
+    text-align: center;
+    font-family: UltimateTeam,sans-serif;
+    font-weight: 600;
+    box-shadow: 0 1px 1px 0 rgb(0 0 0 / 25%);
+    background: linear-gradient(to bottom,#44a7db 0,#42a2d4 100%);
+    color: #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+    line-height: 18px;
+}
+
+.club-analyzer .player .rating:before {
+    content: '(';
+}
+.club-analyzer .player .rating:after {
+    content: ')';
+}
+.club-analyzer-navigation > div {
+    border-right: 1px solid #275261;
+    padding-left: 12px;
+    padding-right: 12px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.club-analyzer-navigation > div > a {
+    color: white;
+}
+.club-analyzer li:not(.player):before {
+    content: '+';
+}
+
+.club-analyzer li.expanded:not(.player):before {
+    content: '-';
+}
+
+#clubanalyzer-report-dashboard h3 {
+    text-align: center;
+}
+
+#clubanalyzer-report-dashboard table {
+    width: 100%;
+}
+
+#clubanalyzer-report-dashboard td {
+    font-size: 30px;
+    text-align: center;
+}
+
+#clubanalyzer-report-dashboard th {
+    text-align: center;
+    font-size: 30px;
+}
+
+#clubanalyzer-report-dashboard img {
+    width: 100px;
+}
+
+#clubanalyzer-report-dashboard > div {
+    display: inline-block;
+    width: 49%;
+    vertical-align: top;
+}
+
+#clubanalyzer-report-dashboard .limbo th {
+    font-size: 20px;
+}
+
+#clubanalyzer-report-dashboard table {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+#clubanalyzer-report-dashboard .tile {
+    padding: 10px;
+}
+
+#clubanalyzer-loading-message {
+    text-align: center;
+    line-height: 50px;
+}
+
+#clubanalyzer-counter-unnasigned::before, #clubanalyzer-counter-tradepile::before, #clubanalyzer-counter-watchlist::before {
+    content: '(';
+}
+
+#clubanalyzer-counter-unnasigned::after, #clubanalyzer-counter-tradepile::after, #clubanalyzer-counter-watchlist::after {
+    content: ')';
+}

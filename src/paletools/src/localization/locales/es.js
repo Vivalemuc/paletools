@@ -102,13 +102,34 @@ export default {
     "plugins.sbcSelectMultiplePlayers.settings.title": "Elegir multiples jugadores en un SBC",
     // #endif
 
-   /// #if process.env.FILTER_SBCS
-   "plugins.filterSbcs.settings.title": "Filtrar SBCs",
-   "plugins.filterSbcs.label": "Buscar",
-   // #endif
+    /// #if process.env.FILTER_SBCS
+    "plugins.filterSbcs.settings.title": "Filtrar SBCs",
+    "plugins.filterSbcs.label": "Buscar",
+    // #endif
 
     /// #if process.env.SETTINGS_MENU
-    "plugins.settings.title": "Configuración de Paletools"
+    "plugins.settings.title": "Configuración de Paletools",
+    /// #endif
+
+    /// #if process.env.CLUB_ANALYZER
+    "plugins.clubAnalyzer.settings.title": "Club Analyzer",
+    "plugins.clubAnalyzer.view.dashboard.description": "Cantidad de jugadores (incluye duplicados, no incluye pr&eacute;stamos + hasta 50 jugadores sin asignar + hasta 100 jugadores de la watchlist (solo los ganados) + la lista de transferibles",
+    "plugins.clubAnalyzer.view.loading.players": "Cargando jugadores, #COUNT# cargados...",
+    "plugins.clubAnalyzer.view.loading.usermassinfo": "Cargando jugadores sin asignar...",
+    "plugins.clubAnalyzer.view.loading.watchlist": "Cargando objetivos de mercado...",
+    "plugins.clubAnalyzer.view.loading.tradepile": "Cargando lista de transferencia...",
+    "plugins.clubAnalyzer.view.loading.process": "Procesando información",
+    "plugins.clubAnalyzer.view.buttons.reload": "Recargar",
+    "plugins.clubAnalyzer.view.buttons.exportCsv": "Exportar como CSV",
+    "plugins.clubAnalyzer.view.buttons.exportHtml": "Exportar como HTML",
+    /// #endif
+
+    /// #if process.env.SHOW_CONSOLE_OUTPUT
+    "plugins.showConsoleOutput.settings.title": "Mostrar Log de Consola",
+    /// #endif
+
+    /// #if process.env.SBC_TIMES_COMPLETED
+    "plugins.sbcTimesCompleted.settings.title": "Notificar cuantas veces un SBC se ha completado"
     /// #endif
 };
 

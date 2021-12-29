@@ -5,6 +5,14 @@ import http from "./http";
 
 const MAX_ITEMS_REQUEST = 150;
 
+export function getClubPlayersCount() {
+    return new Promise(resolve => {
+        http("club/stats/club").then(stats => {
+            resolve(stats.stat.find(x => x.type == "players").typeValue);
+        });
+    });
+}
+
 export function getClubPlayers(playerIds) {
     return new Promise(resolve => {
         const players = [];
@@ -24,6 +32,24 @@ export function getClubPlayers(playerIds) {
 }
 
 let getAllClubPlayersExecutingPromise = null;
+
+export function getAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback) {
+    return new Promise(resolve => {
+        if(getAllClubPlayersExecutingPromise){
+            promiseState(getAllClubPlayersExecutingPromise, state => {
+                if(state !== "pending"){
+                    getAllClubPlayersExecutingPromise = internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback);
+                }
+
+                getAllClubPlayersExecutingPromise.then(resolve);
+            });
+        }
+        else {
+            getAllClubPlayersExecutingPromise = internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback);
+            getAllClubPlayersExecutingPromise.then(resolve);
+        }
+    });
+};
 
 function internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback){
     return new Promise((resolve, reject) => {
@@ -61,24 +87,6 @@ function internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback
         getAllSquadMembers();
     });
 }
-
-export function getAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback) {
-    return new Promise(resolve => {
-        if(getAllClubPlayersExecutingPromise){
-            promiseState(getAllClubPlayersExecutingPromise, state => {
-                if(state !== "pending"){
-                    getAllClubPlayersExecutingPromise = internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback);
-                }
-
-                getAllClubPlayersExecutingPromise.then(resolve);
-            });
-        }
-        else {
-            getAllClubPlayersExecutingPromise = internalGetAllClubPlayers(filterLoaned, playerId, onBatchLoadedCallback);
-            getAllClubPlayersExecutingPromise.then(resolve);
-        }
-    });
-};
 
 export function getUnnasignedPlayers() {
     return http('purchased/items');
