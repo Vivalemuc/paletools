@@ -8,6 +8,10 @@ If you find this tool useful, please condier donating
 
 ## CHANGELOG
 
+### v1.0.3
+- Fixed club load on Mark as duplicated plugin</li>
+- Fixed localization issues</li>
+
 ### v1.0.2
 - Cleaned text with diacritics on player search, please search now works as intended
 - Added duplicated and untradeable icons to player search list

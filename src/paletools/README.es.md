@@ -8,6 +8,10 @@ Si consideras esta herramienta útil, por favor considera realizar una donación
 
 ## CHANGELOG
 
+### v1.0.3
+- Arreglado la carga del club en el plugin de Marcar jugadores como duplicados</li>
+- Arreglado los problemas de globalización</li>
+
 ### v1.0.2
 - Removidos los diacríticos del texto de entrada en la búsqueda de jugadores, la búsqueda ahora funciona como debería
 - Se agregaron los íconos de duplicado e intransferible a la búsqueda de jugadores
