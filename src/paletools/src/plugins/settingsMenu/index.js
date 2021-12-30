@@ -21,7 +21,7 @@ plugin = {
             const tab = new UTTabBarItemView();
             tab.init();
             tab.setTag(6);
-            tab.setText(localize("plugins.settings.title"));
+            tab.__buttonText.innerHTML = localize("plugins.settings.title");
             tab.addClass("icon-transfer");
             tab.getRootElement().classList.add("palesnipe-element");
             return tab;

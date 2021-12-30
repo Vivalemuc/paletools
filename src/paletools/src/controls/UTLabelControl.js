@@ -11,7 +11,7 @@ UTLabelControl.prototype._generate = function _generate() {
 }
 
 UTLabelControl.prototype.setText = function (text) {
-    this._label.textContent = text;
+    this._label.innerHTML = text;
 }
 
 UTLabelControl.prototype.destroyGeneratedElements = function destroyGeneratedElements() {

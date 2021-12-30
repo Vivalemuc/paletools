@@ -38,7 +38,7 @@ ClubAnalyzerController.prototype.getNavigationTitle = function () {
 ClubAnalyzerController.prototype._reload = function () {
     const self = this;
     function loadingCallback(type, data) {
-        let msg = localize(`plugins.clubAnalyzer.view.loading.${type}`).replace("#COUNT#", data);
+        let msg = localize(`plugins.clubAnalyzer.view.loading.${type}`).replace("{count}", data);
         self.getView().showLoading(msg)
     }
 
