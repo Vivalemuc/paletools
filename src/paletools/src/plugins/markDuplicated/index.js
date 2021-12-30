@@ -16,23 +16,42 @@ const cfg = settings.plugins.markDuplicated;
 
 function run() {
 
-    if (settings.enabled && cfg.enabled) {
-        getAllClubPlayers(true);
+    let club = null;
+
+
+    function loadClubPlayers(){
+        function playersToDictionary(players){
+            console.log(players);
+            if(!players) return {};
+
+            const playersDict = {};
+            for(let player of players){
+                playersDict[player.definitionId] = player;
+            }
+            return playersDict;
+        }
+
+        return new Promise(resolve => {
+            getAllClubPlayers(true, null, (loadedPlayersCount, currentClub) => {
+                club = playersToDictionary(currentClub);
+                updateBanner(localize("plugins.markDuplicated.loading").replace("{count}", loadedPlayersCount));
+            }).then(currentClub => {
+                club = playersToDictionary(currentClub); 
+                updateBanner("");
+                resolve(club);
+            });
+        });
     }
 
+    if (settings.enabled && cfg.enabled) {
+        loadClubPlayers();
+    }
 
     const UTTransfersHubViewController_requestTransferTargetData = UTTransfersHubViewController.prototype._requestTransferTargetData;
 
     UTTransfersHubViewController.prototype._requestTransferTargetData = function () {
         if (settings.enabled && cfg.enabled) {
-            getAllClubPlayers(true, null, (loadedPlayersCount, currentClub) => {
-                club = currentClub;
-                updateBanner(localize("plugins.markDuplicated.loading").replace("{count}", loadedPlayersCount));
-
-            }).then(club => {
-                club = club;
-                updateBanner("");
-            });
+            loadClubPlayers();
         }
 
         UTTransfersHubViewController_requestTransferTargetData.call(this);
@@ -48,7 +67,7 @@ function run() {
             } else {
                 const controller = getCurrentController();
                 if (controller instanceof UTMarketSearchResultsSplitViewController) {
-                    if (club && club.find(x => x.definitionId === this.data.definitionId)) {
+                    if (club && club[this.data.definitionId]) {
                         $(this.__entityContainer).addClass("club-duplicated");
                     }
                 }
@@ -61,18 +80,13 @@ function run() {
         UTPlayerSearchControl_updateList.call(this, e, t);
 
         if (settings.enabled && cfg.enabled) {
-            getAllClubPlayers(true).then(players => {
-                const playersDict = {};
-                for(let player of players){
-                    playersDict[player.definitionId] = player;
-                }
-
+            loadClubPlayers().then(club => {
                 for (let index = 0; index < e.length; index++) {
                     if (!t[index]) continue;
                     const player = t[index];
-                    if (playersDict[player.id]) {
+                    if (club[player.id]) {
                         this.__playerResultsList.children[index].children[0].classList.add('club-duplicated');
-                        if(playersDict[player.id].untradeable){
+                        if(club[player.id].untradeable){
                             this.__playerResultsList.children[index].children[0].classList.add('club-untradeable');
                         }
                     }

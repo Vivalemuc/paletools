@@ -20,7 +20,9 @@ function base64Encode(getCode){
         // * contents can only be a Buffer, Stream, or null
         // * This allows us to modify the vinyl file in memory and prevents the need to write back to the file system.
         //transformedFile.contents = Buffer.from(`"${filename}": "${vinylFile.contents.toString('base64')}",`);
-        transformedFile.contents = Buffer.from(`window.paletools = window.paletools || {};\nwindow.paletools['paletools-${VERSION}'] = "${getCode(filePath, vinylFile).toString('base64')}"`);
+
+        const code = encodeURIComponent(vinylFile.contents);
+        transformedFile.contents = Buffer.from(`window.paletools = window.paletools || {};\nwindow.paletools['paletools-${VERSION}'] = "${code}";`);
         // 3. pass along transformed file for use in next `pipe()`
         callback(null, transformedFile);
       });
