@@ -1,5 +1,5 @@
 # Welcome to Paletools 
-Para español click en el siguiente [link](https://github.org/eallegretta/paletools/src/paletools/README.es.md)
+Para español click en el siguiente [link](README.es.md)
 
 ## Donatation link
 If you find this tool useful, please condier donating
