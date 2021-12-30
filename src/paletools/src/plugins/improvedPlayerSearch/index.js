@@ -21,7 +21,7 @@ function run() {
     ImprovedSearchEngine.prototype.getEntriesForString = function (str) {
         if (str.length <= 1) return [];
 
-        str = str.toLowerCase();
+        str = removeDiacritics(str.toLowerCase());
         let where = null;
         let sort = null;
 
@@ -55,7 +55,9 @@ function run() {
         else {
             where = x => x.cleanedLastName.toLowerCase().indexOf(str) > -1
                 || x.cleanedFirstName.toLowerCase().indexOf(str) > -1
-                || (x.commonName && x.cleanedCommonName.toLowerCase().indexOf(str) > -1);
+                || (x.commonName && (x.cleanedCommonName.toLowerCase().indexOf(str) > -1 || x.commonName.toLowerCase().indexOf(str) >  -1))
+                || `${x.cleanedFirstName} ${x.cleanedLastName}`.toLowerCase().indexOf(str) > -1
+                ;
             sort = ratingSort;
         }
 

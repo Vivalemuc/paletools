@@ -15,7 +15,11 @@ import localize from "../../localization";
 const cfg = settings.plugins.markDuplicated;
 
 function run() {
-    let club = [];
+
+    if (settings.enabled && cfg.enabled) {
+        getAllClubPlayers(true);
+    }
+
 
     const UTTransfersHubViewController_requestTransferTargetData = UTTransfersHubViewController.prototype._requestTransferTargetData;
 
@@ -51,6 +55,32 @@ function run() {
             }
         }
     }
+
+    const UTPlayerSearchControl_updateList = UTPlayerSearchControl.prototype.updateList;
+    UTPlayerSearchControl.prototype.updateList = function (e, t) {
+        UTPlayerSearchControl_updateList.call(this, e, t);
+
+        if (settings.enabled && cfg.enabled) {
+            getAllClubPlayers(true).then(players => {
+                const playersDict = {};
+                for(let player of players){
+                    playersDict[player.definitionId] = player;
+                }
+
+                for (let index = 0; index < e.length; index++) {
+                    if (!t[index]) continue;
+                    const player = t[index];
+                    if (playersDict[player.id]) {
+                        this.__playerResultsList.children[index].children[0].classList.add('club-duplicated');
+                        if(playersDict[player.id].untradeable){
+                            this.__playerResultsList.children[index].children[0].classList.add('club-untradeable');
+                        }
+                    }
+                }
+            });
+        }
+    }
+
 
     on(EVENTS.APP_ENABLED, () => addStyle("paletools-markDuplicated", styles));
     on(EVENTS.APP_DISABLED, () => removeStyle("paletools-markDuplicated"));

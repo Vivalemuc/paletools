@@ -1,1 +1,23 @@
 .club-duplicated { opacity: 0.5 !important; }
+
+.playerResultsList .club-duplicated { 
+    opacity: 1 !important;
+}
+
+.playerResultsList .club-duplicated:after {
+    content: "\E009";
+    font-family: UltimateTeam-Icons,sans-serif;
+    color: #00ff00;
+    order: 2;
+    position: initial;
+    margin-left: 0;
+} 
+
+.playerResultsList .club-untradeable:before {
+    content: "\E06F";
+    font-family: UltimateTeam-Icons,sans-serif;
+    color: #ffd100;
+    order: 3;
+    position: initial;
+    margin-left: 0;
+}
