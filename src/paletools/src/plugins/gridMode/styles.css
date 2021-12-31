@@ -257,7 +257,7 @@ section.ui-layout-right .listFUTItem .entityContainer .player-stats-data-compone
 }
 
 .ut-sbc-set-tile-view {
-	width: 24%;
+	width: calc(25% - 1rem);
 	height: 220px;
 	float: left;
 }
